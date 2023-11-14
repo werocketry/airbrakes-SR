@@ -64,7 +64,7 @@ def Cd_rocket_at_Re(Re):
 A_rocket = 0.015326 # 5.5" diameter circle's area in m^2
 
 
-dataset = pd.read_csv('preliminary-flight-analysis/2022-06-24-serial-5115-flight-0001.csv',skiprows=range(1,20)).iloc[:600].drop_duplicates().reset_index()
+dataset = pd.read_csv('preliminary-flight-analysis/2022-06-24-serial-5115-flight-0001.csv',skiprows=range(1,20)).iloc[:2000].drop_duplicates().reset_index()
 dataset['time'] = dataset['time'] - dataset['time'][0]
 timestep = 0.01
 
@@ -79,40 +79,140 @@ dataset['air_density'] = dataset.apply(lambda x: air_density_fn(x['pressure'],x[
 dataset['q'] = dataset.apply(lambda x: 0.5*x['air_density']*pow(x['speed'],2), axis=1)
 dataset['dynamic_viscosity'] = dataset['temperature'].apply(lambda x: lookup_dynamic_viscosity(x,one_atm_air_dynamic_viscosity_lookup))
 dataset['reynolds_num'] = dataset.apply(lambda x: x['air_density']*x['speed']*len_characteristic/x['dynamic_viscosity'], axis=1)
+dataset['Cd_rocket'] = dataset['reynolds_num'].apply(Cd_rocket_at_Re)
 
-def tech_spec_thrust_at_time(time): 
-    # as per https://www.csrocketry.com/rocket-motors/cesaroni/motors/pro-98/3g-reloads/cesaroni-m1520-blue-streak-rocket-motor.html
-    if time < 0.1: return 1710*time/0.1
-    elif time < 0.2: return 1710 - (time-0.1)*(1710-1626)/0.1
-    elif time < 0.55: return 1626 + (time-0.2)*(1710-1626)/0.35
-    elif time < 1.67: return 1710 + (time-0.55)*(1842-1710)/1.12
-    elif time < 2.7: return 1842 - (time-1.67)*(1842-1722)/1.03
-    elif time < 4.25: return 1722 - (time-2.7)*(1722-1389)/1.55
-    elif time < 4.41: return 1389 + (time-4.25)*(1414-1389)/0.16
-    elif time < 4.65: return 1414 - (time-4.41)*(1414-595)/0.24
-    elif time < 4.9: return 595 - (time-4.65)*(595)/0.25
-    else: return 0
-def tech_spec_mass_at_time(time):
-    if time <4.9: return 20.51-(time*(20.51-16.91)/4.9)
-    else: return 16.91
 
-dataset['thrust'] = dataset['time'].apply(lambda x: tech_spec_thrust_at_time(x))
-dataset['mass'] = dataset['time'].apply(lambda x: tech_spec_mass_at_time(x))
+dry_mass = 16.91 # kg
+engine_mass_lookup = { # source: https://www.thrustcurve.org/simfiles/5f4294d20002e900000006b1/
+    # note we took there to be 3.6kg of propellant
+    0:3.737,
+    0.04:3.72292,
+    0.082:3.69047,
+    0.176:3.61337,
+    0.748:3.14029,
+    1.652:2.34658,
+    2.676:1.45221,
+    3.89:0.512779,
+    4.399:0.157939,
+    4.616:0.0473998,
+    4.877:0.000343417,
+    4.897:0
+}
+def tech_spec_mass_at_time(time, dry_mass, engine_mass_lookup):
+    time_list = list(engine_mass_lookup.keys())
+    if time >= time_list[-1]:
+        return dry_mass
+    else:
+        lower_time = max([t for t in time_list if t <= time])
+        upper_time = min([t for t in time_list if t > time])
+        lower_mass = engine_mass_lookup[lower_time]
+        upper_mass = engine_mass_lookup[upper_time]
+        return dry_mass + lower_mass + (time - lower_time) * (upper_mass - lower_mass) / (upper_time - lower_time)
+engine_thrust_lookup = { # source: https://www.thrustcurve.org/simfiles/5f4294d20002e900000006b1/
+    0:0,
+    0.04:1427.8,
+    0.082:1706.39,
+    0.176:1620.49,
+    0.748:1734.25,
+    1.652:1827.11,
+    2.676:1715.68,
+    3.89:1423.15,
+    4.399:1404.58,
+    4.616:661.661,
+    4.877:69.649,
+    4.897:0
+}
+def tech_spec_thrust_at_time(time, engine_thrust_lookup):
+    time_list = list(engine_thrust_lookup.keys())
+    if time >= time_list[-1]:
+        return 0
+    else:
+        lower_time = max([t for t in time_list if t <= time])
+        upper_time = min([t for t in time_list if t > time])
+        lower_thrust = engine_thrust_lookup[lower_time]
+        upper_thrust = engine_thrust_lookup[upper_time]
+        return lower_thrust + (time - lower_time) * (upper_thrust - lower_thrust) / (upper_time - lower_time)
+
+dataset['thrust'] = dataset['time'].apply(lambda x: tech_spec_thrust_at_time(x, engine_thrust_lookup))
+dataset['mass'] = dataset['time'].apply(lambda x: tech_spec_mass_at_time(x, dry_mass, engine_mass_lookup))
 
 dataset['accel_minus_g'] = dataset['acceleration'] - F_gravity
-dataset['Cd_rocket'] = dataset['reynolds_num'].apply(Cd_rocket_at_Re)
 dataset['accel_minus_g_minus_drag'] = dataset['accel_minus_g'] - (dataset['q']*A_rocket*dataset['Cd_rocket'])/dataset['mass']
+
+
+# plot thrust/mass_minus_g_minus_drag and acceleration_minus_g_minus_drag vs time on the same plot
+
+fig, ax1 = plt.subplots()
+ax1.plot(dataset['time'],dataset['accel_minus_g_minus_drag'],label='accel_minus_g_minus_drag')
+
+def Cd_rocket_at_Re(Re): 
+    # new version, just k-ω model
+    if Re < 1e7: return 0.42
+    elif Re < 2.8e7: return 0.42 - (Re-1e7)*(0.42-0.4)/(2.8e7-1e7)
+    elif Re < 5e7: return 0.4 - (Re-2.8e7)*(0.4-0.31)/(5e7-2.8e7)
+    else: return 0.31
+dataset['Cd_rocket'] = dataset['reynolds_num'].apply(Cd_rocket_at_Re)
+
 
 dataset['thrust/mass'] = dataset['thrust']/dataset['mass']
 dataset['thrust/mass_minus_g'] = dataset['thrust/mass'] - F_gravity
 dataset['thrust/mass_minus_g_minus_drag'] = dataset['thrust/mass_minus_g'] - (dataset['q']*A_rocket*dataset['Cd_rocket'])/dataset['mass']
-# plot thrust/mass_minus_g_minus_drag and acceleration_minus_g_minus_drag vs time on the same plot
 
-fig, ax1 = plt.subplots()
 ax1.plot(dataset['time'],dataset['thrust/mass_minus_g_minus_drag'],label='thrust/mass_minus_g_minus_drag')
-ax1.plot(dataset['time'],dataset['accel_minus_g_minus_drag'],label='accel_minus_g_minus_drag')
+
 ax1.set_xlabel('time (s)')
 ax1.set_ylabel('acceleration (m/s^2)')
 ax1.legend()
 
+# plot Re on the same graph
+ax2 = ax1.twinx()
+ax2.plot(dataset['time'],dataset['reynolds_num'],label='Re', color='black')
+ax2.set_ylabel('Re')
+ax2.legend()
+
 plt.show()
+
+# # determine what the coefficient of drag would need to be to slow the rocket down the same amount as it was slowed in the expermental data
+
+# dataset['Fd_experimental'] = dataset['thrust']-(dataset['acceleration']-F_gravity)*(dataset['mass'])
+# dataset['Cd_experimental'] = dataset['Fd_experimental']/(dataset['q']*A_rocket)
+
+# # plot Cd_experimental vs time
+# fig, ax1 = plt.subplots()
+# ax1.plot(dataset['time'].iloc[100:],dataset['Cd_experimental'].iloc[100:],label='Cd_experimental')
+# ax1.set_xlabel('time (s)')
+# ax1.set_ylabel('Cd_experimental')
+# ax1.legend()
+
+# # plot Re on the same graph
+# ax2 = ax1.twinx()
+# ax2.plot(dataset['time'].iloc[100:],dataset['reynolds_num'].iloc[100:],label='Re', color='orange')
+# ax2.set_ylabel('Re')
+# ax2.legend()
+
+# plt.show()
+
+# # plot Fd_experimental and q vs time on the same graph
+
+# fig, ax1 = plt.subplots()
+# ax1.plot(dataset['time'].iloc[100:],dataset['Fd_experimental'].iloc[100:],label='Fd_experimental')
+# ax1.set_xlabel('time (s)')
+# ax1.set_ylabel('Fd_experimental')
+# ax1.legend()
+
+# ax2 = ax1.twinx()
+# ax2.plot(dataset['time'].iloc[100:],dataset['q'].iloc[100:],label='q', color='orange')
+# ax2.set_ylabel('q')
+# ax2.legend()
+
+# plt.show()
+
+# # plot Fd_experimental/Re vs time
+
+# fig, ax1 = plt.subplots()
+# ax1.plot(dataset['time'].iloc[100:],dataset['Fd_experimental'].iloc[100:]/dataset['reynolds_num'].iloc[100:],label='Fd_experimental/Re')
+# ax1.set_xlabel('time (s)')
+# ax1.set_ylabel('Fd_experimental/Re')
+# ax1.legend()
+
+# plt.show()
