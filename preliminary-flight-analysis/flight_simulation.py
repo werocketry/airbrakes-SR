@@ -2,20 +2,25 @@
 import pandas as pd
 import numpy as np
 
+F_gravity = 9.80665 # m/s^2
 R_universal = 8.3144598 # J/(mol*K)
 MM_air = 0.0289644 # kg/mol
 R_specific_air = R_universal/MM_air # J/(kg*K)
-F_gravity = 9.80665 # m/s^2
 T_lapse_rate = 0.0065 # K/m
 
 def temp_at_height(h, launchpad_temp):
     return launchpad_temp - (h*T_lapse_rate)
 def pressure_at_height(h, launchpad_temp, launchpad_pressure):
-    return launchpad_pressure*(pow((1-(h*T_lapse_rate/(launchpad_temp+273.15))),(F_gravity/(R_specific_air*T_lapse_rate)))) 
-    # Pressure at the launch site was around 87 kPa for Prometheus' launch
+    return launchpad_pressure*pow((1-(h*T_lapse_rate/(launchpad_temp+273.15))),(F_gravity/(R_specific_air*T_lapse_rate)))
 def air_density_fn(pressure, temp):
     return pressure/(R_specific_air*(temp+273.15))
-one_atm_air_dynamic_viscosity_lookup = { # https://www.me.psu.edu/cimbala/me433/Links/Table_A_9_CC_Properties_of_Air.pdf
+def lookup_dynamic_viscosity(temp):
+    """
+    temp: temperature in C
+    returns dynamic viscosity in kg/m·s
+    source of lookup table: https://www.me.psu.edu/cimbala/me433/Links/Table_A_9_CC_Properties_of_Air.pdf
+    """
+    one_atm_air_dynamic_viscosity_lookup = {
     -150:8.636*pow(10,-6),
     -100:1.189*pow(10,-6),
     -50:1.474*pow(10,-5),
@@ -36,8 +41,7 @@ one_atm_air_dynamic_viscosity_lookup = { # https://www.me.psu.edu/cimbala/me433/
     50:1.963*pow(10,-5),
     60:2.008*pow(10,-5),
     70:2.052*pow(10,-5),
-}
-def lookup_dynamic_viscosity(temp, one_atm_air_dynamic_viscosity_lookup):
+    }
     temp_list = list(one_atm_air_dynamic_viscosity_lookup.keys())
     if temp <= temp_list[0]:
         return one_atm_air_dynamic_viscosity_lookup[temp_list[0]]
@@ -123,7 +127,7 @@ def Prometheus_Cd_function(Re):
 Prometheus = Rocket(
     L_rocket = 2.229, # length of Prometheus in m
     A_rocket = 0.015326, # 5.5" diameter circle's area in m^2
-    dry_mass = 16.91, 
+    dry_mass = 16.91, # kg, from (CAD? final physical rocket mass? were they the same at the end?)
     fuel_mass_lookup = { # source: https://www.thrustcurve.org/simfiles/5f4294d20002e900000006b1/
     # note we took there to be 3.6kg of propellant
     0:3.737,
@@ -169,7 +173,7 @@ example_airbrakes = Airbrakes(
 )
 
 # Flight simulation function
-def simulate_flight(rocket = Prometheus, launch_conditions=Prometheus_launch_conditions, timestep = 0.001):
+def simulate_flight(rocket = Prometheus, launch_conditions = Prometheus_launch_conditions, timestep = 0.001):
     # Initializations
     len_characteristic = rocket.L_rocket
     A_rocket = rocket.A_rocket
@@ -177,6 +181,7 @@ def simulate_flight(rocket = Prometheus, launch_conditions=Prometheus_launch_con
     fuel_mass_lookup = rocket.fuel_mass_lookup
     engine_thrust_lookup = rocket.engine_thrust_lookup
     Cd_rocket_at_Re = rocket.Cd_rocket_at_Re
+    burnout_time = max(list(engine_thrust_lookup.keys()))
 
     launchpad_pressure = launch_conditions.launchpad_pressure
     launchpad_temp = launch_conditions.launchpad_temp
@@ -186,12 +191,12 @@ def simulate_flight(rocket = Prometheus, launch_conditions=Prometheus_launch_con
     time, height, speed, v_y, v_x = 0, 0, 0, 0, 0
     angle_to_vertical = np.deg2rad(90 - launch_angle)
     air_density = air_density_fn(launchpad_pressure, launchpad_temp)
-    dynamic_viscosity = lookup_dynamic_viscosity(launchpad_temp, one_atm_air_dynamic_viscosity_lookup)
+    dynamic_viscosity = lookup_dynamic_viscosity(launchpad_temp)
 
     simulated_values = [[0, 0, 0, 0, 0, 0, 0, launchpad_temp, launchpad_pressure, air_density, 0, dynamic_viscosity, 0, 0, angle_to_vertical]]
 
     # Motor burn until liftoff
-    while thrust_at_time(time, engine_thrust_lookup)/mass_at_time(time, dry_mass, fuel_mass_lookup) < F_gravity:
+    while thrust_at_time(time, engine_thrust_lookup)/mass_at_time(time, dry_mass, fuel_mass_lookup) <= F_gravity:
         time += timestep
         simulated_values.append([time, 0, 0, 0, 0, 0, 0, launchpad_temp, launchpad_pressure, air_density, 0, dynamic_viscosity, 0, 0, angle_to_vertical])
     liftoff_index = len(simulated_values)
@@ -202,43 +207,43 @@ def simulate_flight(rocket = Prometheus, launch_conditions=Prometheus_launch_con
         temperature = temp_at_height(height,launchpad_temp)        
         pressure = pressure_at_height(height,launchpad_temp, launchpad_pressure)
         air_density = air_density_fn(pressure, temperature)
-        dynamic_viscosity = lookup_dynamic_viscosity(temperature, one_atm_air_dynamic_viscosity_lookup)
+        dynamic_viscosity = lookup_dynamic_viscosity(temperature)
         reynolds_num = (air_density*speed*len_characteristic)/dynamic_viscosity
         Cd_rocket = Cd_rocket_at_Re(reynolds_num)
         q = 0.5 * (air_density) * (speed**2)
         F_drag = q * Cd_rocket * A_rocket
         mass = mass_at_time(time,dry_mass,fuel_mass_lookup)
         thrust = thrust_at_time(time, engine_thrust_lookup)
-        a_y = (thrust-F_drag)/mass*np.cos(angle_to_vertical) - F_gravity
-        a_x = (thrust-F_drag)/mass*np.sin(angle_to_vertical)
-        v_y += a_y*timestep
-        v_x += a_x*timestep
+        a_y = (thrust-F_drag)*np.cos(angle_to_vertical)/mass - F_gravity
+        a_x = (thrust-F_drag)*np.sin(angle_to_vertical)/mass
+        v_y += a_y * timestep
+        v_x += a_x * timestep
         speed = np.sqrt(v_y**2 + v_x**2)
-        height += v_y*timestep
+        height += v_y * timestep
     
         simulated_values.append([time, height, speed, a_y, a_x, v_y, v_x, temperature, pressure, air_density, q, dynamic_viscosity, reynolds_num, Cd_rocket, angle_to_vertical])
     launch_rail_cleared_index = len(simulated_values)
-
+    
     # Flight from launch rail cleared until burnout
-    while time < max(list(engine_thrust_lookup.keys())):
+    while time < burnout_time:
         time += timestep
         
         temperature = temp_at_height(height, launchpad_temp)        
         pressure = pressure_at_height(height, launchpad_temp, launchpad_pressure)
         air_density = air_density_fn(pressure, temperature)
-        dynamic_viscosity = lookup_dynamic_viscosity(temperature, one_atm_air_dynamic_viscosity_lookup)
+        dynamic_viscosity = lookup_dynamic_viscosity(temperature)
         reynolds_num = air_density * speed * len_characteristic / dynamic_viscosity
         Cd_rocket = Cd_rocket_at_Re(reynolds_num)
         q = 0.5 * air_density * (speed**2)
         F_drag = q * Cd_rocket * A_rocket
         mass = mass_at_time(time, dry_mass, fuel_mass_lookup)
         thrust = thrust_at_time(time, engine_thrust_lookup)
-        a_y = (thrust-F_drag)/mass*np.cos(angle_to_vertical) - F_gravity
-        a_x = (thrust-F_drag)/mass*np.sin(angle_to_vertical)
-        v_y += a_y*timestep
-        v_x += a_x*timestep
+        a_y = (thrust-F_drag)*np.cos(angle_to_vertical)/mass - F_gravity
+        a_x = (thrust-F_drag)*np.sin(angle_to_vertical)/mass
+        v_y += a_y * timestep
+        v_x += a_x * timestep
         speed = np.sqrt(v_y**2 + v_x**2)
-        height += v_y*timestep
+        height += v_y * timestep
 
         angle_to_vertical = np.arctan(v_x/v_y)
         
@@ -255,13 +260,13 @@ def simulate_flight(rocket = Prometheus, launch_conditions=Prometheus_launch_con
         temperature = temp_at_height(height, launchpad_temp)        
         pressure = pressure_at_height(height, launchpad_temp, launchpad_pressure)
         air_density = air_density_fn(pressure, temperature)
-        dynamic_viscosity = lookup_dynamic_viscosity(temperature, one_atm_air_dynamic_viscosity_lookup)
+        dynamic_viscosity = lookup_dynamic_viscosity(temperature)
         reynolds_num = (air_density*speed*len_characteristic)/dynamic_viscosity
         Cd_rocket = Cd_rocket_at_Re(reynolds_num)
         q = 0.5 * air_density * (speed**2)
         F_drag = q * Cd_rocket * A_rocket
-        a_y = -F_drag/mass*np.cos(angle_to_vertical) - F_gravity
-        a_x = -F_drag/mass*np.sin(angle_to_vertical)
+        a_y = -F_drag*np.cos(angle_to_vertical)/mass - F_gravity
+        a_x = -F_drag*np.sin(angle_to_vertical)/mass
         v_y += a_y * timestep
         v_x += a_x * timestep
         speed = np.sqrt(v_y**2 + v_x**2)
@@ -330,7 +335,7 @@ def simulate_airbrakes_flight(pre_brake_flight, rocket = Prometheus, airbrakes =
         temperature = temp_at_height(height,launchpad_temp)
         pressure = pressure_at_height(height,launchpad_temp, launchpad_pressure)
         air_density = air_density_fn(pressure, temperature)
-        dynamic_viscosity = lookup_dynamic_viscosity(temperature, one_atm_air_dynamic_viscosity_lookup)
+        dynamic_viscosity = lookup_dynamic_viscosity(temperature)
         reynolds_num = (air_density*speed*len_characteristic)/dynamic_viscosity
         Cd_rocket = Cd_rocket_at_Re(reynolds_num)
         q = 0.5 * air_density * (speed**2)
@@ -338,13 +343,13 @@ def simulate_airbrakes_flight(pre_brake_flight, rocket = Prometheus, airbrakes =
         deployment_angle = min(45, deployment_angle + max_deployment_speed*timestep) 
         
         F_drag = q * (np.sin(np.deg2rad(deployment_angle))*A_Cd_brakes + A_rocket*Cd_rocket)
-        a_y = -F_drag/mass*np.cos(angle_to_vertical) - F_gravity
-        a_x = -F_drag/mass*np.sin(angle_to_vertical)
-        v_y += a_y*timestep
-        v_x += a_x*timestep
+        a_y = -F_drag*np.cos(angle_to_vertical)/mass - F_gravity
+        a_x = -F_drag*np.sin(angle_to_vertical)/mass
+        v_y += a_y * timestep
+        v_x += a_x * timestep
         speed = np.sqrt(v_y**2 + v_x**2)
         previous_height = height
-        height += v_y*timestep
+        height += v_y * timestep
 
         angle_to_vertical = np.arctan(v_x/v_y)
 
