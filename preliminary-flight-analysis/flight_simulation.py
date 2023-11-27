@@ -81,8 +81,8 @@ class Rocket:
     L_rocket: length of the rocket (m)
     A_rocket: cross-sectional area of the rocket (m^2)
     dry_mass: dry mass of the rocket (kg)
-    fuel_mass_lookup: dictionary of fuel mass at time (kg)
-    engine_thrust_lookup: dictionary of thrust at time (N)
+    fuel_mass_lookup: dictionary of fuel mass (kg) at time (s after ignition)
+    engine_thrust_lookup: dictionary of thrust (N) at time (s after ignition)
     Cd_rocket_at_Re: coefficient of drag of the rocket at Re
     """
     def __init__(self, dry_mass, fuel_mass_lookup, engine_thrust_lookup, Cd_rocket_at_Re, A_rocket, L_rocket):
@@ -95,7 +95,7 @@ class Rocket:
 class LaunchConditions:
     """
     launchpad_pressure: pressure at the launchpad (Pa)
-    launchpad_temp: temperature at the launchpad (C)
+    launchpad_temp: temperature at the launchpad (°C)
     L_launch_rail: length of the launch rail (m)
     launch_angle: launch angle (deg)
     """
@@ -106,7 +106,7 @@ class LaunchConditions:
         self.launch_angle = launch_angle
 class Airbrakes:
     """
-    num_flaps: number of flaps on the airbrakes
+    num_flaps: number of airbrakes flaps
     A_flap: cross-sectional area of each flap (m^2)
     Cd_brakes: coefficient of drag of the airbrakes
     max_deployment_speed: maximum speed at which the airbrakes can be deployed (deg/s)
@@ -382,3 +382,4 @@ def simulate_airbrakes_flight(pre_brake_flight, rocket = Prometheus, airbrakes =
 
 if __name__ == "__main__":
     dataset, liftoff_index, launch_rail_cleared_index, burnout_index, apogee_index = simulate_flight()
+    ascent = simulate_airbrakes_flight(dataset.iloc[:burnout_index].copy())
