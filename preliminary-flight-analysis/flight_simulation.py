@@ -85,7 +85,7 @@ class Rocket:
     engine_thrust_lookup: dictionary of thrust (N) at time (s after ignition)
     Cd_rocket_at_Re: coefficient of drag of the rocket at Re
     """
-    def __init__(self, dry_mass, fuel_mass_lookup, engine_thrust_lookup, Cd_rocket_at_Re, A_rocket, L_rocket):
+    def __init__(self, L_rocket, A_rocket, dry_mass, fuel_mass_lookup, engine_thrust_lookup, Cd_rocket_at_Re):
         self.L_rocket = L_rocket
         self.A_rocket = A_rocket
         self.dry_mass = dry_mass
