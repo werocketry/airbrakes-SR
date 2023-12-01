@@ -13,7 +13,7 @@ THE HORIZONTAL VELOCITY IS GOING TO ACCOUNT FOR THE AIRBRAKES GIVING A BIGGER TH
 for the experimental datasets, the velocity not being 0/the acceleration not being -g at apogee could help with finding out the horizontal motion
 
 https://github.com/WPI-HPRC/ORBrake
-rocketpy
+rocketpy ← branch with air brakes: https://github.com/RocketPy-Team/RocketPy/tree/enh/air-brakes
 
 add wind effects, determine how far from the launchpad it lands. for fun: animation of flight?
 
