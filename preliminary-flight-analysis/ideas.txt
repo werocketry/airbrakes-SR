@@ -1,0 +1,25 @@
+flight/sim main differences in first 4/5 seconds - about 1000 ft off around motor burnout
+
+probably not: add an option to sim Prometheus data from motor burnout without airbrakes deployment?
+
+something so that the sim data goes down towards the experimental data (~ rotation CW)
+
+comparisons to ORK sims
+
+maybe make it so that I can run one function to sim an ascent and save it to a variable (flight class?)
+
+THE HORIZONTAL VELOCITY IS GOING TO ACCOUNT FOR THE AIRBRAKES GIVING A BIGGER THAN EXPECTED APOGEE CHANGE!!!
+
+for the experimental datasets, the velocity not being 0/the acceleration not being -g at apogee could help with finding out the horizontal motion
+
+https://github.com/WPI-HPRC/ORBrake
+rocketpy ← branch with air brakes: https://github.com/RocketPy-Team/RocketPy/tree/enh/air-brakes
+
+add wind effects, determine how far from the launchpad it lands. for fun: animation of flight?
+
+what rough magnitude of change does weathercocking have (fn of stability in tube calibers?)
+
+je suis re.venu encore
+_1 _1__ _2._1__ __3___
+ξανα.ήρθα πίσω
+_3__._1__ _2__

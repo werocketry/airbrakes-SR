@@ -1,3 +1,3 @@
 # airbrakes-prelim-analysis
 
-Some basic analysis of Prometheus' flight data, and a simulation flight with a PID controller controlling some egregiously simplified airbrakes 
+Analysis of Prometheus' flight data, flight simulation, and simplified airbrakes
