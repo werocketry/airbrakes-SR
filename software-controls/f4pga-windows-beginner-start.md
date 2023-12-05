@@ -12,7 +12,7 @@ Using Chocolatey, install wget and xz-utils:
 
 ```bash
 choco install wget
-choco install xz-utils
+choco install archiver
 ```
 
 Next, clone the F4PGA examples repository and enter it:
@@ -43,7 +43,7 @@ wget https://repo.continuum.io/miniconda/Miniconda3-latest-Windows-x86_64.exe -O
 The install directory can either be in your user directory such as `C:\Users\YourUsername\opt\f4pga` or in a system directory such as `C:\opt\f4pga`. If you choose a system directory, you will need administrator permission to perform the installation.
 
 ```bash
-set F4PGA_INSTALL_DIR=C:\Users\YourUsername\opt\f4pga
+$env:F4PGA_INSTALL_DIR="C:\Users\YOURUSERNAME\opt\f4pga"
 ```
 
 ### Setup and download assets
@@ -51,15 +51,16 @@ set F4PGA_INSTALL_DIR=C:\Users\YourUsername\opt\f4pga
 Select your target FPGA family:
 
 ```bash
-set FPGA_FAM=eos-s3
+$env:FPGA_FAM="eos-s3"
 ```
 
 Next, setup Conda and your system’s environment, and download architecture definitions:
 
 ```bash
-start /wait "" conda_installer.exe /InstallationType=JustMe /RegisterPython=0 /AddToPath=0 /S /D=%F4PGA_INSTALL_DIR%\%FPGA_FAM%\conda
-call "%F4PGA_INSTALL_DIR%\%FPGA_FAM%\conda\Scripts\activate.bat"
-conda env create -f %FPGA_FAM%\environment.yml
+Start-Process -FilePath "conda_installer.exe" -ArgumentList "/InstallationType=JustMe /RegisterPython=0 /AddToPath=0 /S /D=$env:F4PGA_INSTALL_DIR\$env:FPGA_FAM\conda" -Wait
+& "$env:F4PGA_INSTALL_DIR\$env:FPGA_FAM\conda\Scripts\activate.bat"
+
+conda env create -f "$env:FPGA_FAM\environment.yml"
 ```
 
 ```bash
@@ -70,9 +71,7 @@ mkdir %F4PGA_INSTALL_DIR%\%FPGA_FAM%
 set F4PGA_TIMESTAMP='20220920-124259'
 set F4PGA_HASH='007d1c1'
 
-for %%i in (%F4PGA_PACKAGES%) do (
-  wget -qO- https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/continuous/install/%F4PGA_TIMESTAMP%/symbiflow-arch-defs-%%i-%F4PGA_HASH%.tar.xz | tar -xJ -C %F4PGA_INSTALL_DIR%\%FPGA_FAM%
-)
+for %%i in (%F4PGA_PACKAGES%) do (wget -qO- https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/continuous/install/%F4PGA_TIMESTAMP%/symbiflow-arch-defs-%%i-%F4PGA_HASH%.tar.xz | tar -xJ -C %F4PGA_INSTALL_DIR%\%FPGA_FAM%)
 ```
 
 If the above commands exited without errors, you have successfully installed and configured your working environment.
