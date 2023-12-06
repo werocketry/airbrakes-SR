@@ -17,6 +17,8 @@ rocketpy ← branch with air brakes: https://github.com/RocketPy-Team/RocketPy/t
 
 add wind effects, determine how far from the launchpad it lands. for fun: animation of flight?
 
+use sim on controller?? ask Cam exactly what's needed at waypoints
+
 what rough magnitude of change does weathercocking have (fn of stability in tube calibers?)
 
 je suis re.venu encore
