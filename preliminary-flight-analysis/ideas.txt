@@ -6,6 +6,9 @@ something so that the sim data goes down towards the experimental data (~ rotati
 
 comparisons to ORK sims
 
+other people are also having ork underestimate drag: 
+    https://discord.com/channels/855522432945618965/855533557996453888/1017453223340150805 
+
 maybe make it so that I can run one function to sim an ascent and save it to a variable (flight class?)
 
 THE HORIZONTAL VELOCITY IS GOING TO ACCOUNT FOR THE AIRBRAKES GIVING A BIGGER THAN EXPECTED APOGEE CHANGE!!!
