@@ -166,7 +166,7 @@ Prometheus_launch_conditions = LaunchConditions(
     launch_angle = 84 # deg, SAC comp rules
 )
 example_airbrakes = Airbrakes(
-    num_flaps = 4,
+    num_flaps = 3,
     A_flap = 0.0064516, # 0.011408 is the current area in CAD, likely to decrease. 0.0064516 from Maryland's last year, which we'll probably have a similar configuration to
     Cd_brakes = 1, # about what other teams had, super rough
     max_deployment_speed = 10 # deg/s
@@ -419,4 +419,4 @@ if __name__ == "__main__":
     )
 
     dataset, liftoff_index, launch_rail_cleared_index, burnout_index, apogee_index = simulate_flight(rocket=Hyperion)
-    ascent = simulate_airbrakes_flight(dataset.iloc[:burnout_index].copy())
+    ascent = simulate_airbrakes_flight(dataset.iloc[:burnout_index].copy(), rocket=Hyperion)
