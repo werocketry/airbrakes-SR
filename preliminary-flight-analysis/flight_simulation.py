@@ -53,6 +53,13 @@ def lookup_dynamic_viscosity(temp):
         lower_viscosity = one_atm_air_dynamic_viscosity_lookup[lower_temp]
         upper_viscosity = one_atm_air_dynamic_viscosity_lookup[upper_temp]
         return lower_viscosity + (temp - lower_temp) * (upper_viscosity - lower_viscosity) / (upper_temp - lower_temp)
+def mach_number_fn(v, temp):
+    """
+    v: velocity in m/s
+    temp: temperature in C
+    returns mach number
+    """
+    return v/np.sqrt(1.4*R_specific_air*(temp+273.15))
 
 def mass_at_time(time, dry_mass, fuel_mass_lookup):
     time_list = list(fuel_mass_lookup.keys())
