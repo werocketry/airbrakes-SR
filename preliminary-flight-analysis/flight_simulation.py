@@ -126,6 +126,9 @@ class Airbrakes:
 
 # Create instances of rocket, launch conditions, airbrakes
 def Prometheus_Cd_function(Re):
+    """
+    THIS IS FROM THE OLD 2020-2021 CFD. Get Shelby's new CFD based on the final Promtheus CAD and see if it's different. Likely change this to that if it is.
+    """
     # use k-ω model from Prometheus CFD sims
     if Re < 1e7: return 0.42
     elif Re < 2.8e7: return 0.42 - (Re-1e7)*(0.42-0.4)/(2.8e7-1e7)
@@ -133,7 +136,7 @@ def Prometheus_Cd_function(Re):
     else: return 0.31
 Prometheus = Rocket(
     L_rocket = 2.229, # length of Prometheus in m
-    A_rocket = 0.015326, # 5.5" diameter circle's area in m^2
+    A_rocket = 0.015326 + 0.13*0.008*3, # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
     dry_mass = 16.91, # kg, from (CAD? final physical rocket mass? were they the same at the end?)
     fuel_mass_lookup = { # source: https://www.thrustcurve.org/simfiles/5f4294d20002e900000006b1/
     # note we took there to be 3.6kg of propellant
@@ -390,7 +393,7 @@ def simulate_airbrakes_flight(pre_brake_flight, rocket = Prometheus, airbrakes =
 if __name__ == "__main__":
     Hyperion = Rocket(
         L_rocket=2.77,
-        A_rocket=0.015326,
+        A_rocket = 0.015326 + 0.13*0.008*3, # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
         dry_mass=18.4,
         fuel_mass_lookup = { # source: https://www.thrustcurve.org/simfiles/5f4294d20002e900000005a0/
                             0:3.423,
