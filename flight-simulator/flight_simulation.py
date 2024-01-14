@@ -3,10 +3,10 @@ import pandas as pd
 import numpy as np
 
 F_gravity = 9.80665 # m/s^2
+T_lapse_rate = 0.0065 # K/m
 R_universal = 8.3144598 # J/(mol*K)
 MM_air = 0.0289644 # kg/mol
 R_specific_air = R_universal/MM_air # J/(kg*K)
-T_lapse_rate = 0.0065 # K/m
 
 def temp_at_height(h, launchpad_temp):
     """
@@ -119,8 +119,8 @@ class LaunchConditions:
     """
     launchpad_pressure: pressure at the launchpad (Pa)
     launchpad_temp: temperature at the launchpad (°C)
-    L_launch_rail: length of the launch rail (m)
-    launch_angle: launch angle (deg)
+    L_launch_rail: length of the launch rail (m). ESRA provides a 17ft (5.18m) launch rail
+    launch_angle: launch angle from horizontal (deg). SAC comp rules say minimum of 6 deg off of vertical, but they pick it based on wind and pad location, so completely out of our control, and we just know it's between 6 and 15 deg
     """
     def __init__(self, launchpad_pressure, launchpad_temp, L_launch_rail, launch_angle):
         self.launchpad_pressure = launchpad_pressure
@@ -191,11 +191,11 @@ Prometheus_launch_conditions = LaunchConditions(
     launchpad_pressure = 86400, # Pa, what it was at Prometheus' launch
     launchpad_temp = 34, # deg C, what it was at Prometheus' launch
     L_launch_rail = 5.18, # m, what ESRA provides
-    launch_angle = 84 # deg, SAC comp rules
+    launch_angle = 80 # deg from horizontal. Niall said Prometheus was set up at 10 deg off vertical
 )
 example_airbrakes = Airbrakes(
     num_flaps = 3,
-    A_flap = 0.0064516, # 0.011408 is the current area in CAD, likely to decrease. 0.0064516 from Maryland's last year, which we'll probably have a similar configuration to
+    A_flap = 0.0022505, # current area in CAD. 0.0064516 from Maryland's last year, which we'll probably have a similar configuration to
     Cd_brakes = 1, # about what other teams had, super rough
     max_deployment_speed = 10, # deg/s
     max_deployment_angle = 45 # deg
