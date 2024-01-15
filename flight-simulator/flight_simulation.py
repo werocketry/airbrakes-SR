@@ -119,7 +119,7 @@ class LaunchConditions:
     """
     launchpad_pressure: pressure at the launchpad (Pa)
     launchpad_temp: temperature at the launchpad (°C)
-    L_launch_rail: length of the launch rail (m). ESRA provides a 17ft (5.18m) launch rail
+    L_launch_rail: effective length of the launch rail (m). ESRA provides a 17ft (5.18m) launch rail, but the value that should be used here is the difference of the length of the rail and the distance between the ground and the second launch lug from the bottom of the rocket (the upper lug if there's only 2)
     launch_angle: launch angle from horizontal (deg). SAC comp rules say minimum of 6 deg off of vertical, but they pick it based on wind and pad location, so completely out of our control, and we just know it's between 6 and 15 deg
     """
     def __init__(self, launchpad_pressure, launchpad_temp, L_launch_rail, launch_angle):
@@ -190,8 +190,8 @@ Prometheus = Rocket(
 Prometheus_launch_conditions = LaunchConditions(
     launchpad_pressure = 86400, # Pa, what it was at Prometheus' launch
     launchpad_temp = 34, # deg C, what it was at Prometheus' launch
-    L_launch_rail = 5.18, # m, what ESRA provides
-    launch_angle = 80 # deg from horizontal. Niall said Prometheus was set up at 10 deg off vertical
+    L_launch_rail = 5.18-0.69, # m, ESRA provides a 5.18m rail, and Prometheus had it's second of two launch lugs 69cm from its bottom
+    launch_angle = 80 # deg from horizontal. Niall said Prometheus was set up at 10 deg off of the vertical
 )
 example_airbrakes = Airbrakes(
     num_flaps = 3,
