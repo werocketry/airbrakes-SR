@@ -1,6 +1,7 @@
 # Import libraries, define natural constants, helper functions
 import pandas as pd
 import numpy as np
+from configs import Prometheus, Prometheus_launch_conditions, current_airbrakes_model
 
 F_gravity = 9.80665 # m/s^2
 T_lapse_rate = 0.0065 # K/m
@@ -107,19 +108,21 @@ class Rocket:
     fuel_mass_lookup: dictionary of fuel mass (kg) at time (s after ignition)
     engine_thrust_lookup: dictionary of thrust (N) at time (s after ignition)
     Cd_rocket_at_Re: coefficient of drag of the rocket at Re
+    h_second_lug: height of the second launch lug from the bottom of the rocket (m). This is the upper lug if there's only 2. Defaults to 0.69m, which is what Prometheus had, and doesn't matter much if it's not set as it changes apogee by less than 10ft when it's at 0.
     """
-    def __init__(self, L_rocket, A_rocket, dry_mass, fuel_mass_lookup, engine_thrust_lookup, Cd_rocket_at_Re):
+    def __init__(self, L_rocket, A_rocket, dry_mass, fuel_mass_lookup, engine_thrust_lookup, Cd_rocket_at_Re, h_second_lug = 0.69):
         self.L_rocket = L_rocket
         self.A_rocket = A_rocket
         self.dry_mass = dry_mass
         self.fuel_mass_lookup = fuel_mass_lookup
         self.engine_thrust_lookup = engine_thrust_lookup
         self.Cd_rocket_at_Re = Cd_rocket_at_Re
+        self.h_second_lug = h_second_lug
 class LaunchConditions:
     """
     launchpad_pressure: pressure at the launchpad (Pa)
     launchpad_temp: temperature at the launchpad (°C)
-    L_launch_rail: effective length of the launch rail (m). ESRA provides a 17ft (5.18m) launch rail, but the value that should be used here is the difference of the length of the rail and the distance between the ground and the second launch lug from the bottom of the rocket (the upper lug if there's only 2)
+    L_launch_rail: length of the launch rail (m). ESRA provides a 17ft (5.18m) launch rail
     launch_angle: launch angle from horizontal (deg). SAC comp rules say minimum of 6 deg off of vertical, but they pick it based on wind and pad location, so completely out of our control, and we just know it's between 6 and 15 deg
     """
     def __init__(self, launchpad_pressure, launchpad_temp, L_launch_rail, launch_angle):
@@ -142,64 +145,10 @@ class Airbrakes:
         self.max_deployment_speed = max_deployment_speed
         self.max_deployment_angle = max_deployment_angle
 
-# Create instances of rocket, launch conditions, airbrakes
-def Prometheus_Cd_function(Re):
-    """
-    THIS IS FROM THE OLD 2020-2021 CFD. Get Shelby's new CFD based on the final Promtheus CAD and see if it's different. Likely change this to that if it is.
-    """
-    # use k-ω model from Prometheus CFD sims
-    if Re < 1e7: return 0.42
-    elif Re < 2.8e7: return 0.42 - (Re-1e7)*(0.42-0.4)/(2.8e7-1e7)
-    elif Re < 5e7: return 0.4 - (Re-2.8e7)*(0.4-0.31)/(5e7-2.8e7)
-    else: return 0.31
-Prometheus = Rocket(
-    L_rocket = 2.229, # length of Prometheus in m
-    A_rocket = 0.015326 + 0.13*0.008*3, # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
-    dry_mass = 16.91, # kg, from (CAD? final physical rocket mass? were they the same at the end?)
-    fuel_mass_lookup = { # source: https://www.thrustcurve.org/simfiles/5f4294d20002e900000006b1/
-    # note we took there to be 3.6kg of propellant
-    0:3.737,
-    0.04:3.72292,
-    0.082:3.69047,
-    0.176:3.61337,
-    0.748:3.14029,
-    1.652:2.34658,
-    2.676:1.45221,
-    3.89:0.512779,
-    4.399:0.157939,
-    4.616:0.0473998,
-    4.877:0.000343417,
-    4.897:0
-    },
-    engine_thrust_lookup = { # source: https://www.thrustcurve.org/simfiles/5f4294d20002e900000006b1/
-    0:0,
-    0.04:1427.8,
-    0.082:1706.39,
-    0.176:1620.49,
-    0.748:1734.25,
-    1.652:1827.11,
-    2.676:1715.68,
-    3.89:1423.15,
-    4.399:1404.58,
-    4.616:661.661,
-    4.877:69.649,
-    4.897:0
-    }, 
-    Cd_rocket_at_Re = Prometheus_Cd_function
-)
-Prometheus_launch_conditions = LaunchConditions(
-    launchpad_pressure = 86400, # Pa, what it was at Prometheus' launch
-    launchpad_temp = 34, # deg C, what it was at Prometheus' launch
-    L_launch_rail = 5.18-0.69, # m, ESRA provides a 5.18m rail, and Prometheus had it's second of two launch lugs 69cm from its bottom
-    launch_angle = 80 # deg from horizontal. Niall said Prometheus was set up at 10 deg off of the vertical
-)
-example_airbrakes = Airbrakes(
-    num_flaps = 3,
-    A_flap = 0.0022505, # current area in CAD. 0.0064516 from Maryland's last year, which we'll probably have a similar configuration to
-    Cd_brakes = 1, # about what other teams had, super rough
-    max_deployment_speed = 10, # deg/s
-    max_deployment_angle = 45 # deg
-)
+# Create default instances of rocket, launch conditions, airbrakes
+Prometheus = Rocket(**Prometheus)
+Prometheus_launch_conditions = LaunchConditions(**Prometheus_launch_conditions)
+airbrakes_model = Airbrakes(**current_airbrakes_model)
 
 # Flight simulation function
 def simulate_flight(rocket = Prometheus, launch_conditions = Prometheus_launch_conditions, timestep = 0.001):
@@ -231,7 +180,8 @@ def simulate_flight(rocket = Prometheus, launch_conditions = Prometheus_launch_c
     liftoff_index = len(simulated_values)
 
     # Liftoff until launch rail cleared
-    while height < L_launch_rail*np.cos(angle_to_vertical):
+    effective_L_launch_rail = L_launch_rail - rocket.h_second_lug
+    while height < effective_L_launch_rail*np.cos(angle_to_vertical):
         time += timestep
         temperature = temp_at_height(height,launchpad_temp)
         pressure = pressure_at_height(height,launchpad_temp, launchpad_pressure)
@@ -326,7 +276,7 @@ def simulate_flight(rocket = Prometheus, launch_conditions = Prometheus_launch_c
     return dataset, liftoff_index, launch_rail_cleared_index, burnout_index, apogee_index
 
 # Flight with airbrakes simulation function
-def simulate_airbrakes_flight(pre_brake_flight, rocket = Prometheus, airbrakes = example_airbrakes, timestep = 0.001):
+def simulate_airbrakes_flight(pre_brake_flight, rocket = Prometheus, airbrakes = airbrakes_model, timestep = 0.001):
     # Initializations
     len_characteristic = rocket.L_rocket
     A_rocket = rocket.A_rocket
@@ -408,42 +358,8 @@ def simulate_airbrakes_flight(pre_brake_flight, rocket = Prometheus, airbrakes =
 
 
 if __name__ == "__main__":
-    Hyperion = Rocket(
-        L_rocket=2.77,
-        A_rocket = 0.015326 + 0.13*0.008*3, # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
-        dry_mass=18.4,
-        fuel_mass_lookup = { # source: https://www.thrustcurve.org/simfiles/5f4294d20002e900000005a0/
-                            0:3.423,
-                            0.12:3.35069,
-                            0.21:3.24469,
-                            0.6:2.77495,
-                            0.9:2.38622,
-                            1.2:1.98198,
-                            1.5:1.57684,
-                            1.8:1.18234,
-                            2.1:0.809811,
-                            2.4:0.467594,
-                            2.7:0.152563,
-                            2.99:0.000196996,
-                            3:0
-                            },
-        engine_thrust_lookup = { # source: https://www.thrustcurve.org/simfiles/5f4294d20002e900000005a0/
-                                0:0,
-                                0.12:2600,
-                                0.21:2482,
-                                0.6:2715,
-                                0.9:2876,
-                                1.2:2938,
-                                1.5:2889,
-                                1.8:2785,
-                                2.1:2573,
-                                2.4:2349,
-                                2.7:2182,
-                                2.99:85,
-                                3:0
-                                },
-        Cd_rocket_at_Re = Prometheus_Cd_function
-    )
+    from configs import Hyperion
+    Hyperion = Rocket(**Hyperion)
 
     dataset, liftoff_index, launch_rail_cleared_index, burnout_index, apogee_index = simulate_flight(rocket=Hyperion)
     ascent = simulate_airbrakes_flight(dataset.iloc[:burnout_index].copy(), rocket=Hyperion)
