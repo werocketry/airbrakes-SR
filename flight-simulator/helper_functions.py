@@ -76,21 +76,15 @@ def mach_number_fn(v, temp):
 
 def mass_at_time(time, dry_mass, fuel_mass_lookup):
     time_list = list(fuel_mass_lookup.keys())
-    if time >= time_list[-1]:
-        return dry_mass
-    else:
-        lower_time = max([t for t in time_list if t <= time])
-        upper_time = min([t for t in time_list if t > time])
-        lower_mass = fuel_mass_lookup[lower_time]
-        upper_mass = fuel_mass_lookup[upper_time]
-        return (dry_mass + lower_mass + (time - lower_time) * (upper_mass - lower_mass) / (upper_time - lower_time))
+    lower_time = max([t for t in time_list if t <= time])
+    upper_time = min([t for t in time_list if t > time])
+    lower_mass = fuel_mass_lookup[lower_time]
+    upper_mass = fuel_mass_lookup[upper_time]
+    return (dry_mass + lower_mass + (time - lower_time) * (upper_mass - lower_mass) / (upper_time - lower_time))
 def thrust_at_time(time, engine_thrust_lookup):
     time_list = list(engine_thrust_lookup.keys())
-    if time >= time_list[-1]:
-        return 0
-    else:
-        lower_time = max([t for t in time_list if t <= time])
-        upper_time = min([t for t in time_list if t > time])
-        lower_thrust = engine_thrust_lookup[lower_time]
-        upper_thrust = engine_thrust_lookup[upper_time]
-        return lower_thrust + (time - lower_time) * (upper_thrust - lower_thrust) / (upper_time - lower_time)
+    lower_time = max([t for t in time_list if t <= time])
+    upper_time = min([t for t in time_list if t > time])
+    lower_thrust = engine_thrust_lookup[lower_time]
+    upper_thrust = engine_thrust_lookup[upper_time]
+    return lower_thrust + (time - lower_time) * (upper_thrust - lower_thrust) / (upper_time - lower_time)

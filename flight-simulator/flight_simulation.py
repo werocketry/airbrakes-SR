@@ -82,9 +82,9 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
     liftoff_index = len(simulated_values)
 
     # Liftoff until launch rail cleared
+    time += timestep
     effective_L_launch_rail = L_launch_rail - rocket.h_second_lug
     while height < effective_L_launch_rail * np.cos(angle_to_vertical):
-        time += timestep
         temperature = hfunc.temp_at_height(height, launchpad_temp)
         pressure = hfunc.pressure_at_height(height, launchpad_temp, launchpad_pressure)
         air_density = hfunc.air_density_fn(pressure, temperature)
@@ -121,12 +121,12 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
                 angle_to_vertical,
             ]
         )
+        time += timestep
+
     launch_rail_cleared_index = len(simulated_values)
 
     # Flight from launch rail cleared until burnout
     while time < burnout_time:
-        time += timestep
-
         temperature = hfunc.temp_at_height(height, launchpad_temp)
         pressure = hfunc.pressure_at_height(height, launchpad_temp, launchpad_pressure)
         air_density = hfunc.air_density_fn(pressure, temperature)
@@ -165,14 +165,13 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
                 angle_to_vertical,
             ]
         )
+        time += timestep
     burnout_index = len(simulated_values)
 
     # Flight from burnout to apogee
     previous_height = height
     mass = dry_mass
     while height >= previous_height:
-        time += timestep
-
         temperature = hfunc.temp_at_height(height, launchpad_temp)
         pressure = hfunc.pressure_at_height(height, launchpad_temp, launchpad_pressure)
         air_density = hfunc.air_density_fn(pressure, temperature)
@@ -210,6 +209,7 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
                 angle_to_vertical,
             ]
         )
+        time += timestep
     apogee_index = len(simulated_values)
     dataset = pd.DataFrame(
         {
@@ -235,7 +235,7 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
         liftoff_index,
         launch_rail_cleared_index,
         burnout_index,
-        apogee_index,
+        apogee_index
     )
 
 
