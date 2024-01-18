@@ -8,8 +8,6 @@ def temp_at_height(h, launchpad_temp):
     returns temperature in C
     """
     return launchpad_temp - (h * con.T_lapse_rate)
-
-
 def pressure_at_height(h, launchpad_temp, launchpad_pressure):
     """
     h: height in m
@@ -19,10 +17,8 @@ def pressure_at_height(h, launchpad_temp, launchpad_pressure):
     """
     return launchpad_pressure * pow(
         (1 - (h * con.T_lapse_rate / (launchpad_temp + 273.15))),
-        (con.F_gravity / (con.R_specific_air * con.T_lapse_rate)),
+        (con.F_gravity / (con.R_specific_air * con.T_lapse_rate))
     )
-
-
 def air_density_fn(pressure, temp):
     """
     pressure: pressure in Pa
@@ -30,8 +26,6 @@ def air_density_fn(pressure, temp):
     returns air density in kg/m^3
     """
     return pressure / (con.R_specific_air * (temp + 273.15))
-
-
 def lookup_dynamic_viscosity(temp):
     """
     temp: temperature in C
@@ -70,11 +64,7 @@ def lookup_dynamic_viscosity(temp):
         upper_temp = min([t for t in temp_list if t > temp])
         lower_viscosity = one_atm_air_dynamic_viscosity_lookup[lower_temp]
         upper_viscosity = one_atm_air_dynamic_viscosity_lookup[upper_temp]
-        return lower_viscosity + (temp - lower_temp) * (
-            upper_viscosity - lower_viscosity
-        ) / (upper_temp - lower_temp)
-
-
+        return lower_viscosity + (temp - lower_temp) * (upper_viscosity - lower_viscosity) / (upper_temp - lower_temp)
 def mach_number_fn(v, temp):
     """
     v: velocity in m/s
@@ -93,15 +83,7 @@ def mass_at_time(time, dry_mass, fuel_mass_lookup):
         upper_time = min([t for t in time_list if t > time])
         lower_mass = fuel_mass_lookup[lower_time]
         upper_mass = fuel_mass_lookup[upper_time]
-        return (
-            dry_mass
-            + lower_mass
-            + (time - lower_time)
-            * (upper_mass - lower_mass)
-            / (upper_time - lower_time)
-        )
-
-
+        return (dry_mass + lower_mass + (time - lower_time) * (upper_mass - lower_mass) / (upper_time - lower_time))
 def thrust_at_time(time, engine_thrust_lookup):
     time_list = list(engine_thrust_lookup.keys())
     if time >= time_list[-1]:
@@ -111,6 +93,4 @@ def thrust_at_time(time, engine_thrust_lookup):
         upper_time = min([t for t in time_list if t > time])
         lower_thrust = engine_thrust_lookup[lower_time]
         upper_thrust = engine_thrust_lookup[upper_time]
-        return lower_thrust + (time - lower_time) * (upper_thrust - lower_thrust) / (
-            upper_time - lower_time
-        )
+        return lower_thrust + (time - lower_time) * (upper_thrust - lower_thrust) / (upper_time - lower_time)

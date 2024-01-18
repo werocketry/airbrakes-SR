@@ -20,10 +20,7 @@ def Prometheus_Cd_function(Re):
 # Rocket class
 Hyperion = {
     "L_rocket": 2.77,
-    "A_rocket": 0.015326
-    + 0.13
-    * 0.008
-    * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
+    "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
     "dry_mass": 18.4,
     "fuel_mass_lookup": {  # source: https://www.thrustcurve.org/simfiles/5f4294d20002e900000005a0/
         0: 3.423,
@@ -38,7 +35,7 @@ Hyperion = {
         2.4: 0.467594,
         2.7: 0.152563,
         2.99: 0.000196996,
-        3: 0,
+        3: 0
     },
     "engine_thrust_lookup": {  # source: https://www.thrustcurve.org/simfiles/5f4294d20002e900000005a0/
         0: 0,
@@ -53,18 +50,15 @@ Hyperion = {
         2.4: 2349,
         2.7: 2182,
         2.99: 85,
-        3: 0,
+        3: 0
     },
     "Cd_rocket_at_Re": Prometheus_Cd_function,
-    "h_second_lug": 0.69,  # m, distance from bottom of rocket to second launch lug, was what Prometheus had
+    "h_second_lug": 0.69  # m, distance from bottom of rocket to second launch lug, was what Prometheus had
 }
 
 Prometheus = {
     "L_rocket": 2.229,  # length of Prometheus in m
-    "A_rocket": 0.015326
-    + 0.13
-    * 0.008
-    * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
+    "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
     "dry_mass": 16.91,  # kg, from (CAD? final physical rocket mass? were they the same at the end?)
     "fuel_mass_lookup": {  # source: https://www.thrustcurve.org/simfiles/5f4294d20002e900000006b1/
         # note we took there to be 3.6kg of propellant in the mass budget
@@ -79,7 +73,7 @@ Prometheus = {
         4.399: 0.157939,
         4.616: 0.0473998,
         4.877: 0.000343417,
-        4.897: 0,
+        4.897: 0
     },
     "engine_thrust_lookup": {  # source: https://www.thrustcurve.org/simfiles/5f4294d20002e900000006b1/
         0: 0,
@@ -93,10 +87,10 @@ Prometheus = {
         4.399: 1404.58,
         4.616: 661.661,
         4.877: 69.649,
-        4.897: 0,
+        4.897: 0
     },
     "Cd_rocket_at_Re": Prometheus_Cd_function,
-    "h_second_lug": 0.69,  # m
+    "h_second_lug": 0.69  # m
 }
 
 # LaunchConditions class
@@ -104,14 +98,14 @@ Prometheus_launch_conditions = {
     "launchpad_pressure": 86400,  # Pa, what it was at Prometheus' launch
     "launchpad_temp": 34,  # deg C, what it was at Prometheus' launch
     "L_launch_rail": 5.18,  # m, ESRA provides a 5.18m rail
-    "launch_angle": 80,  # deg from horizontal. Niall said Prometheus was set up at 10 deg off of the vertical
+    "launch_angle": 80  # deg from horizontal. Niall said Prometheus was set up at 10 deg off of the vertical
 }
 
 # Airbrakes class
 current_airbrakes_model = {
     "num_flaps": 3,
-    "A_flap": 0.0022505,  # current area in CAD. 0.0064516 from Maryland's last year, which we'll probably have a similar configuration to
+    "A_flap": 0.0022505,  # current area in CAD. Maryland's last year was 0.0064516, which we'll probably have a similar configuration to
     "Cd_brakes": 1,  # about what other teams had, super rough
     "max_deployment_speed": 10,  # deg/s
-    "max_deployment_angle": 45,  # deg
+    "max_deployment_angle": 45  # deg
 }
