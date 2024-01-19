@@ -32,10 +32,10 @@ def pressure_at_height(h, launchpad_temp, launchpad_pressure):
     )
 def air_density_fn(pressure, temp):
     """
-    Calculate the air density given pressure and temperature.
+    Calculate the density of air at a given pressure and temperature.
 
     Args:
-    - pressure (float): Air pressure in Pascals.
+    - pressure (float): Pressure in Pascals.
     - temp (float): Temperature in Celsius.
 
     Returns:
@@ -103,11 +103,11 @@ def mach_number_fn(v, temp):
 
 def mass_at_time(time, dry_mass, fuel_mass_lookup):
     """
-    Calculate the total mass of the rocket at a given time during its flight.
+    Calculate the total mass of the rocket at a given time during motor burn.
 
     Args:
-    - time (float): Time in seconds since the start of the rocket's flight.
-    - dry_mass (float): Dry mass of the rocket in kilograms (excluding fuel).
+    - time (float): Time in seconds since motor ignition.
+    - dry_mass (float): Dry mass of the rocket in kilograms.
     - fuel_mass_lookup (dict): Dictionary mapping times to fuel masses.
 
     Returns:
@@ -121,10 +121,10 @@ def mass_at_time(time, dry_mass, fuel_mass_lookup):
     return (dry_mass + lower_mass + (time - lower_time) * (upper_mass - lower_mass) / (upper_time - lower_time))
 def thrust_at_time(time, engine_thrust_lookup):
     """
-    Calculate the thrust of the rocket engine at a given time during its flight.
+    Calculate the thrust of the rocket engine at a given time during motor burn.
 
     Args:
-    - time (float): Time in seconds since the start of the rocket's flight.
+    - time (float): Time in seconds since motor ignition.
     - engine_thrust_lookup (dict): Dictionary mapping times to thrust values.
 
     Returns:
@@ -140,29 +140,29 @@ def thrust_at_time(time, engine_thrust_lookup):
 # turn into function
 def calculate_reynolds_number(air_density, speed, len_characteristic, dynamic_viscosity):
     """
-    Calculate the Reynolds number for the rocket at a given state of flight.
+    Calculate the Reynolds number of a solid moving through air.
 
     Args:
-    - air_density (float): The density of air at the current altitude of the rocket.
-    - speed (float): The speed of the rocket.
-    - len_characteristic (float): The characteristic length of the rocket.
-    - dynamic_viscosity (float): The dynamic viscosity of air at the current altitude.
+    - air_density (float): The density of the air.
+    - speed (float): The relative speed of the solid and the air.
+    - len_characteristic (float): The characteristic length of the solid.
+    - dynamic_viscosity (float): The dynamic viscosity of the air.
 
     Returns:
-    - float: The Reynolds number for the rocket at the given state.
+    - float: The Reynolds number of the solid.
     """
     return (air_density * speed * len_characteristic) / dynamic_viscosity
 
 
 def calculate_dynamic_pressure(air_density, speed):
     """
-    Calculate the dynamic pressure of the rocket at a given state of flight.
+    Calculate the dynamic pressure imparted on a solid moving through a fluid.
 
     Args:
-    - air_density (float): The density of air at the current altitude of the rocket.
-    - speed (float): The speed of the rocket.
+    - air_density (float): The density of the fluid.
+    - speed (float): The relative speed of the solid and the fluid.
 
     Returns:
-    - float: The dynamic pressure experienced by the rocket.
+    - float: The dynamic pressure on the solid.
     """
     return 0.5 * air_density * (speed ** 2)

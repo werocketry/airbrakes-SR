@@ -13,15 +13,13 @@ airbrakes_model = rktClass.Airbrakes(**current_airbrakes_model)
 
 
 # Flight simulation function
-def simulate_flight(
-    rocket=Prometheus, launch_conditions=Prometheus_launch_conditions, timestep=0.001
-):
+def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_conditions, timestep=0.001):
     """
-    Simulate the flight of a rocket given its specifications and launch conditions.
+    Simulate the flight of a rocket until its apogee given its specifications and launch conditions.
 
     Args:
-    - rocket (Rocket): An instance of the Rocket class with rocket specifications.
-    - launch_conditions (LaunchConditions): An instance of the LaunchConditions class with launch details.
+    - rocket (Rocket): An instance of the Rocket class.
+    - launch_conditions (LaunchConditions): An instance of the LaunchConditions class.
     - timestep (float): The time increment for the simulation in seconds.
 
     Returns:
