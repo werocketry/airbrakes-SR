@@ -87,6 +87,7 @@ def lookup_dynamic_viscosity(temp):
         lower_viscosity = one_atm_air_dynamic_viscosity_lookup[lower_temp]
         upper_viscosity = one_atm_air_dynamic_viscosity_lookup[upper_temp]
         return lower_viscosity + (temp - lower_temp) * (upper_viscosity - lower_viscosity) / (upper_temp - lower_temp)
+    
 def mach_number_fn(v, temp):
     """
     Calculate the Mach number of an object moving in air at a given temperature.
@@ -119,6 +120,7 @@ def mass_at_time(time, dry_mass, fuel_mass_lookup):
     lower_mass = fuel_mass_lookup[lower_time]
     upper_mass = fuel_mass_lookup[upper_time]
     return (dry_mass + lower_mass + (time - lower_time) * (upper_mass - lower_mass) / (upper_time - lower_time))
+
 def thrust_at_time(time, engine_thrust_lookup):
     """
     Calculate the thrust of the rocket engine at a given time during its flight.
@@ -137,7 +139,6 @@ def thrust_at_time(time, engine_thrust_lookup):
     upper_thrust = engine_thrust_lookup[upper_time]
     return lower_thrust + (time - lower_time) * (upper_thrust - lower_thrust) / (upper_time - lower_time)
 
-# turn into function
 def calculate_reynolds_number(air_density, speed, len_characteristic, dynamic_viscosity):
     """
     Calculate the Reynolds number for the rocket at a given state of flight.

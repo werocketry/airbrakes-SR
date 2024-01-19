@@ -159,6 +159,7 @@ def simulate_flight(
 
     # Flight from launch rail cleared until burnout
     while time < burnout_time:
+        # Update environmental conditions based on height
         temperature = hfunc.temp_at_height(height, launchpad_temp)
         pressure = hfunc.pressure_at_height(height, launchpad_temp, launchpad_pressure)
         air_density = hfunc.air_density_fn(pressure, temperature)
@@ -205,6 +206,7 @@ def simulate_flight(
         )
 
         time += timestep
+
     burnout_index = len(simulated_values)
 
     # Flight from burnout to apogee
@@ -256,8 +258,9 @@ def simulate_flight(
             ]
         )
 
-    # Mark the index at apogee (highest point)
         time += timestep
+
+    # Mark the index at apogee (highest point)
     apogee_index = len(simulated_values)
 
     # Convert the list of simulation values to a DataFrame for easier analysis and visualization
