@@ -105,12 +105,12 @@ def simulate_flight(
 
     liftoff_index = len(simulated_values)
 
-
+    # Liftoff until launch rail cleared
+    time += timestep
     effective_L_launch_rail = L_launch_rail - rocket.h_second_lug
 
     # Simulate flight from liftoff until the launch rail is cleared
     while height < effective_L_launch_rail * np.cos(angle_to_vertical):
-        time += timestep
         # Update environmental conditions based on height
         temperature = hfunc.temp_at_height(height, launchpad_temp)
         pressure = hfunc.pressure_at_height(height, launchpad_temp, launchpad_pressure)
@@ -153,13 +153,12 @@ def simulate_flight(
                 angle_to_vertical,
             ]
         )
+        time += timestep
 
     launch_rail_cleared_index = len(simulated_values)
 
     # Flight from launch rail cleared until burnout
     while time < burnout_time:
-        time += timestep
-        # Update environmental conditions based on height
         temperature = hfunc.temp_at_height(height, launchpad_temp)
         pressure = hfunc.pressure_at_height(height, launchpad_temp, launchpad_pressure)
         air_density = hfunc.air_density_fn(pressure, temperature)
@@ -205,6 +204,7 @@ def simulate_flight(
             ]
         )
 
+        time += timestep
     burnout_index = len(simulated_values)
 
     # Flight from burnout to apogee
@@ -212,8 +212,6 @@ def simulate_flight(
     mass = dry_mass
 
     while height >= previous_height:
-        time += timestep
-        # Update environmental conditions based on height
         temperature = hfunc.temp_at_height(height, launchpad_temp)
         pressure = hfunc.pressure_at_height(height, launchpad_temp, launchpad_pressure)
         air_density = hfunc.air_density_fn(pressure, temperature)
@@ -259,6 +257,7 @@ def simulate_flight(
         )
 
     # Mark the index at apogee (highest point)
+        time += timestep
     apogee_index = len(simulated_values)
 
     # Convert the list of simulation values to a DataFrame for easier analysis and visualization
@@ -286,14 +285,12 @@ def simulate_flight(
         liftoff_index,
         launch_rail_cleared_index,
         burnout_index,
-        apogee_index,
+        apogee_index
     )
 
 
 # Flight with airbrakes simulation function
-def simulate_airbrakes_flight(
-    pre_brake_flight, rocket=Prometheus, airbrakes=airbrakes_model, timestep=0.001
-):
+def simulate_airbrakes_flight(pre_brake_flight, rocket=Prometheus, airbrakes=airbrakes_model, timestep=0.001):
     # Initializations
     len_characteristic = rocket.L_rocket
     A_rocket = rocket.A_rocket
@@ -335,13 +332,9 @@ def simulate_airbrakes_flight(
         Cd_rocket = Cd_rocket_at_Re(reynolds_num)
         q = hfunc.calculate_dynamic_pressure(air_density, speed)
 
-        deployment_angle = min(
-            max_deployment_angle, deployment_angle + max_deployment_speed * timestep
-        )
+        deployment_angle = min(max_deployment_angle, deployment_angle + max_deployment_speed * timestep)
 
-        F_drag = q * (
-            np.sin(np.deg2rad(deployment_angle)) * A_Cd_brakes + A_rocket * Cd_rocket
-        )
+        F_drag = q * (np.sin(np.deg2rad(deployment_angle)) * A_Cd_brakes + A_rocket * Cd_rocket)
         a_y = -F_drag * np.cos(angle_to_vertical) / mass - con.F_gravity
         a_x = -F_drag * np.sin(angle_to_vertical) / mass
         v_y += a_y * timestep
@@ -402,23 +395,5 @@ if __name__ == "__main__":
 
     Hyperion = rktClass.Rocket(**Hyperion)
 
-    (
-        dataset,
-        liftoff_index,
-        launch_rail_cleared_index,
-        burnout_index,
-        apogee_index,
-    ) = simulate_flight(rocket=Hyperion)
-    ascent = simulate_airbrakes_flight(
-        dataset.iloc[:burnout_index].copy(), rocket=Hyperion
-    )
-
-
-
-""" 
-def update_simulation_parameters(
-    rocket, time, height, speed, v_y, v_x, temperature, pressure, air_density,
-    dynamic_viscosity, reynolds_num, Cd_rocket, angle_to_vertical, mass,
-    thrust, A_rocket, len_characteristic, timestep, airbrake_params=None
-):
- """
+    dataset, liftoff_index, launch_rail_cleared_index, burnout_index, apogee_index = simulate_flight(rocket=Hyperion)
+    ascent = simulate_airbrakes_flight(dataset.iloc[:burnout_index].copy(), rocket=Hyperion)

@@ -14,8 +14,6 @@ def temp_at_height(h, launchpad_temp):
     - float: Temperature at the given height in Celsius.
     """
     return launchpad_temp - (h * con.T_lapse_rate)
-
-
 def pressure_at_height(h, launchpad_temp, launchpad_pressure):
     """
     Calculate the air pressure at a given height above the launchpad.
@@ -30,10 +28,8 @@ def pressure_at_height(h, launchpad_temp, launchpad_pressure):
     """
     return launchpad_pressure * pow(
         (1 - (h * con.T_lapse_rate / (launchpad_temp + 273.15))),
-        (con.F_gravity / (con.R_specific_air * con.T_lapse_rate)),
+        (con.F_gravity / (con.R_specific_air * con.T_lapse_rate))
     )
-
-
 def air_density_fn(pressure, temp):
     """
     Calculate the air density given pressure and temperature.
@@ -46,8 +42,6 @@ def air_density_fn(pressure, temp):
     - float: Air density in kilograms per cubic meter.
     """
     return pressure / (con.R_specific_air * (temp + 273.15))
-
-
 def lookup_dynamic_viscosity(temp):
     """
     Look up the dynamic viscosity of air at a given temperature.
@@ -92,11 +86,7 @@ def lookup_dynamic_viscosity(temp):
         upper_temp = min([t for t in temp_list if t > temp])
         lower_viscosity = one_atm_air_dynamic_viscosity_lookup[lower_temp]
         upper_viscosity = one_atm_air_dynamic_viscosity_lookup[upper_temp]
-        return lower_viscosity + (temp - lower_temp) * (
-            upper_viscosity - lower_viscosity
-        ) / (upper_temp - lower_temp)
-
-
+        return lower_viscosity + (temp - lower_temp) * (upper_viscosity - lower_viscosity) / (upper_temp - lower_temp)
 def mach_number_fn(v, temp):
     """
     Calculate the Mach number of an object moving in air at a given temperature.
@@ -124,22 +114,11 @@ def mass_at_time(time, dry_mass, fuel_mass_lookup):
     - float: Total mass of the rocket at the specified time.
     """
     time_list = list(fuel_mass_lookup.keys())
-    if time >= time_list[-1]:
-        return dry_mass
-    else:
-        lower_time = max([t for t in time_list if t <= time])
-        upper_time = min([t for t in time_list if t > time])
-        lower_mass = fuel_mass_lookup[lower_time]
-        upper_mass = fuel_mass_lookup[upper_time]
-        return (
-            dry_mass
-            + lower_mass
-            + (time - lower_time)
-            * (upper_mass - lower_mass)
-            / (upper_time - lower_time)
-        )
-
-
+    lower_time = max([t for t in time_list if t <= time])
+    upper_time = min([t for t in time_list if t > time])
+    lower_mass = fuel_mass_lookup[lower_time]
+    upper_mass = fuel_mass_lookup[upper_time]
+    return (dry_mass + lower_mass + (time - lower_time) * (upper_mass - lower_mass) / (upper_time - lower_time))
 def thrust_at_time(time, engine_thrust_lookup):
     """
     Calculate the thrust of the rocket engine at a given time during its flight.
@@ -152,16 +131,11 @@ def thrust_at_time(time, engine_thrust_lookup):
     - float: Thrust of the engine at the specified time.
     """
     time_list = list(engine_thrust_lookup.keys())
-    if time >= time_list[-1]:
-        return 0
-    else:
-        lower_time = max([t for t in time_list if t <= time])
-        upper_time = min([t for t in time_list if t > time])
-        lower_thrust = engine_thrust_lookup[lower_time]
-        upper_thrust = engine_thrust_lookup[upper_time]
-        return lower_thrust + (time - lower_time) * (upper_thrust - lower_thrust) / (
-            upper_time - lower_time
-        )
+    lower_time = max([t for t in time_list if t <= time])
+    upper_time = min([t for t in time_list if t > time])
+    lower_thrust = engine_thrust_lookup[lower_time]
+    upper_thrust = engine_thrust_lookup[upper_time]
+    return lower_thrust + (time - lower_time) * (upper_thrust - lower_thrust) / (upper_time - lower_time)
 
 # turn into function
 def calculate_reynolds_number(air_density, speed, len_characteristic, dynamic_viscosity):
