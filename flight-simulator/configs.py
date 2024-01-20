@@ -106,6 +106,6 @@ current_airbrakes_model = {
     "num_flaps": 3,
     "A_flap": 0.0022505,  # current area in CAD. Maryland's last year was 0.0064516, which we'll probably have a similar configuration to
     "Cd_brakes": 1,  # about what other teams had, super rough
-    "max_deployment_speed": 10,  # deg/s
-    "max_deployment_angle": 45  # deg
+    "max_deployment_speed": 7.5,  # deg/s
+    "max_deployment_angle": 41.35  # deg
 }

@@ -5,6 +5,7 @@ from configs import Prometheus, Prometheus_launch_conditions, current_airbrakes_
 import helper_functions as hfunc
 import rocket_classes as rktClass
 import constants as con
+import math
 
 # Create default instances of rocket, launch conditions, airbrakes
 Prometheus = rktClass.Rocket(**Prometheus)
@@ -316,6 +317,7 @@ def simulate_airbrakes_flight(pre_brake_flight, rocket=Prometheus, airbrakes=air
     angle_to_vertical = np.arctan(v_x / v_y)
 
     deployment_angle = 0
+    time_recorded = False
 
     # for efficiency, may be removed when the simulation is made more accurate by the cd of the brakes changing during the sim:
     A_Cd_brakes = A_brakes * Cd_brakes
@@ -331,9 +333,14 @@ def simulate_airbrakes_flight(pre_brake_flight, rocket=Prometheus, airbrakes=air
         dynamic_viscosity = hfunc.lookup_dynamic_viscosity(temperature)
         reynolds_num = hfunc.calculate_reynolds_number(air_density, speed, len_characteristic, dynamic_viscosity)
         Cd_rocket = Cd_rocket_at_Re(reynolds_num)
-        q = hfunc.calculate_dynamic_pressure(air_density, speed)
+        q = hfunc.calculate_dynamic_pressure(air_density, speed)        
 
         deployment_angle = min(max_deployment_angle, deployment_angle + max_deployment_speed * timestep)
+
+        if deployment_angle >= max_deployment_angle and not time_recorded:
+            time_of_max_deployment = time
+            time_recorded = True
+
 
         F_drag = q * (np.sin(np.deg2rad(deployment_angle)) * A_Cd_brakes + A_rocket * Cd_rocket)
         a_y = -F_drag * np.cos(angle_to_vertical) / mass - con.F_gravity
@@ -388,7 +395,7 @@ def simulate_airbrakes_flight(pre_brake_flight, rocket=Prometheus, airbrakes=air
 
     ascent = pd.concat([pre_brake_flight, pd.DataFrame(data)], ignore_index=True)
 
-    return ascent
+    return ascent, time_of_max_deployment
 
 # Execution Guard
 if __name__ == "__main__":

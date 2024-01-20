@@ -113,6 +113,8 @@ def plot_airbrakes_ascent(ascent, unit="m"):
     ax1.set_ylabel(f"Height ({unit})", color="b")
     ax1.tick_params(axis="y", labelcolor="b")
 
+    ax1.axhline(y=10000, color='gray', linestyle='--')
+
     ax2 = ax1.twinx()
     ax2.plot(ascent["time"], speed, color="r")
     ax2.set_ylabel(f"Speed ({unit}/s)", color="r")
