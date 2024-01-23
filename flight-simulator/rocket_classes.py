@@ -1,5 +1,4 @@
-
-# Define rocket, launch condition, and airbrake classes
+# Define rocket, launch conditions, and airbrakes classes
 class Rocket:
     """
     L_rocket: length of the rocket (m)
@@ -7,8 +6,8 @@ class Rocket:
     dry_mass: dry mass of the rocket (kg)
     fuel_mass_lookup: dictionary of fuel mass (kg) at time (s after ignition)
     engine_thrust_lookup: dictionary of thrust (N) at time (s after ignition)
-    Cd_rocket_at_Re: coefficient of drag of the rocket at Re
-    h_second_lug: height of the second launch lug from the bottom of the rocket (m). This is the upper lug if there's only 2. Defaults to 0.69m, which is what Prometheus had, and doesn't matter much if it's not set as it changes apogee by less than 10ft when it's at 0.
+    Cd_rocket_at_Re: coefficient of drag of the rocket as a function of Reynolds number
+    h_second_lug: height of the second launch lug from the bottom of the rocket (m). This is the upper lug if there's only 2. Defaults to 0.69m, which is what Prometheus had. Doesn't matter much if it's not set as it changes apogee by less than 10ft when it's at 0.
     """
 
     def __init__(

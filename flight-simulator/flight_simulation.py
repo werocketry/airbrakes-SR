@@ -404,4 +404,4 @@ if __name__ == "__main__":
     Hyperion = rktClass.Rocket(**Hyperion)
 
     dataset, liftoff_index, launch_rail_cleared_index, burnout_index, apogee_index = simulate_flight(rocket=Hyperion)
-    ascent = simulate_airbrakes_flight(dataset.iloc[:burnout_index].copy(), rocket=Hyperion)
+    ascent, time_of_max_deployment = simulate_airbrakes_flight(dataset.iloc[:burnout_index].copy(), rocket=Hyperion)
