@@ -21,7 +21,7 @@ def Prometheus_Cd_function(Re):
 Hyperion = {
     "L_rocket": 2.59,
     "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
-    "dry_mass": 18.4,
+    "dry_mass": 17.4,
     "fuel_mass_lookup": {  # source: https://www.thrustcurve.org/simfiles/5f4294d20002e900000005a0/
         0: 3.423,
         0.12: 3.35069,

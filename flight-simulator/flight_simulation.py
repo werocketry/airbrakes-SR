@@ -5,7 +5,6 @@ from configs import Prometheus, Prometheus_launch_conditions, current_airbrakes_
 import helper_functions as hfunc
 import rocket_classes as rktClass
 import constants as con
-import math
 
 # Create default instances of rocket, launch conditions, airbrakes
 Prometheus = rktClass.Rocket(**Prometheus)
