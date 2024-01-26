@@ -42,7 +42,7 @@ for rocket_dry_mass in rocket_dry_masses:
             Hyperion["fuel_mass_lookup"],
             Hyperion["engine_thrust_lookup"],
             Hyperion["Cd_rocket_at_Re"],
-            Hyperion["h_second_lug"]
+            Hyperion["h_second_rail_button"]
         )
     )
 

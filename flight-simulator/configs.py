@@ -53,7 +53,7 @@ Hyperion = {
         3: 0
     },
     "Cd_rocket_at_Re": Prometheus_Cd_function,
-    "h_second_lug": 0.69  # m, distance from bottom of rocket to second launch lug, was what Prometheus had
+    "h_second_rail_button": 0.69  # m, distance from bottom of rocket to second rail button, was what Prometheus had
 }
 
 Prometheus = {
@@ -90,7 +90,7 @@ Prometheus = {
         4.897: 0
     },
     "Cd_rocket_at_Re": Prometheus_Cd_function,
-    "h_second_lug": 0.69  # m
+    "h_second_rail_button": 0.69  # m
 }
 
 # LaunchConditions class

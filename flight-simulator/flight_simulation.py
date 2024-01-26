@@ -105,7 +105,7 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
 
     # Liftoff until launch rail cleared
     time += timestep
-    effective_L_launch_rail = L_launch_rail - rocket.h_second_lug
+    effective_L_launch_rail = L_launch_rail - rocket.h_second_rail_button
 
     # Simulate flight from liftoff until the launch rail is cleared
     while height < effective_L_launch_rail * np.cos(angle_to_vertical):

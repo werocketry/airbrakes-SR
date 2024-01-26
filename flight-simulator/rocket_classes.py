@@ -7,7 +7,7 @@ class Rocket:
     fuel_mass_lookup: dictionary of fuel mass (kg) at time (s after ignition)
     engine_thrust_lookup: dictionary of thrust (N) at time (s after ignition)
     Cd_rocket_at_Re: coefficient of drag of the rocket as a function of Reynolds number
-    h_second_lug: height of the second launch lug from the bottom of the rocket (m). This is the upper lug if there's only 2. Defaults to 0.69m, which is what Prometheus had. Doesn't matter much if it's not set as it changes apogee by less than 10ft when it's at 0.
+    h_second_rail_button: height of the second rail button from the bottom of the rocket (m). This is the upper button if there's only 2. Defaults to 0.69m, which is what Prometheus had. Doesn't matter much if it's not set as it changes apogee by less than 10ft when it's at 0.
     """
 
     def __init__(
@@ -18,7 +18,7 @@ class Rocket:
         fuel_mass_lookup,
         engine_thrust_lookup,
         Cd_rocket_at_Re,
-        h_second_lug=0.69,
+        h_second_rail_button=0.69,
     ):
         self.L_rocket = L_rocket
         self.A_rocket = A_rocket
@@ -26,7 +26,7 @@ class Rocket:
         self.fuel_mass_lookup = fuel_mass_lookup
         self.engine_thrust_lookup = engine_thrust_lookup
         self.Cd_rocket_at_Re = Cd_rocket_at_Re
-        self.h_second_lug = h_second_lug
+        self.h_second_rail_button = h_second_rail_button
 
 
 class LaunchConditions:
