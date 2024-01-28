@@ -16,9 +16,13 @@ def Prometheus_Cd_function(Re):
     else:
         return 0.31
 
+# add Hyperion Cd function(s) here when Shelby's done CFD
 
-# Rocket class
-Hyperion = {
+# Set the default Cd functions
+Hyperion_Cd_function = Prometheus_Cd_function
+
+# Rocket class configurations
+Hyperion_2024_01_24 = {
     "L_rocket": 2.59,
     "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
     "dry_mass": 17.4,
@@ -52,7 +56,7 @@ Hyperion = {
         2.99: 85,
         3: 0
     },
-    "Cd_rocket_at_Re": Prometheus_Cd_function,
+    "Cd_rocket_at_Re": Hyperion_Cd_function,
     "h_second_rail_button": 0.69  # m, distance from bottom of rocket to second rail button, was what Prometheus had
 }
 
@@ -93,7 +97,7 @@ Prometheus = {
     "h_second_rail_button": 0.69  # m
 }
 
-# LaunchConditions class
+# LaunchConditions class configurations
 Prometheus_launch_conditions = {
     "launchpad_pressure": 86400,  # Pa, what it was at Prometheus' launch
     "launchpad_temp": 34,  # deg C, what it was at Prometheus' launch
@@ -101,11 +105,15 @@ Prometheus_launch_conditions = {
     "launch_angle": 80  # deg from horizontal. Niall said Prometheus was set up at 10 deg off of the vertical
 }
 
-# Airbrakes class
-current_airbrakes_model = {
+# Airbrakes class configurations
+airbrakes_model_2024_01_14 = {
     "num_flaps": 3,
     "A_flap": 0.0022505,  # current area in CAD. Maryland's last year was 0.0064516, which we'll probably have a similar configuration to
     "Cd_brakes": 1,  # about what other teams had, super rough
     "max_deployment_speed": 7.5,  # deg/s
     "max_deployment_angle": 41.35  # deg
 }
+
+# Set the default Hyperion configuration
+Hyperion = Hyperion_2024_01_24
+current_airbrakes_model = airbrakes_model_2024_01_14
