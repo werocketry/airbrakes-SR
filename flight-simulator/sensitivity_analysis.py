@@ -15,7 +15,7 @@ from configs import Hyperion
 launch_rail_angles = 90 - np.linspace(5, 15, 6)
 launchpad_temps = np.linspace(25, 45, 3)
 launchpad_pressures = np.linspace(80000, 90000, 3) # [86400]
-rocket_dry_masses = np.linspace(16, 19, 4)
+rocket_dry_masses = np.linspace(16, 18, 3)
 
 # Create a list of all the different combinations of launch conditions to be simulated with
 launch_conditions = []
@@ -47,6 +47,20 @@ for rocket_dry_mass in rocket_dry_masses:
     )
 
 # Run the simulations
+def run_simulation(rocket, launch_condition):
+    flight = fs.simulate_flight(rocket, launch_condition, 0.01)[0]
+
+    # add a correction for wind 
+        # for now, just a constant value of -400m (about what ork sims return as the average differences between sims with no wind and average windy sims), to be refined later
+    wind_correction = -200
+
+    apogee = flight['height'].iloc[-1] + wind_correction
+    max_q = max(flight['q'])
+    # max mach number is at max speed. Use that and the temperature at that point with the function mach_number_fn in helper_functions.py
+    temp_at_max_speed = flight['temperature'].iloc[flight['speed'].idxmax()]
+    max_mach = hfunc.mach_number_fn(flight['speed'].max(), temp_at_max_speed)
+    return apogee, max_q, max_mach
+
 num_sims = len(launch_conditions) * len(rockets)
 print(f"Running {num_sims} simulations")
 sim_num = 0
@@ -56,13 +70,10 @@ max_machs = []
 for rocket in rockets:
     for launch_condition in launch_conditions:
         sim_num += 1
-        flight = fs.simulate_flight(rocket, launch_condition, 0.01)[0]
-        apogee = flight['height'].iloc[-1]
+        apogee, max_q, max_mach = run_simulation(rocket, launch_condition)
         apogees.append(apogee)
-        max_qs.append(max(flight['q']))
-        # max mach number is at max speed. Use that and the temperature at that point with the function mach_number_fn in helper_functions.py
-        temp_at_max_speed = flight['temperature'].iloc[flight['speed'].idxmax()]
-        max_machs.append(hfunc.mach_number_fn(flight['speed'].max(), temp_at_max_speed))
+        max_qs.append(max_q)
+        max_machs.append(max_mach)
     print(f"Simulation {sim_num} of {num_sims} complete")
 
 # Print out the results
@@ -89,8 +100,10 @@ print(f'Std: {np.std(max_machs)}')
 
 # Plot the results
 import matplotlib.pyplot as plt
-# histogram of apogees
-plt.hist(apogees, bins=20)
+# histogram of apogees, with bins of size 500
+min_bin = int(min(apogees) // 500 * 500)
+max_bin = int(max(apogees) // 500 * 500) + 500
+plt.hist(apogees, bins=range(min_bin, max_bin, 250))
 plt.title('Apogee distribution')
 plt.xlabel('Apogee (ft)')
 plt.ylabel('Frequency')

@@ -22,6 +22,44 @@ def Prometheus_Cd_function(Re):
 Hyperion_Cd_function = Prometheus_Cd_function
 
 # Rocket class configurations
+Hyperion_2024_02_04 = {
+    "L_rocket": 2.59,
+    "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
+    "dry_mass": 17.1,
+    "fuel_mass_lookup": {  # source: https://www.thrustcurve.org/simfiles/5f4294d20002e900000005a0/
+        0: 3.423,
+        0.12: 3.35069,
+        0.21: 3.24469,
+        0.6: 2.77495,
+        0.9: 2.38622,
+        1.2: 1.98198,
+        1.5: 1.57684,
+        1.8: 1.18234,
+        2.1: 0.809811,
+        2.4: 0.467594,
+        2.7: 0.152563,
+        2.99: 0.000196996,
+        3: 0
+    },
+    "engine_thrust_lookup": {  # source: https://www.thrustcurve.org/simfiles/5f4294d20002e900000005a0/
+        0: 0,
+        0.12: 2600,
+        0.21: 2482,
+        0.6: 2715,
+        0.9: 2876,
+        1.2: 2938,
+        1.5: 2889,
+        1.8: 2785,
+        2.1: 2573,
+        2.4: 2349,
+        2.7: 2182,
+        2.99: 85,
+        3: 0
+    },
+    "Cd_rocket_at_Re": Hyperion_Cd_function,
+    "h_second_rail_button": 0.69  # m, distance from bottom of rocket to second rail button, was what Prometheus had
+}
+
 Hyperion_2024_01_24 = {
     "L_rocket": 2.59,
     "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
@@ -115,5 +153,5 @@ airbrakes_model_2024_01_14 = {
 }
 
 # Set the default Hyperion configuration
-Hyperion = Hyperion_2024_01_24
+Hyperion = Hyperion_2024_02_04
 current_airbrakes_model = airbrakes_model_2024_01_14
