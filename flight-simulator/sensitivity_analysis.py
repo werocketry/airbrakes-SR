@@ -13,9 +13,15 @@ from configs import Hyperion
 
 # Outline of sensitivity analysis:
 launch_rail_angles = 90 - np.linspace(5, 15, 6)
-launchpad_temps = np.linspace(25, 45, 3)
-launchpad_pressures = np.linspace(80000, 90000, 3) # [86400]
-rocket_dry_masses = np.linspace(16, 18, 3)
+launchpad_temps = np.linspace(20, 40, 3)
+    # https://www.timeanddate.com/weather/@5492576/historic?month=6&year=2023
+launchpad_pressures = np.linspace(85000, 88000, 3)
+    # 86400 2022/06/24   our 2022 data
+    # 86405 2022/06/23   https://github.com/ISSUIUC/flight-data/tree/master/20220623
+    # 86170 2023/06/21   https://github.com/ISSUIUC/flight-data/tree/master/20230621
+    # Truth or Consequences, NM, USA, which has an elevation 90 m lower than Spaceport America
+        # 84780 http://cms.ashrae.biz/weatherdata/STATIONS/722710_s.pdf
+rocket_dry_masses = np.linspace(16, 18, 5)
 
 # Create a list of all the different combinations of launch conditions to be simulated with
 launch_conditions = []
@@ -51,8 +57,8 @@ def run_simulation(rocket, launch_condition):
     flight = fs.simulate_flight(rocket, launch_condition, 0.01)[0]
 
     # add a correction for wind 
-        # for now, just a constant value of -400m (about what ork sims return as the average differences between sims with no wind and average windy sims), to be refined later
-    wind_correction = -200
+        # for now, just a constant value of -300m (about what ork sims return as the average differences between sims with no wind and average windy sims), to be refined later
+    wind_correction = -300
 
     apogee = flight['height'].iloc[-1] + wind_correction
     max_q = max(flight['q'])
@@ -101,9 +107,10 @@ print(f'Std: {np.std(max_machs)}')
 # Plot the results
 import matplotlib.pyplot as plt
 # histogram of apogees, with bins of size 500
-min_bin = int(min(apogees) // 500 * 500)
-max_bin = int(max(apogees) // 500 * 500) + 500
-plt.hist(apogees, bins=range(min_bin, max_bin, 250))
+min_bin = int(min(apogees) // 200 * 200)
+max_bin = int(max(apogees) // 200 * 200) + 200
+plt.hist(apogees, bins=range(min_bin, max_bin, 200), edgecolor='black')
+plt.xticks([400*x for x in range(min_bin//400, max_bin//400+1)])
 plt.title('Apogee distribution')
 plt.xlabel('Apogee (ft)')
 plt.ylabel('Frequency')
