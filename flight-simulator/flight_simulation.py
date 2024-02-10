@@ -394,6 +394,9 @@ def simulate_airbrakes_flight(pre_brake_flight, rocket=Prometheus, airbrakes=air
 
     ascent = pd.concat([pre_brake_flight, pd.DataFrame(data)], ignore_index=True)
 
+    if not time_recorded:
+        time_of_max_deployment = time
+
     return ascent, time_of_max_deployment
 
 # Execution Guard
