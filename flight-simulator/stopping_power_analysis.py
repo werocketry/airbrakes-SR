@@ -32,7 +32,7 @@ Hyperion = rktClass.Rocket(**Hyperion)
 pre_brake_flight, _, _, burnout_index, _ = fs.simulate_flight(Hyperion)
 pre_brake_flight = pre_brake_flight.iloc[:burnout_index]
 
-# Run the simulations -> add wind correction??
+# Run the simulations
 def run_simulation(pre_brake_flight, Hyperion, airbrakes_model):
     ascent = fs.simulate_airbrakes_flight(pre_brake_flight, Hyperion, airbrakes_model)[0]
     # optimize airbrakes sim?
@@ -56,9 +56,10 @@ import seaborn as sns
 
 apogees = np.array(apogees).reshape(len(individual_flap_areas), len(deploy_speeds))
 apogees*=con.m_to_ft_conversion
+apogees-=300 # wind correction
 fig, ax = plt.subplots(figsize=(10, 5))
 sns.heatmap(apogees, annot=True, fmt=".0f", ax=ax, xticklabels=np.round(deploy_speeds, 4), yticklabels=np.round(individual_flap_areas*10000, 1))
 ax.set_xlabel('Deployment Speed (deg/s)')
-ax.set_ylabel('Indicidual Flap Area (cm^2)')
+ax.set_ylabel('Individual Flap Area (cm^2)')
 ax.set_title('Apogee (ft) vs Flap Area and Deployment Speed')
 plt.show()
