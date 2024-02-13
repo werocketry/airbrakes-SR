@@ -83,14 +83,23 @@ def plot_aerodynamics(time, height, speed, q, reynolds_num, air_density, unit="m
     plt.show()
 
 
+import numpy as np  # Make sure numpy is imported
+
 def plot_airbrakes_ascent(ascent, unit="m"):
     """
-    Plot ascent data including height, speed, acceleration, and deployment angle for airbrakes.
+    Plot ascent data including height, speed, acceleration, deployment angle, and force on airbrakes.
 
     Args:
     - ascent (pd.DataFrame): Dataframe containing the ascent data with airbrakes.
     - unit (str): Unit of measurement for height, speed, etc.
     """
+
+    flap_h = 65 # mm
+    flap_w = 35 # mm
+    flap_A = flap_h * flap_w
+
+
+    # Existing code for height, speed, and acceleration plots
     height = (
         ascent["height"].copy() * con.m_to_ft_conversion
         if unit == "ft"
@@ -107,12 +116,18 @@ def plot_airbrakes_ascent(ascent, unit="m"):
         else ascent["a_y"].copy()
     )
 
+    # New code to calculate force
+    # Assuming 'ascent' DataFrame includes 'q' and 'deployment_angle'
+    # and 'airbrake_deployment' is defined or calculated before this function
+    force = (ascent["q"] * 0.001 * 0.001) * flap_A * np.sin(np.deg2rad(ascent["deployment_angle"])) * 3
+
     fig, ax1 = plt.subplots()
+
+    # Existing plotting code for height, speed, acceleration, and deployment angle
     ax1.plot(ascent["time"], height, color="b")
     ax1.set_xlabel("Time (s)")
     ax1.set_ylabel(f"Height ({unit})", color="b")
     ax1.tick_params(axis="y", labelcolor="b")
-
     ax1.axhline(y=10000, color='gray', linestyle='--')
 
     ax2 = ax1.twinx()
@@ -132,6 +147,13 @@ def plot_airbrakes_ascent(ascent, unit="m"):
     ax4.set_ylabel(f"Deployment Angle (deg)", color="y")
     ax4.tick_params(axis="y", labelcolor="y")
     ax4.set_yticks(range(0, 46, 15))
+
+    # New plotting code for force
+    ax5 = ax1.twinx()
+    ax5.spines["right"].set_position(("outward", 180))  # Adjust this as needed
+    ax5.plot(ascent["time"], force, color="m")  # 'm' for magenta, can choose any color
+    ax5.set_ylabel("Force (N)", color="m")  # Assuming force is in Newtons
+    ax5.tick_params(axis="y", labelcolor="m")
 
     plt.title("Ascent with Airbrakes")
     plt.show()
