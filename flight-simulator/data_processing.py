@@ -44,6 +44,8 @@ def calculate_aerodynamic_parameters(dataset, rocket_config):
     rocket = rktClass.Rocket(**rocket_config)
     len_characteristic = rocket.L_rocket
 
+    # Fix temperature (temperature readings were taken inside the av bay, which does not change at the same rate as the outside temperature)
+    dataset["temperature"] = hfunc.temp_at_height(dataset["height"], dataset["temperature"].iloc[0]+273.15)
     # Calculate additional parameters
     dataset["air_density"] = dataset.apply(
         lambda x: hfunc.air_density_fn(x["pressure"], x["temperature"]), axis=1

@@ -8,10 +8,10 @@ def temp_at_height(h, launchpad_temp):
 
     Args:
     - h (float): Height above the launchpad in meters.
-    - launchpad_temp (float): Temperature at the launchpad in Celsius.
+    - launchpad_temp (float): Temperature at the launchpad in Celsius or Kelvin.
 
     Returns:
-    - float: Temperature at the given height in Celsius.
+    - float: Temperature at the given height in Celsius or Kelvin (same as input).
     """
     return launchpad_temp - (h * con.T_lapse_rate)
 def pressure_at_height(h, launchpad_temp, launchpad_pressure):
@@ -20,15 +20,15 @@ def pressure_at_height(h, launchpad_temp, launchpad_pressure):
 
     Args:
     - h (float): Height above the launchpad in meters.
-    - launchpad_temp (float): Temperature at the launchpad in Celsius.
+    - launchpad_temp (float): Temperature at the launchpad in Kelvin.
     - launchpad_pressure (float): Air pressure at the launchpad in Pascals.
 
     Returns:
     - float: Air pressure at the given height in Pascals.
     """
     return launchpad_pressure * pow(
-        (1 - (h * con.T_lapse_rate / (launchpad_temp + 273.15))),
-        (con.F_gravity / (con.R_specific_air * con.T_lapse_rate))
+        (1 - (h * con.T_lapse_rate / launchpad_temp)),
+        (con.F_g_over_R_spec_air_T_lapse_rate)
     )
 def air_density_fn(pressure, temp):
     """
@@ -36,45 +36,59 @@ def air_density_fn(pressure, temp):
 
     Args:
     - pressure (float): Pressure in Pascals.
-    - temp (float): Temperature in Celsius.
+    - temp (float): Temperature in Kelvin.
 
     Returns:
     - float: Air density in kilograms per cubic meter.
     """
-    return pressure / (con.R_specific_air * (temp + 273.15))
+    return pressure / (con.R_specific_air * temp)
+def air_density_optimized(temp, const1, const2):
+    """
+    Calculate the density of air at a given height above the launchpad.
+
+    Args:
+    - temp (float): Temperature at the given height in Kelvin.
+    - const1 (float): A constant derived from the temperature and pressure at the launchpad, the lapse rate, the specific gas constant for air, and the value for gravity near the Earth's surface. Calculated at the start of the simulation script outside of the main loops. Equal to P_launchpad / (R_air * pow(T_launchpad, Fg_over_R_spec_air_T_lapse_rate)).
+    - const2 (float): A constant derived from the value for gravity near the Earth's surface, the specific gas constant for air, and the lapse rate. Calculated at the start of the simulation script outside of the main loops. Equal to Fg_over_R_spec_air_T_lapse_rate - 1.
+
+    Returns:
+    - float: Air density at the given height in kilograms per cubic meter.
+    """
+    return const1 * pow(temp, const2)
+
 def lookup_dynamic_viscosity(temp):
     """
     Look up the dynamic viscosity of air at a given temperature.
 
     Args:
-    - temp (float): Temperature in Celsius.
+    - temp (float): Temperature in Kelvin.
 
     Returns:
     - float: Dynamic viscosity in kilograms per meter-second.
 
     Source of lookup table: https://www.me.psu.edu/cimbala/me433/Links/Table_A_9_CC_Properties_of_Air.pdf
+    Temperatures converted from source (Celsius to Kelvin).
     """
     one_atm_air_dynamic_viscosity_lookup = {
-        -150: 8.636 * pow(10, -6),
-        -100: 1.189 * pow(10, -6),
-        -50: 1.474 * pow(10, -5),
-        -40: 1.527 * pow(10, -5),
-        -30: 1.579 * pow(10, -5),
-        -20: 1.630 * pow(10, -5),
-        -10: 1.680 * pow(10, -5),
-        0: 1.729 * pow(10, -5),
-        5: 1.754 * pow(10, -5),
-        10: 1.778 * pow(10, -5),
-        15: 1.802 * pow(10, -5),
-        20: 1.825 * pow(10, -5),
-        25: 1.849 * pow(10, -5),
-        30: 1.872 * pow(10, -5),
-        35: 1.895 * pow(10, -5),
-        40: 1.918 * pow(10, -5),
-        45: 1.941 * pow(10, -5),
-        50: 1.963 * pow(10, -5),
-        60: 2.008 * pow(10, -5),
-        70: 2.052 * pow(10, -5),
+        173.15: 1.189 * pow(10, -6),
+        223.15: 1.474 * pow(10, -5),
+        233.15: 1.527 * pow(10, -5),
+        243.15: 1.579 * pow(10, -5),
+        253.15: 1.630 * pow(10, -5),
+        263.15: 1.680 * pow(10, -5),
+        273.15: 1.729 * pow(10, -5),
+        278.15: 1.754 * pow(10, -5),
+        283.15: 1.778 * pow(10, -5),
+        288.15: 1.802 * pow(10, -5),
+        293.15: 1.825 * pow(10, -5),
+        298.15: 1.849 * pow(10, -5),
+        303.15: 1.872 * pow(10, -5),
+        308.15: 1.895 * pow(10, -5),
+        313.15: 1.918 * pow(10, -5),
+        318.15: 1.941 * pow(10, -5),
+        323.15: 1.963 * pow(10, -5),
+        333.15: 2.008 * pow(10, -5),
+        343.15: 2.052 * pow(10, -5),
     }
     temp_list = list(one_atm_air_dynamic_viscosity_lookup.keys())
     if temp <= temp_list[0]:
@@ -94,12 +108,12 @@ def mach_number_fn(v, temp):
 
     Args:
     - v (float): Velocity in meters per second.
-    - temp (float): Temperature in Celsius.
+    - temp (float): Temperature in Kelvin.
 
     Returns:
     - float: Mach number (dimensionless).
     """
-    return v / np.sqrt(1.4 * con.R_specific_air * (temp + 273.15))
+    return v / np.sqrt(1.4 * con.R_specific_air * temp)
 
 
 def mass_at_time(time, dry_mass, fuel_mass_lookup):

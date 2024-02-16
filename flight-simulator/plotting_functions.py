@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 import constants as con
 import helper_functions as hfunc
 
@@ -83,7 +84,6 @@ def plot_aerodynamics(time, height, speed, q, reynolds_num, air_density, unit="m
     plt.show()
 
 
-import numpy as np  # Make sure numpy is imported
 
 def plot_airbrakes_ascent(ascent, unit="m"):
     """
@@ -119,7 +119,7 @@ def plot_airbrakes_ascent(ascent, unit="m"):
     # New code to calculate force
     # Assuming 'ascent' DataFrame includes 'q' and 'deployment_angle'
     # and 'airbrake_deployment' is defined or calculated before this function
-    force = (ascent["q"] * 0.001 * 0.001) * flap_A * np.sin(np.deg2rad(ascent["deployment_angle"])) * 3
+    force = (ascent["q"] * 0.001 * 0.001) * flap_A * np.sin(ascent["deployment_angle"]) * 3
 
     fig, ax1 = plt.subplots()
 
