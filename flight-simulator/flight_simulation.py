@@ -118,7 +118,7 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
         air_density = hfunc.air_density_optimized(temperature, multiplier, exponent_constant)
         dynamic_viscosity = hfunc.lookup_dynamic_viscosity(temperature)
 
-        # Calculate Reynolds number, Drag coefficient, and Forces
+        # Calculate Reynolds number, drag coefficient, and forces
         reynolds_num = (air_density * speed * len_characteristic) / dynamic_viscosity
         Cd_rocket = Cd_rocket_at_Re(reynolds_num)
         q = hfunc.calculate_dynamic_pressure(air_density, speed)
@@ -208,10 +208,9 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
     burnout_index = len(simulated_values)
 
     # Flight from burnout to apogee
-    previous_height = height
     mass = dry_mass
 
-    while height >= previous_height:
+    while v_y > 0:
         temperature = hfunc.temp_at_height(height, launchpad_temp)
         air_density = hfunc.air_density_optimized(temperature, multiplier, exponent_constant)
         dynamic_viscosity = hfunc.lookup_dynamic_viscosity(temperature)
@@ -228,7 +227,6 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
         v_y += a_y * timestep
         v_x += a_x * timestep
         speed = np.sqrt(v_y**2 + v_x**2)
-        previous_height = height
         height += v_y * timestep
 
         # Recalculate the angle to the veritcal
@@ -327,8 +325,7 @@ def simulate_airbrakes_flight(pre_brake_flight, rocket=Prometheus, airbrakes=air
     A_Cd_brakes = A_brakes * Cd_brakes
 
     simulated_values = []
-    previous_height = height
-    while height >= previous_height:
+    while v_y > 0:
         time += timestep
 
         temperature = hfunc.temp_at_height(height, launchpad_temp)
@@ -351,7 +348,6 @@ def simulate_airbrakes_flight(pre_brake_flight, rocket=Prometheus, airbrakes=air
         v_y += a_y * timestep
         v_x += a_x * timestep
         speed = np.sqrt(v_y**2 + v_x**2)
-        previous_height = height
         height += v_y * timestep
 
         angle_to_vertical = np.arctan(v_x / v_y)
