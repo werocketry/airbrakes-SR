@@ -28,6 +28,23 @@ def import_and_clean_data(file_path, data_type):
     dataset = dataset.iloc[:-drop_rows].drop_duplicates().reset_index()
     dataset["time"] = dataset["time"] - dataset["time"][0]
 
+    if data_type == 'telemega':
+        # approximate velocity based on derivative of height data for missing points in the TeleMega data (TeleMega didn't start capturing velocity data until apogee)
+        num_to_smooth_by = 7  # speed quite far off of TeleMetrum. Maybe try going back to acceleration based
+        for i in range(num_to_smooth_by):
+            dataset.at[i, "speed"] = np.float64(0)
+        for i in range(len(dataset) - num_to_smooth_by):
+            if dataset["speed"][i] == "     NaN":
+                prev_points = 0
+                following_points = 0
+                for j in range(num_to_smooth_by):
+                    prev_points = prev_points + dataset["height"][i - j]
+                    following_points = following_points + dataset["height"][i + j]
+                average_prev = prev_points / num_to_smooth_by
+                average_following = following_points / num_to_smooth_by
+                dataset.at[i, "speed"] = (average_following - average_prev) / (dataset["time"][i + num_to_smooth_by] - dataset["time"][i - num_to_smooth_by])
+        dataset["speed"] = pd.to_numeric(dataset["speed"])        
+
     return dataset
 
 def calculate_aerodynamic_parameters(dataset, rocket_config):
