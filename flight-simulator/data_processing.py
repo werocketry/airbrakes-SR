@@ -58,7 +58,7 @@ def calculate_aerodynamic_parameters(dataset, rocket_config):
     Returns:
     - pd.DataFrame: Dataset with calculated aerodynamic parameters.
     """
-    rocket = rktClass.Rocket(**rocket_config)
+    rocket = rocket_config
     len_characteristic = rocket.L_rocket
 
     # Fix temperature (temperature readings were taken inside the av bay, which does not change at the same rate as the outside temperature)

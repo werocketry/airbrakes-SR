@@ -19,16 +19,15 @@ for area in individual_flap_areas:
     for speed in deploy_speeds:
         airbrakes_models.append(
             rktClass.Airbrakes(
-                num_flaps= 3,
-                A_flap= area,
-                Cd_brakes= 1,
-                max_deployment_speed= speed,
-                max_deployment_angle= 41.35
+                num_flaps = 3,
+                A_flap = area,
+                Cd_brakes = 1,
+                max_deployment_speed = speed,
+                max_deployment_angle = 41.35
             )
         )
 
 # Get flight data for Hyperion through to motor burnout
-Hyperion = rktClass.Rocket(**Hyperion)
 pre_brake_flight, _, _, burnout_index, _ = fs.simulate_flight(Hyperion)
 pre_brake_flight = pre_brake_flight.iloc[:burnout_index]
 

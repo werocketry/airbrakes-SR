@@ -116,7 +116,7 @@ def mach_number_fn(v, temp):
     return v / np.sqrt(1.4 * con.R_specific_air * temp)
 
 
-def mass_at_time(time, dry_mass, fuel_mass_lookup):
+def mass_at_time(time, dry_mass, fuel_mass_lookup): # is np.interp more efficient?
     """
     Calculate the total mass of the rocket at a given time during motor burn.
 
@@ -135,7 +135,7 @@ def mass_at_time(time, dry_mass, fuel_mass_lookup):
     upper_mass = fuel_mass_lookup[upper_time]
     return (dry_mass + lower_mass + (time - lower_time) * (upper_mass - lower_mass) / (upper_time - lower_time))
 
-def thrust_at_time(time, engine_thrust_lookup):
+def thrust_at_time(time, engine_thrust_lookup): # is np.interp more efficient?
     """
     Calculate the thrust of the rocket engine at a given time during motor burn.
 

@@ -25,7 +25,7 @@ if analysis_type == 'linear':
         # 86170 2023/06/21   https://github.com/ISSUIUC/flight-data/tree/master/20230621
         # Truth or Consequences, NM, USA, which has an elevation 90 m lower than Spaceport America
             # 84780 http://cms.ashrae.biz/weatherdata/STATIONS/722710_s.pdf
-    rocket_dry_masses = np.linspace(16, 18, 5)
+    rocket_dry_masses = [Hyperion.rocket_mass - 1, Hyperion.rocket_mass, Hyperion.rocket_mass + 1]
 elif analysis_type == 'gaussian':
     num_sims = 20000
     mean_launch_rail_angle = 90-10
@@ -34,7 +34,7 @@ elif analysis_type == 'gaussian':
     std_launchpad_temp = 5
     mean_launchpad_pressure = 86300
     std_launchpad_pressure = 500
-    mean_rocket_dry_mass = 17.1
+    mean_rocket_dry_mass = Hyperion.rocket_mass
     std_rocket_dry_mass = 0.5
 else:
     raise ValueError("analysis_type must be either 'linear' or 'gaussian'")
@@ -78,13 +78,12 @@ if analysis_type == 'linear':
     for rocket_dry_mass in rocket_dry_masses:
         rockets.append(
             rktClass.Rocket(
-                Hyperion["L_rocket"],
-                Hyperion["A_rocket"],
+                Hyperion.L_rocket,
+                Hyperion.A_rocket,
                 rocket_dry_mass,
-                Hyperion["fuel_mass_lookup"],
-                Hyperion["engine_thrust_lookup"],
-                Hyperion["Cd_rocket_at_Re"],
-                Hyperion["h_second_rail_button"]
+                Hyperion.motor,
+                Hyperion.Cd_rocket_at_Re,
+                Hyperion.h_second_rail_button
             )
         )
     
@@ -106,8 +105,8 @@ elif analysis_type == 'gaussian':
     for _ in range(num_sims):
         launch_rail_angle = max(
             min(
-            np.random.normal(mean_launch_rail_angle, std_launch_rail_angle),
-            85
+                np.random.normal(mean_launch_rail_angle, std_launch_rail_angle),
+                85
             ),
             75
         )
@@ -121,13 +120,12 @@ elif analysis_type == 'gaussian':
             launch_rail_angle
         )
         rocket = rktClass.Rocket(
-            Hyperion["L_rocket"],
-            Hyperion["A_rocket"],
+            Hyperion.L_rocket,
+            Hyperion.A_rocket,
             rocket_dry_mass,
-            Hyperion["fuel_mass_lookup"],
-            Hyperion["engine_thrust_lookup"],
-            Hyperion["Cd_rocket_at_Re"],
-            Hyperion["h_second_rail_button"]
+            Hyperion.motor,
+            Hyperion.Cd_rocket_at_Re,
+            Hyperion.h_second_rail_button
         )
         apogee, max_q, max_mach = run_simulation(rocket, launch_condition)
         apogees.append(apogee)

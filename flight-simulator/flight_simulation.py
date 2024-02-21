@@ -6,10 +6,6 @@ import helper_functions as hfunc
 import rocket_classes as rktClass
 import constants as con
 
-# Create default instances of rocket, launch conditions, airbrakes
-Prometheus = rktClass.Rocket(**Prometheus)
-Prometheus_launch_conditions = rktClass.LaunchConditions(**Prometheus_launch_conditions)
-airbrakes_model = rktClass.Airbrakes(**current_airbrakes_model)
 
 """
 Note on timesteps:
@@ -33,10 +29,10 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
     len_characteristic = rocket.L_rocket
     A_rocket = rocket.A_rocket
     dry_mass = rocket.dry_mass
-    fuel_mass_lookup = rocket.fuel_mass_lookup
-    engine_thrust_lookup = rocket.engine_thrust_lookup
+    fuel_mass_lookup = rocket.motor.mass_curve
+    engine_thrust_lookup = rocket.motor.thrust_curve
     Cd_rocket_at_Re = rocket.Cd_rocket_at_Re
-    burnout_time = max(list(engine_thrust_lookup.keys()))
+    burnout_time = rocket.motor.burn_time
 
     # Extract launch condition parameters
     launchpad_pressure = launch_conditions.launchpad_pressure
@@ -287,7 +283,7 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
 
 
 # Flight with airbrakes simulation function
-def simulate_airbrakes_flight(pre_brake_flight, rocket=Prometheus, airbrakes=airbrakes_model, timestep=0.01):
+def simulate_airbrakes_flight(pre_brake_flight, rocket=Prometheus, airbrakes=current_airbrakes_model, timestep=0.01):
     # Extract rocket parameters
     len_characteristic = rocket.L_rocket
     A_rocket = rocket.A_rocket
@@ -400,11 +396,9 @@ def simulate_airbrakes_flight(pre_brake_flight, rocket=Prometheus, airbrakes=air
 
 if __name__ == "__main__":
     from configs import Hyperion
-
-    Hyperion = rktClass.Rocket(**Hyperion)
     
     dataset, liftoff_index, launch_rail_cleared_index, burnout_index, apogee_index = simulate_flight(rocket=Hyperion, timestep=0.01)
     
-    # print(dataset[["time", "height", "speed"]].iloc[apogee_index - 1])
-    # ascent, time_of_max_deployment = simulate_airbrakes_flight(dataset.iloc[:burnout_index].copy(), rocket=Hyperion, timestep=0.01)
-    # print(ascent[["time", "height", "speed"]].iloc[-1])
+    print(dataset[["time", "height", "speed"]].iloc[apogee_index - 1]*3.28084)
+    ascent, time_of_max_deployment = simulate_airbrakes_flight(dataset.iloc[:burnout_index].copy(), rocket=Hyperion, timestep=0.01)
+    print(ascent[["time", "height", "speed"]].iloc[-1]*3.28084)

@@ -1,32 +1,46 @@
-# Define rocket, launch conditions, and airbrakes classes
+# Define Motor, Rocket, LaunchConditions, and Airbrakes classes
+class Motor:
+    """
+    dry_mass: mass of the motor without fuel (kg)
+    thrust_curve: dictionary of thrust (N) at time (s after ignition)
+    mass_curve: dictionary of mass (kg) at time (s after ignition)
+    burn_time: time it takes for the motor to burn all of its fuel (s)
+    """
+
+    def __init__(self, dry_mass, thrust_curve, fuel_mass_curve):
+        self.dry_mass = dry_mass
+        self.thrust_curve = thrust_curve
+        self.mass_curve = fuel_mass_curve
+        self.burn_time = max(thrust_curve.keys())
+
+
 class Rocket:
     """
     L_rocket: length of the rocket (m)
     A_rocket: cross-sectional area of the rocket (m^2)
-    dry_mass: dry mass of the rocket (kg)
-    fuel_mass_lookup: dictionary of fuel mass (kg) at time (s after ignition)
-    engine_thrust_lookup: dictionary of thrust (N) at time (s after ignition)
+    rocket_mass: dry mass of the rocket without the motor (kg)
+    motor: Motor object
     Cd_rocket_at_Re: coefficient of drag of the rocket as a function of Reynolds number
     h_second_rail_button: height of the second rail button from the bottom of the rocket (m). This is the upper button if there's only 2. Defaults to 0.69m, which is what Prometheus had. Doesn't matter much if it's not set as it changes apogee by less than 10ft when it's at 0.
+    dry_mass: total mass of the rocket without fuel (kg)
     """
 
     def __init__(
         self,
         L_rocket,
         A_rocket,
-        dry_mass,
-        fuel_mass_lookup,
-        engine_thrust_lookup,
+        rocket_mass,
+        motor,
         Cd_rocket_at_Re,
         h_second_rail_button=0.69,
     ):
         self.L_rocket = L_rocket
         self.A_rocket = A_rocket
-        self.dry_mass = dry_mass
-        self.fuel_mass_lookup = fuel_mass_lookup
-        self.engine_thrust_lookup = engine_thrust_lookup
+        self.rocket_mass = rocket_mass
+        self.motor = motor
         self.Cd_rocket_at_Re = Cd_rocket_at_Re
         self.h_second_rail_button = h_second_rail_button
+        self.dry_mass = rocket_mass + motor.dry_mass
 
 
 class LaunchConditions:
