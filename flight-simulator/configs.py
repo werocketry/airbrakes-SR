@@ -86,17 +86,15 @@ def Prometheus_Cd_function(Re):
 
 # add Hyperion Cd function(s) here when Shelby's done CFD
 
-# Set the default Cd functions
-Hyperion_Cd_function = Prometheus_Cd_function
 
 # Rocket class configurations
 Hyperion_2024_02_20 = {
-    "L_rocket": 2.70, # CHECK WITH UPDATED CAD, then update main Hyperion reference to here
+    "L_rocket": 2.70, # CHECK WITH UPDATED CAD
     "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
     "rocket_mass": 14.29,
     "motor": Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Re": Hyperion_Cd_function,
-    "h_second_rail_button": 0.69  # m, distance from bottom of rocket to second rail button, was what Prometheus had
+    "Cd_rocket_at_Re": Prometheus_Cd_function,
+    "h_second_rail_button": 0.69  # TBU # m, distance from bottom of rocket to second rail button, was what Prometheus had
 }
 
 Hyperion_2024_02_04 = {
@@ -104,7 +102,7 @@ Hyperion_2024_02_04 = {
     "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
     "rocket_mass": 14.24,
     "motor": Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Re": Hyperion_Cd_function,
+    "Cd_rocket_at_Re": Prometheus_Cd_function,
     "h_second_rail_button": 0.69  # m, distance from bottom of rocket to second rail button, was what Prometheus had
 }
 
@@ -113,12 +111,12 @@ Hyperion_2024_01_24 = {
     "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
     "rocket_mass": 14.54,
     "motor": Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Re": Hyperion_Cd_function,
+    "Cd_rocket_at_Re": Prometheus_Cd_function,
     "h_second_rail_button": 0.69  # m, distance from bottom of rocket to second rail button, was what Prometheus had
 }
 
 Prometheus = rocket_classes.Rocket(
-    L_rocket = 2.229,  # length of Prometheus in m
+    L_rocket = 2.229,  # length of Prometheus in m # measure to double check
     A_rocket = 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
     rocket_mass = 13.93,  # kg, from (CAD? final physical rocket mass? were they the same at the end?)
     motor = Cesaroni_7579M1520_P,
