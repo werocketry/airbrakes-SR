@@ -56,7 +56,7 @@ def air_density_optimized(temp, const1, const2):
     """
     return const1 * pow(temp, const2)
 
-def lookup_dynamic_viscosity(temp):
+def lookup_dynamic_viscosity(temp): # is np.interp more efficient?
     """
     Look up the dynamic viscosity of air at a given temperature.
 
@@ -70,25 +70,25 @@ def lookup_dynamic_viscosity(temp):
     Temperatures converted from source (Celsius to Kelvin).
     """
     one_atm_air_dynamic_viscosity_lookup = {
-        173.15: 1.189 * pow(10, -6),
-        223.15: 1.474 * pow(10, -5),
-        233.15: 1.527 * pow(10, -5),
-        243.15: 1.579 * pow(10, -5),
-        253.15: 1.630 * pow(10, -5),
-        263.15: 1.680 * pow(10, -5),
-        273.15: 1.729 * pow(10, -5),
-        278.15: 1.754 * pow(10, -5),
-        283.15: 1.778 * pow(10, -5),
-        288.15: 1.802 * pow(10, -5),
-        293.15: 1.825 * pow(10, -5),
-        298.15: 1.849 * pow(10, -5),
-        303.15: 1.872 * pow(10, -5),
-        308.15: 1.895 * pow(10, -5),
-        313.15: 1.918 * pow(10, -5),
-        318.15: 1.941 * pow(10, -5),
-        323.15: 1.963 * pow(10, -5),
-        333.15: 2.008 * pow(10, -5),
-        343.15: 2.052 * pow(10, -5),
+        173.15: 1.189e-6,
+        223.15: 1.474e-5,
+        233.15: 1.527e-5,
+        243.15: 1.579e-5,
+        253.15: 1.630e-5,
+        263.15: 1.680e-5,
+        273.15: 1.729e-5,
+        278.15: 1.754e-5,
+        283.15: 1.778e-5,
+        288.15: 1.802e-5,
+        293.15: 1.825e-5,
+        298.15: 1.849e-5,
+        303.15: 1.872e-5,
+        308.15: 1.895e-5,
+        313.15: 1.918e-5,
+        318.15: 1.941e-5,
+        323.15: 1.963e-5,
+        333.15: 2.008e-5,
+        343.15: 2.052e-5,
     }
     temp_list = list(one_atm_air_dynamic_viscosity_lookup.keys())
     if temp <= temp_list[0]:
