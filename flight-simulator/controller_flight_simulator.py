@@ -9,6 +9,16 @@ import rocket_classes as rktClass
 import constants as con
 import flight_simulation as fltSim
 
+# wind
+"""
+Morning of launch, load wind forecasts for different times of day into the controller. Niall said wind forecasts are pretty accurate for the day of.
+"""
+
+# closing
+"""
+Implement how closing the airbrakes at the end would be part of the simulation used for the controller
+"""
+
 # simulate the flight up to burnout
 # real inputs would be fed from sensor data
 dataset, liftoff_index, launch_rail_cleared_index, burnout_index, apogee_index = fltSim.simulate_flight(rocket=Hyperion, timestep=0.01)

@@ -185,6 +185,16 @@ airbrakes_model_2024_01_14 = rocket_classes.Airbrakes(
     max_deployment_angle = 41.35  # deg
 )
 
+airbrakes_model_2024_03_10 = rocket_classes.Airbrakes(
+    num_flaps = 3,
+    A_flap = 0.0045,  # current estimate. Maryland's last year was 0.0064516, which we'll probably have a similar configuration to
+    Cd_brakes = 1,  # about what other teams had. rough
+    max_deployment_speed = 5.5,  # deg/s
+    # update to take torque into account
+    max_deployment_angle = 41.35  # deg
+    # verify max angle, check consistent with tron model
+)
+
 # Set the default Hyperion configuration
 Hyperion = rocket_classes.Rocket(**Hyperion_2024_03_05)
-current_airbrakes_model = airbrakes_model_2024_01_14
+current_airbrakes_model = airbrakes_model_2024_03_10

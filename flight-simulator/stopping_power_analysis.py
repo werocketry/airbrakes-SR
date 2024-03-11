@@ -9,8 +9,10 @@ import rocket_classes as rktClass
 import flight_simulation as fs
 from configs import Hyperion
 
+# may want to do an updated version of this that incorporates other things outside of our control like launch angle, atmospheric conditions, etc similar to the other sensitivity analysis without airbrakes. Or just use worst case scenario (the one that leads to the highest apogee) for everything
+
 # Outline of analysis:
-individual_flap_areas = np.linspace(0.002, 0.02, 6) # m^2
+individual_flap_areas = np.linspace(0.002, 0.007, 6) # m^2
 deploy_speeds = np.linspace(1, 15, 8) # deg/s
 
 # Create a list of all the different combinations of launch conditions to be simulated with
@@ -55,7 +57,7 @@ import seaborn as sns
 
 apogees = np.array(apogees).reshape(len(individual_flap_areas), len(deploy_speeds))
 apogees*=con.m_to_ft_conversion
-apogees-=300 # wind correction
+apogees-=100 # wind correction, made smaller because worst case is low wind meaning greater need to bring down apogee 
 fig, ax = plt.subplots(figsize=(10, 5))
 sns.heatmap(apogees, annot=True, fmt=".0f", ax=ax, xticklabels=np.round(deploy_speeds, 4), yticklabels=np.round(individual_flap_areas*10000, 1))
 ax.set_xlabel('Deployment Speed (deg/s)')

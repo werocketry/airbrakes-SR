@@ -408,7 +408,7 @@ def create_flight_event_table(
         index=[
             "Liftoff",
             "Off Launch Rail",
-            "Max-g Force",
+            "Max g-Force",
             "Max Re",
             "Max q",
             "Max Speed",
