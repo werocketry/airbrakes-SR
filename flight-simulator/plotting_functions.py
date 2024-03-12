@@ -94,9 +94,8 @@ def plot_airbrakes_ascent(ascent, unit="m"):
     - unit (str): Unit of measurement for height, speed, etc.
     """
 
-    flap_h = 65 # mm
-    flap_w = 35 # mm
-    flap_A = flap_h * flap_w
+    from configs import current_airbrakes_model
+    flap_A = current_airbrakes_model.A_flap
 
 
     # Existing code for height, speed, and acceleration plots
@@ -119,7 +118,7 @@ def plot_airbrakes_ascent(ascent, unit="m"):
     # New code to calculate force
     # Assuming 'ascent' DataFrame includes 'q' and 'deployment_angle'
     # and 'airbrake_deployment' is defined or calculated before this function
-    force = (ascent["q"] * 0.001 * 0.001) * flap_A * np.sin(ascent["deployment_angle"]) * 3
+    force = (ascent["q"]) * flap_A * np.sin(ascent["deployment_angle"]) * 3
 
     fig, ax1 = plt.subplots()
 
@@ -166,7 +165,7 @@ def display_apogee_parameters_table(ascent, parameters_at_flight_events, unit="m
     Args:
     - ascent (pd.DataFrame): Dataframe containing the ascent data with airbrakes.
     - parameters_at_flight_events (pd.DataFrame): Dataframe containing parameters at key flight events.
-    - unit (str): Unit of measurement.
+    - unit (str): Unit of length.
     """
     # Calculate the relevant parameters for ascent with airbrakes
     last_index = len(ascent) - 1

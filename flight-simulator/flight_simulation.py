@@ -6,10 +6,13 @@ import helper_functions as hfunc
 import rocket_classes as rktClass
 import constants as con
 
+# TODO: add consideration for wind
 
 """
 Note on timesteps:
 The default for OpenRocket sims is 0.01s for the first while, and then somewhere between 0.02 and 0.05 for a while, and then 0.05 for most of the rest of the ascent. It simulates more complicated dynamics than we do, so a timestep of 0.01s is good enough for us. That timestep gives apogees about 2m different for a 10k launch compared to using 0.001s. 0.001s can still be used for one-off sims, but when running many sims, 0.01s is better.
+
+TODO: run with a couple hundred different timesteps in logspace between 0.0001 and 1 to see how it changes to get a better picture of the tradeoffs.
 """
 # Flight simulation function
 def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_conditions, timestep=0.01):
@@ -317,7 +320,7 @@ def simulate_airbrakes_flight(pre_brake_flight, rocket=Prometheus, airbrakes=cur
     deployment_angle = 0
     time_recorded = False
 
-    # for efficiency, may be removed when the simulation is made more accurate by the cd of the brakes changing during the sim:
+    # for efficiency, may be removed if/when the simulation is made more accurate by the cd of the brakes changing during the sim:
     A_Cd_brakes = A_brakes * Cd_brakes
 
     simulated_values = []

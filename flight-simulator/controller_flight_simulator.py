@@ -31,7 +31,7 @@ input_v_x = pre_brake_flight["v_x"].iloc[-1]
 
 # can be computed once at launchpad, then same value used each time a new sim is run
     # maybe incorporate this into the series of things the controller does during the burn based on what it read right before the burn (most recent launchpad pressure reading)
-    # should temperature be something fed into it at the start of the day based on forecast temps at different times, and then it picks the one that is closest to the current time? temp inside the rocket could vary from the outside
+    # launchpad temperature could be something fed into it at the start of the day based on forecast temps at different times, and then it picks the one that is closest to the current time, as temp inside the rocket could vary from the outside
 launchpad_temp = pre_brake_flight["temperature"].iloc[0]
 launchpad_pressure = pre_brake_flight["air_density"].iloc[0] * con.R_specific_air * launchpad_temp
 multiplier = launchpad_pressure / (con.R_specific_air * pow(launchpad_temp, con.F_g_over_R_spec_air_T_lapse_rate))
@@ -58,15 +58,15 @@ def simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, l
 
     deployment_angle = 0
 
-    # for efficiency, may be removed when the simulation is made more accurate by the cd of the brakes changing during the sim:
+    # for efficiency, may be removed if/when the simulation is made more accurate by the cd of the brakes changing during the sim:
     A_Cd_brakes = A_brakes * Cd_brakes
     
     while v_y > 0:
         temperature = hfunc.temp_at_height(height, launchpad_temp)
         air_density = hfunc.air_density_optimized(temperature, multiplier, exponent_constant)
         dynamic_viscosity = hfunc.lookup_dynamic_viscosity(temperature)
-        # dynamic viscosity only changes by about 5% over the flight, so can find a way to trade off some accuracy for speed here. Also it's only used in the reynolds number calculation, so it an optimized reynolds number calculation that uses len_characteristic/viscosity could be used for most of the timesteps
-        # might be able to also look into not recalculating the reynolds number as often, because between 0 and 3e7, the drag coefficient doesn't change much
+        # TODO: dynamic viscosity only changes by about 5% over the flight, so can find a way to trade off some accuracy for speed here. Also it's only used in the reynolds number calculation, so it an optimized reynolds number calculation that uses len_characteristic/viscosity could be used for most of the timesteps
+        # TODO: might be able to also look into not recalculating the reynolds number as often, because between 0 and 3e7, the drag coefficient doesn't change much
         reynolds_num = hfunc.calculate_reynolds_number(air_density, speed, len_characteristic, dynamic_viscosity)
         Cd_rocket = Cd_rocket_at_Re(reynolds_num)
         q = hfunc.calculate_dynamic_pressure(air_density, speed)        
@@ -83,7 +83,7 @@ def simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, l
 
     return height
 
-# going to need to put some work into picking a good timestep. maybe make it dynamic? for now using 0.1, which is small enough to cause less than a 1% error in the apogee prediction compared to a sim with a timestep of 0.001
+# TODO: going to need to put some work into picking a good timestep. maybe make it dynamic? for now using 0.1, which is small enough to cause less than a 1% error in the apogee prediction compared to a sim with a timestep of 0.001
 
 apogee = simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, launchpad_temp, multiplier, exponent_constant, rocket=Hyperion, airbrakes=current_airbrakes_model, timestep=0.1)
 

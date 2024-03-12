@@ -3,7 +3,8 @@
 import rocket_classes
 
 # Motor class configurations
-Cesaroni_7579M1520_P = rocket_classes.Motor( # source: https://www.thrustcurve.org/simfiles/5f4294d20002e900000006b1/
+Cesaroni_7579M1520_P = rocket_classes.Motor( 
+    # source: https://www.thrustcurve.org/simfiles/5f4294d20002e900000006b1/
     dry_mass = 2.981,
     thrust_curve = {
         0: 0,
@@ -70,7 +71,8 @@ Cesaroni_7450M2505_P = rocket_classes.Motor(
 )
 
 our_Cesaroni_7450M2505_P = rocket_classes.Motor(
-    dry_mass = 2.762, # massing all of our dry parts (still need to do the tube once cleaned, as well as the thrust plate)
+    dry_mass = 2.762, # from massing our dry parts
+    # TODO: mass the tube once cleaned, as well as the thrust plate, and update the mass budget and this value
     thrust_curve = { # source: https://www.thrustcurve.org/simfiles/5f4294d20002e900000005a0/
         0: 0,
         0.12: 2600,
@@ -119,17 +121,21 @@ def Prometheus_Cd_function(Re):
         return 0.31
 
 # add Hyperion Cd function(s) here when Shelby's done CFD
+# TODO: add Cd function taken from ork export (called "Hyperion_ork_V7_Cd_output")
+# TODO: add a Cd function from some other team's CFD, see how different it actually is to get an idea of how important it is to have a very accurate Cd function
 
 
 # Rocket class configurations
 Hyperion_2024_03_05 = {
     "L_rocket": 2.70, # CHECK WITH UPDATED CAD
     "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
-    # when fins made, update A_rocket
+    # TODO: when fins made, update A_rocket
+    # TODO: get response from Shelby on whether Ogden said to use fin area in drag calculation
     "rocket_mass": 13.917,
     "motor": our_Cesaroni_7450M2505_P,
     "Cd_rocket_at_Re": Prometheus_Cd_function,
-    "h_second_rail_button": 0.69  # TBU # m, distance from bottom of rocket to second rail button, was what Prometheus had
+    "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
+    # TODO: switch to Hyperion's in once aero has a final design
 }
 
 Hyperion_2024_02_20 = {
@@ -162,7 +168,7 @@ Hyperion_2024_01_24 = {
 Prometheus = rocket_classes.Rocket(
     L_rocket = 2.229,  # length of Prometheus in m # measure to double check
     A_rocket = 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
-    rocket_mass = 13.93,  # kg, from (CAD? final physical rocket mass? were they the same at the end?)
+    rocket_mass = 13.93,  # kg, from (TODO: CAD? final physical rocket mass? were they the same at the end?)
     motor = Cesaroni_7579M1520_P,
     Cd_rocket_at_Re = Prometheus_Cd_function,
     h_second_rail_button = 0.69  # m
@@ -187,12 +193,14 @@ airbrakes_model_2024_01_14 = rocket_classes.Airbrakes(
 
 airbrakes_model_2024_03_10 = rocket_classes.Airbrakes(
     num_flaps = 3,
-    A_flap = 0.0045,  # current estimate. Maryland's last year was 0.0064516, which we'll probably have a similar configuration to
+    A_flap = 0.0045,  # m^2  current estimate. Maryland's last year was 0.0064516, which we'll probably have a similar configuration to
+    # TODO: check exact area with Brett, think about it's projection onto the plane perpendicular to the rocket's longitundinal axis
     Cd_brakes = 1,  # about what other teams had. rough
+    # TODO: verify Cd by checking other teams' values again
     max_deployment_speed = 5.5,  # deg/s
-    # update to take torque into account
+    # TODO: check with Cam on how to make more accurate
     max_deployment_angle = 41.35  # deg
-    # verify max angle, check consistent with tron model
+    # TODO: pick a max value. May want to meet with Niall and Brett (and Cam?) to discuss
 )
 
 # Set the default Hyperion configuration

@@ -62,7 +62,11 @@ def calculate_aerodynamic_parameters(dataset, rocket_config):
     len_characteristic = rocket.L_rocket
 
     # Fix temperature (temperature readings were taken inside the av bay, which does not change at the same rate as the outside temperature)
-    dataset["temperature"] = hfunc.temp_at_height(dataset["height"], dataset["temperature"].iloc[0]+273.15)
+    # launch occured at about 9:15 am June 24th, 2022
+    # sources:
+        # https://meteostat.net/en/station/72271?t=2022-06-24/2022-06-24
+        # https://www.timeanddate.com/weather/@5492576/historic?month=6&year=2022
+    dataset["temperature"] = hfunc.temp_at_height(dataset["height"], 24 + 273.15)
     # Calculate additional parameters
     dataset["air_density"] = dataset.apply(
         lambda x: hfunc.air_density_fn(x["pressure"], x["temperature"]), axis=1
@@ -84,4 +88,3 @@ def calculate_aerodynamic_parameters(dataset, rocket_config):
     )
 
     return dataset
-

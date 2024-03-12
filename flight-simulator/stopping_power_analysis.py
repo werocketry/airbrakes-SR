@@ -1,7 +1,7 @@
 # Perform analysis on max stopping power provided by different airbrakes. Specifically:
 # - different areas
 # - different deployment speeds
-# - different coefficients of drag?
+# TODO: - different coefficients of drag?
 
 import numpy as np
 import constants as con
@@ -9,7 +9,7 @@ import rocket_classes as rktClass
 import flight_simulation as fs
 from configs import Hyperion
 
-# may want to do an updated version of this that incorporates other things outside of our control like launch angle, atmospheric conditions, etc similar to the other sensitivity analysis without airbrakes. Or just use worst case scenario (the one that leads to the highest apogee) for everything
+# TODO: may want to do an updated version of this that incorporates other things outside of our control like launch angle, atmospheric conditions, etc similar to the other sensitivity analysis without airbrakes. Or just use worst case scenario (the one that leads to the highest apogee) for everything
 
 # Outline of analysis:
 individual_flap_areas = np.linspace(0.002, 0.007, 6) # m^2
@@ -36,7 +36,6 @@ pre_brake_flight = pre_brake_flight.iloc[:burnout_index]
 # Run the simulations
 def run_simulation(pre_brake_flight, Hyperion, airbrakes_model):
     ascent = fs.simulate_airbrakes_flight(pre_brake_flight, Hyperion, airbrakes_model)[0]
-    # optimize airbrakes sim?
     apogee = ascent['height'].iloc[-1]
     return apogee
 
