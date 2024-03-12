@@ -37,8 +37,8 @@ launchpad_pressure = pre_brake_flight["air_density"].iloc[0] * con.R_specific_ai
 multiplier = launchpad_pressure / (con.R_specific_air * pow(launchpad_temp, con.F_g_over_R_spec_air_T_lapse_rate))
 exponent_constant = con.F_g_over_R_spec_air_T_lapse_rate - 1
 
-# when used on controller, the current deployment angle would be fed in, and the deployment angle will remain constant for a given sim
-def simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, launchpad_temp, multiplier, exponent_constant, rocket=Hyperion, airbrakes=current_airbrakes_model, timestep=0.01):
+# when used on controller, the current deployment angle would be fed in, and the deployment angle will remain constant for a given sim. apogee returned will let the controller know if it needs to change the deployment angle
+def simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, launchpad_temp, multiplier, exponent_constant, rocket=Hyperion, airbrakes=current_airbrakes_model, deployment_angle = 0.523599, timestep=0.01):
     # Extract rocket parameters
     len_characteristic = rocket.L_rocket
     A_rocket = rocket.A_rocket
@@ -47,8 +47,6 @@ def simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, l
 
     # Extract airbrakes parameters
     Cd_brakes = airbrakes.Cd_brakes
-    max_deployment_speed = np.deg2rad(airbrakes.max_deployment_speed)
-    max_deployment_angle = np.deg2rad(airbrakes.max_deployment_angle)
     A_brakes = airbrakes.num_flaps * airbrakes.A_flap
 
     # Initialize simulation variables
@@ -67,11 +65,11 @@ def simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, l
         temperature = hfunc.temp_at_height(height, launchpad_temp)
         air_density = hfunc.air_density_optimized(temperature, multiplier, exponent_constant)
         dynamic_viscosity = hfunc.lookup_dynamic_viscosity(temperature)
+        # dynamic viscosity only changes by about 5% over the flight, so can find a way to trade off some accuracy for speed here. Also it's only used in the reynolds number calculation, so it an optimized reynolds number calculation that uses len_characteristic/viscosity could be used for most of the timesteps
+        # might be able to also look into not recalculating the reynolds number as often, because between 0 and 3e7, the drag coefficient doesn't change much
         reynolds_num = hfunc.calculate_reynolds_number(air_density, speed, len_characteristic, dynamic_viscosity)
         Cd_rocket = Cd_rocket_at_Re(reynolds_num)
         q = hfunc.calculate_dynamic_pressure(air_density, speed)        
-
-        deployment_angle = min(max_deployment_angle, deployment_angle + max_deployment_speed * timestep)
 
         F_drag = q * (np.sin(deployment_angle) * A_Cd_brakes + A_rocket * Cd_rocket)
         a_y = -F_drag * np.cos(angle_to_vertical) / mass - con.F_gravity
@@ -85,14 +83,16 @@ def simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, l
 
     return height
 
-apogee = simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, launchpad_temp, multiplier, exponent_constant, rocket=Hyperion, airbrakes=current_airbrakes_model, timestep=0.01)
+# going to need to put some work into picking a good timestep. maybe make it dynamic? for now using 0.1, which is small enough to cause less than a 1% error in the apogee prediction compared to a sim with a timestep of 0.001
+
+apogee = simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, launchpad_temp, multiplier, exponent_constant, rocket=Hyperion, airbrakes=current_airbrakes_model, timestep=0.1)
 
 print(apogee*3.28084)
 
 import time
 time1 = time.time()
 for i in range(10000):
-    simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, launchpad_temp, multiplier, exponent_constant, rocket=Hyperion, airbrakes=current_airbrakes_model, timestep=0.01)
+    simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, launchpad_temp, multiplier, exponent_constant, rocket=Hyperion, airbrakes=current_airbrakes_model, timestep=0.1)
     if i % 100 == 0:
         print(i)
 time2 = time.time()
