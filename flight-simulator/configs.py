@@ -121,7 +121,7 @@ def Prometheus_Cd_function(Re):
         return 0.31
 
 # add Hyperion Cd function(s) here when Shelby's done CFD
-# TODO: add Cd function taken from ork export (called "Hyperion_ork_V7_Cd_output")
+# TODO: add Cd function taken from ork export (called "Hyperion_ork_V7_Cd_output"), even though ork doesn't do a great job with Cd
 # TODO: add a Cd function from some other team's CFD, see how different it actually is to get an idea of how important it is to have a very accurate Cd function
 
 
@@ -132,6 +132,7 @@ Hyperion_2024_03_05 = {
     # TODO: when fins made, update A_rocket
     # TODO: get response from Shelby on whether Ogden said to use fin area in drag calculation
     "rocket_mass": 13.917,
+    # TODO: finish major updates that can be done to the mass budget and update this value
     "motor": our_Cesaroni_7450M2505_P,
     "Cd_rocket_at_Re": Prometheus_Cd_function,
     "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
@@ -166,7 +167,7 @@ Hyperion_2024_01_24 = {
 }
 
 Prometheus = rocket_classes.Rocket(
-    L_rocket = 2.229,  # length of Prometheus in m # measure to double check
+    L_rocket = 2.229,  # length of Prometheus in m # TODO: measure to double check
     A_rocket = 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
     rocket_mass = 13.93,  # kg, from (TODO: CAD? final physical rocket mass? were they the same at the end?)
     motor = Cesaroni_7579M1520_P,
