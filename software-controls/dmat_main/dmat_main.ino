@@ -1,10 +1,6 @@
 #include "Arduino.h"
 #include "Arduino_BHY2Host.h"
-
-
-
-//#include <Servo.h>
-
+#include "DCMotorServo.h" // from https://github.com/CameronBrooks11/DCMotorServo
 
 SensorXYZ accel(SENSOR_ID_ACC);
 SensorOrientation ori(SENSOR_ID_ORI);
