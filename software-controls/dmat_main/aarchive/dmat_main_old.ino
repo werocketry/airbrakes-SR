@@ -25,9 +25,6 @@ void setup() {
   linaccel.begin();
   gyro.begin();
 
-
-
-
 }
 
 
