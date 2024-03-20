@@ -142,7 +142,7 @@ def plot_airbrakes_ascent(ascent, unit="m"):
 
     ax4 = ax1.twinx()
     ax4.spines["right"].set_position(("outward", 120))
-    ax4.plot(ascent["time"], ascent["deployment_angle"], color="y")
+    ax4.plot(ascent["time"], np.rad2deg(ascent["deployment_angle"]), color="y")
     ax4.set_ylabel(f"Deployment Angle (deg)", color="y")
     ax4.tick_params(axis="y", labelcolor="y")
     ax4.set_yticks(range(0, 46, 15))

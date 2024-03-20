@@ -126,17 +126,27 @@ def Prometheus_Cd_function(Re):
 
 
 # Rocket class configurations
-Hyperion_2024_03_05 = {
+Hyperion_2024_03_19 = {
     "L_rocket": 2.70, # CHECK WITH UPDATED CAD
     "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
     # TODO: when fins made, update A_rocket
+        # the thickness of the Sapphire fins is 1.2 cm, and because we're switching to buying a G10 plate, it's probably going to be more similar to that. But given that I'm not sure if the fin area is even used in the calculation (see below), I'm leaving it as-is for now
     # TODO: get response from Shelby on whether Ogden said to use fin area in drag calculation
-    "rocket_mass": 13.917,
-    # TODO: finish major updates that can be done to the mass budget and update this value
+    "rocket_mass": 13.449,
+    # TODO: continuous refinement of mass budget and updating of this value
     "motor": our_Cesaroni_7450M2505_P,
     "Cd_rocket_at_Re": Prometheus_Cd_function,
     "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
-    # TODO: switch to Hyperion's in once aero has a final design
+    # TODO: switch to Hyperion's once aero has a final design
+}
+
+Hyperion_2024_03_05 = {
+    "L_rocket": 2.70,
+    "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
+    "rocket_mass": 13.917,
+    "motor": our_Cesaroni_7450M2505_P,
+    "Cd_rocket_at_Re": Prometheus_Cd_function,
+    "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
 }
 
 Hyperion_2024_02_20 = {
@@ -205,5 +215,5 @@ airbrakes_model_2024_03_10 = rocket_classes.Airbrakes(
 )
 
 # Set the default Hyperion configuration
-Hyperion = rocket_classes.Rocket(**Hyperion_2024_03_05)
+Hyperion = rocket_classes.Rocket(**Hyperion_2024_03_19)
 current_airbrakes_model = airbrakes_model_2024_03_10

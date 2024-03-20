@@ -1,11 +1,4 @@
 F_gravity = 9.791327  # m/s^2
-T_lapse_rate = 0.00817  # K/m
-R_universal = 8.3144598  # J/(mol*K)
-MM_air = 0.0289644  # kg/mol
-R_specific_air = R_universal / MM_air  # J/(kg*K)
-m_to_ft_conversion = 3.28084  # ft/m
-F_g_over_R_spec_air_T_lapse_rate = F_gravity / (R_specific_air * T_lapse_rate)
-
 """ How F_gravity was calculated
 
 https://en.wikipedia.org/wiki/Theoretical_gravity#International_gravity_formula_1980
@@ -47,7 +40,7 @@ IGF 1980 (with height at launchpad): 9.791331465 m/s^2
 IGF 1980 (with height at 10kft): 9.791322064 m/s^2
 Going to use average height between launchpad and 10kft: 9.791327 m/s^2
 """
-
+T_lapse_rate = 0.00817  # K/m
 """ How T_lapse_rate was determined
 
 Only one source was found with the lapse rate for Spaceport America:
@@ -76,3 +69,8 @@ The following was the most comprehensive source found for temperature lapse rate
 - has values for many locations in New Mexico (search for n. mex), and they ranged from 1.4 to 3.9 K/km
     - the closest station to SC was Datil, which had a lapse rate of 3.1 K/km
 """
+R_universal = 8.3144598  # J/(mol*K)
+MM_air = 0.0289644  # kg/mol
+R_specific_air = R_universal / MM_air  # J/(kg*K)
+m_to_ft_conversion = 3.28084  # ft/m
+F_g_over_R_spec_air_T_lapse_rate = F_gravity / (R_specific_air * T_lapse_rate) # unitless
