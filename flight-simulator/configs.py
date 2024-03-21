@@ -121,23 +121,32 @@ def Prometheus_Cd_function(Re):
         return 0.31
 
 # add Hyperion Cd function(s) here when Shelby's done CFD
-# TODO: add Cd function taken from ork export (called "Hyperion_ork_V7_Cd_output"), even though ork doesn't do a great job with Cd
+# TODO: add Cd function taken from ork export (called "Hyperion_ork_V7_Cd_output"), even though ork doesn't do a great job with Cd. Also add ork function for Prometheus, just to demonstrate the difference and how it's prediction doesn't line up well with the experimental data
 # TODO: add a Cd function from some other team's CFD, see how different it actually is to get an idea of how important it is to have a very accurate Cd function
 
 
 # Rocket class configurations
-Hyperion_2024_03_19 = {
-    "L_rocket": 2.70, # CHECK WITH UPDATED CAD
-    "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
+Hyperion_2024_03_20 = {
+    "L_rocket": 2.71,
+    # TODO: when more parts finished, update L_rocket
+    "A_rocket": 0.015326 + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
     # TODO: when fins made, update A_rocket
-        # the thickness of the Sapphire fins is 1.2 cm, and because we're switching to buying a G10 plate, it's probably going to be more similar to that. But given that I'm not sure if the fin area is even used in the calculation (see below), I'm leaving it as-is for now
-    # TODO: get response from Shelby on whether Ogden said to use fin area in drag calculation
-    "rocket_mass": 13.449,
-    # TODO: continuous refinement of mass budget and updating of this value
+    # TODO: when body tubes sanded, update A_rocket
+    "rocket_mass": 13.462+2,
+    # TODO: continuous refinement of mass budget and updating of the first value. second value is guess at additional mass we'll add to it (heavier infills, coatings, literal weights, etc.) to bring our pre-airbrakes apogee down to ~11k ft
     "motor": our_Cesaroni_7450M2505_P,
     "Cd_rocket_at_Re": Prometheus_Cd_function,
     "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
     # TODO: switch to Hyperion's once aero has a final design
+}
+
+Hyperion_2024_03_19 = {
+    "L_rocket": 2.70,
+    "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
+    "rocket_mass": 13.449,
+    "motor": our_Cesaroni_7450M2505_P,
+    "Cd_rocket_at_Re": Prometheus_Cd_function,
+    "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
 }
 
 Hyperion_2024_03_05 = {
@@ -205,15 +214,24 @@ airbrakes_model_2024_01_14 = rocket_classes.Airbrakes(
 airbrakes_model_2024_03_10 = rocket_classes.Airbrakes(
     num_flaps = 3,
     A_flap = 0.0045,  # m^2  current estimate. Maryland's last year was 0.0064516, which we'll probably have a similar configuration to
-    # TODO: check exact area with Brett, think about it's projection onto the plane perpendicular to the rocket's longitundinal axis
+    Cd_brakes = 1,  # about what other teams had. rough
+    max_deployment_speed = 5.5,  # deg/s
+    max_deployment_angle = 41.35  # deg
+)
+
+airbrakes_model_2024_03_20 = rocket_classes.Airbrakes(
+    num_flaps = 3,
+    A_flap = 0.00395,  # m^2  flap area
+    # TODO: still needs final sanding, so check again later, but should be super close
+    # TODO: look at how some being covered by the tube affects the area (will be incredibly minor)
     Cd_brakes = 1,  # about what other teams had. rough
     # TODO: verify Cd by checking other teams' values again
     max_deployment_speed = 5.5,  # deg/s
-    # TODO: check with Cam on how to make more accurate
+    # TODO: check with Cam on how to make more accurate (likely not to be exactly linear?)
     max_deployment_angle = 41.35  # deg
     # TODO: pick a max value. May want to meet with Niall and Brett (and Cam?) to discuss
 )
 
 # Set the default Hyperion configuration
-Hyperion = rocket_classes.Rocket(**Hyperion_2024_03_19)
-current_airbrakes_model = airbrakes_model_2024_03_10
+Hyperion = rocket_classes.Rocket(**Hyperion_2024_03_20)
+current_airbrakes_model = airbrakes_model_2024_03_20
