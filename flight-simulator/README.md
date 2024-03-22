@@ -1,6 +1,6 @@
 # airbrakes-prelim-analysis
 
-Flight and airbrakes simulation, analysis of Prometheus' flight data
+Flight and airbrakes simulations, analysis of Prometheus' flight data
 
 ## Giorgio's Ideas
 
@@ -12,12 +12,12 @@ Flight and airbrakes simulation, analysis of Prometheus' flight data
   - think about other ways to/what would align sim data with experimental data if above doesn't work
 
 - **Underestimation of Drag in Other Projects:** 
-  - Others are also experiencing underestimation of drag in their simulations: [Discord Discussion](https://discord.com/channels/855522432945618965/855533557996453888/1017453223340150805).
+  - Others are also experiencing underestimation of drag in their OpenRocket simulations: [Discord Discussion](https://discord.com/channels/855522432945618965/855533557996453888/1017453223340150805).
 
 - **Impact of Horizontal Velocity on Apogee Change Due to Airbrakes:** 
   - If actually wanting to simulate airbrakes using Prometheus experimental data as the data till burnout, note that flight data has no vertical vs horizontal velocity data, so would need to use the speed and change of height with time to separate them out. Possibly use the velocity not being 0/the acceleration not being -g at apogee to help determine the horizontal motion. Not a priority at all
 
-- **Useful Resources and Repositories:**
+- **Useful Repositories:**
   - [ORBrake Repository](https://github.com/WPI-HPRC/ORBrake)
   - [RocketPy](https://github.com/RocketPy-Team/RocketPy)
 
