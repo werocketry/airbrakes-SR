@@ -108,24 +108,80 @@ our_Cesaroni_7450M2505_P = rocket_classes.Motor(
 # Cd functions
 def Prometheus_Cd_function(Re):
     """
-    THIS IS FROM THE OLD 2020-2021 CFD. Get Shelby's new CFD based on the final Promtheus CAD and see if it's different. Likely switch to that if it is (keep this as legacy here because why not).
+    CFD done by Niall in early 2021 using the Prometheus CAD as it was at that time. k-ω model.
     """
-    # use k-ω model from Prometheus CFD sims
-    if Re < 1e7:
+    if Re <= 1e7:
         return 0.42
-    elif Re < 2.8e7:
+    elif Re <= 2.8e7:
         return 0.42 - (Re - 1e7) * (0.42 - 0.4) / (2.8e7 - 1e7)
-    elif Re < 5e7:
+    elif Re <= 5e7:
         return 0.4 - (Re - 2.8e7) * (0.4 - 0.31) / (5e7 - 2.8e7)
     else:
         return 0.31
 
-# add Hyperion Cd function(s) here when Shelby's done CFD
-# TODO: add Cd function taken from ork export (called "Hyperion_ork_V7_Cd_output"), even though ork doesn't do a great job with Cd. Also add ork function for Prometheus, just to demonstrate the difference and how it's prediction doesn't line up well with the experimental data
+# OpenRocket Cd functions
+"""
+For demonstrative purposes, here's the Cd function from the ork files for Prometheus and Hyperion. They are basically indistinguishable.
+
+Using the Prometheus one to project the Prometheus flight gives terrible results, doubling the error to about 2000 ft (at least as the sim and ork outputs stood on March 26th). 
+"""
+def Prometheus_Cd_function_orkPrometheus_V3_CADUPD(Re):
+    """
+    Drag coefficient curve given by Prometheus_V3_CADUPD.ork, on flight with Prometheus' launch conditions, but no wind (ascent only). Far less accurate than simply using the Prometheus Cd function.
+    """
+    if Re <= 2.2e6:
+        return 0.436
+    elif Re <= 5.01e6:
+        return 0.436 + (Re - 2.2e6) * (0.438 - 0.436) / (5.01e6 - 2.2e6)
+    elif Re <= 1.12e7:
+        return 0.438 + (Re - 5.01e6) * (0.445 - 0.438) / (1.12e7 - 5.01e6)
+    elif Re <= 1.83e7:
+        return 0.445 + (Re - 1.12e7) * (0.47 - 0.445) / (1.83e7 - 1.12e7)
+    elif Re <= 2.46e7:
+        return 0.47 + (Re - 1.83e7) * (0.496 - 0.47) / (2.46e7 - 1.83e7)
+    elif Re <= 3.02e7:
+        return 0.496 + (Re - 2.46e7) * (0.528 - 0.496) / (3.02e7 - 2.46e7)
+    elif Re <= 3.61e7:
+        return 0.528 + (Re - 3.02e7) * (0.576 - 0.528) / (3.61e7 - 3.02e7)
+    elif Re <= 3.88e7:
+        return 0.576 + (Re - 3.61e7) * (0.61 - 0.576) / (3.88e7 - 3.61e7)
+    elif Re <= 4.14e7:
+        return 0.61 + (Re - 3.88e7) * (0.657 - 0.61) / (4.14e7 - 3.88e7)
+    elif Re <= 4.42e7:
+        return 0.657 + (Re - 4.14e7) * (0.652 - 0.657) / (4.42e7 - 4.14e7)
+    else:
+        return 0.65
+def Hyperion_Cd_function_orkV7(Re):
+    """
+    Drag coefficient curve given by HyperionV7.ork, on flight with Prometheus' launch conditions, but no wind (ascent only). Likely far less accurate than simply using the Prometheus Cd function.
+    """
+    if Re <= 2.2e6:
+        return 0.436
+    elif Re <= 7.64e6:
+        return 0.436 + (Re - 2.2e6) * (0.44 - 0.436) / (7.64e6 - 2.2e6)
+    elif Re <= 1.75e7:
+        return 0.44 + (Re - 7.64e6) * (0.467 - 0.44) / (1.75e7 - 7.64e6)
+    elif Re <= 2.76e7:
+        return 0.467 + (Re - 1.75e7) * (0.512 - 0.467) / (2.76e7 - 1.75e7)
+    elif Re <= 3.41e7:
+        return 0.512 + (Re - 2.76e7) * (0.557 - 0.512) / (3.41e7 - 2.76e7)
+    elif Re <= 3.86e7:
+        return 0.557 + (Re - 3.41e7) * (0.606 - 0.557) / (3.86e7 - 3.41e7)
+    elif Re <= 4.14e7:
+        return 0.606 + (Re - 3.86e7) * (0.657 - 0.606) / (4.14e7 - 3.86e7)
+    elif Re <= 4.48e7:
+        return 0.657 + (Re - 4.14e7) * (0.651 - 0.657) / (4.48e7 - 4.14e7)
+    else:
+        return 0.65
+
+# Hyperion Cd function
+
+# TODO: add Hyperion Cd function(s) here when Shelby's done CFD
 # TODO: add a Cd function from some other team's CFD, see how different it actually is to get an idea of how important it is to have a very accurate Cd function
 
 
 # Rocket class configurations
+# TODO: add another team's rocket and Cd function, test our sim with it
 Hyperion_2024_03_20 = {
     "L_rocket": 2.71,
     # TODO: when more parts finished, update L_rocket

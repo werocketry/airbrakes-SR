@@ -37,6 +37,8 @@ exponent_constant = con.F_g_over_R_spec_air_T_lapse_rate - 1
 """
 - Dynamic viscosity only changes by about 5% over the flight, so can find a way to trade off some accuracy for speed here. Also it's only used in the reynolds number calculation, so it an optimized reynolds number calculation that uses len_characteristic/viscosity could be used for most of the timesteps
 - Might be able to also look into not recalculating the reynolds number as often, because between 0 and 3e7, the drag coefficient doesn't change much
+- Optimize Cd(Re) function to precombine the constants
+- Look at helper_functions.py and note where np.interp might be faster
 """
 
 def simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, launchpad_temp, multiplier, exponent_constant, rocket=Hyperion, airbrakes=current_airbrakes_model, deployment_angle = 0, timestep=0.01):
