@@ -88,6 +88,7 @@ def simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, l
 
     """
     TODO: Implement how closing the airbrakes at the end would be part of the simulation used for the controller
+        wait till we test how fast retraction is (loaded and unloaded)
 
     t_to_apogee_min = v_y / a_y
         minimum time to apogee is if the current drag force remains all the way to apogee. Currently compared to time needed to close airbrakes completely if they're fully deployed

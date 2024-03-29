@@ -8,14 +8,15 @@ import constants as con
 
 # TODO: add consideration for wind
 
-"""
-Note on timesteps:
-The default for OpenRocket sims is 0.01s for the first while, and then somewhere between 0.02 and 0.05 for a while, and then 0.05 for most of the rest of the ascent. It simulates more complicated dynamics than we do, so a timestep of 0.01s is good enough for us. That timestep gives apogees about 2m different for a 10k launch compared to using 0.001s. 0.001s can still be used for one-off sims, but when running many sims, 0.01s is better.
+default_timestep = 0.02
+""" Notes on timesteps:
 
-TODO: run with a couple hundred different timesteps in logspace between 0.0001 and 1 to see how it changes to get a better picture of the tradeoffs.
+The default for OpenRocket sims is 0.01s for the first while, and then somewhere between 0.02 and 0.05 for a while, and then 0.05 for most of the rest of the ascent. It simulates more complicated dynamics than we do
+
+A timestep of 0.02s gives apogees a few feet different for a 10k launch compared to using 0.001s. 0.001s can still be used for one-off sims, but when running many sims, 0.02s is better.
 """
 # Flight simulation function
-def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_conditions, timestep=0.01):
+def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_conditions, timestep=default_timestep):
     """
     Simulate the flight of a rocket until its apogee given its specifications and launch conditions.
 
@@ -109,9 +110,10 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
     # Liftoff until launch rail cleared
     time += timestep
     effective_L_launch_rail = L_launch_rail - rocket.h_second_rail_button
+    effective_h_launch_rail = effective_L_launch_rail * np.cos(angle_to_vertical)
 
     # Simulate flight from liftoff until the launch rail is cleared
-    while height < effective_L_launch_rail * np.cos(angle_to_vertical):
+    while height < effective_h_launch_rail:
         # Update environmental conditions based on height
         temperature = hfunc.temp_at_height(height, launchpad_temp)
         air_density = hfunc.air_density_optimized(temperature, multiplier, exponent_constant)
@@ -286,7 +288,7 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
 
 
 # Flight with airbrakes simulation function
-def simulate_airbrakes_flight(pre_brake_flight, rocket=Prometheus, airbrakes=current_airbrakes_model, timestep=0.01):
+def simulate_airbrakes_flight(pre_brake_flight, rocket=Prometheus, airbrakes=current_airbrakes_model, timestep=default_timestep):
     # Extract rocket parameters
     len_characteristic = rocket.L_rocket
     A_rocket = rocket.A_rocket
@@ -400,8 +402,26 @@ def simulate_airbrakes_flight(pre_brake_flight, rocket=Prometheus, airbrakes=cur
 if __name__ == "__main__":
     from configs import Hyperion
     
-    dataset, liftoff_index, launch_rail_cleared_index, burnout_index, apogee_index = simulate_flight(rocket=Hyperion, timestep=0.01)
+    dataset, liftoff_index, launch_rail_cleared_index, burnout_index, apogee_index = simulate_flight(rocket=Hyperion, timestep=0.001)
     
     print(dataset[["time", "height", "speed"]].iloc[apogee_index - 1]*3.28084)
-    ascent, time_of_max_deployment = simulate_airbrakes_flight(dataset.iloc[:burnout_index].copy(), rocket=Hyperion, timestep=0.01)
+    ascent, time_of_max_deployment = simulate_airbrakes_flight(dataset.iloc[:burnout_index].copy(), rocket=Hyperion, timestep=0.001)
     print(ascent[["time", "height", "speed"]].iloc[-1]*3.28084)
+
+    # run a couple hundred different timesteps in logspace between 0.001 and 0.1 to see how it changes to help pick a good timestep
+    
+"""    apogees = []
+    for timestep in np.logspace(-3, -1, 200):
+        dataset, liftoff_index, launch_rail_cleared_index, burnout_index, apogee_index = simulate_flight(rocket=Hyperion, timestep=timestep)
+        ascent, time_of_max_deployment = simulate_airbrakes_flight(dataset.iloc[:burnout_index].copy(), rocket=Hyperion, timestep=0.001)
+        apogees.append(ascent["height"].iloc[-1]*3.28084)
+        print(len(apogees))
+    # plot them
+    import matplotlib.pyplot as plt
+    plt.plot(np.logspace(-3, -1, 200), apogees)
+    plt.xscale("log")
+    plt.xlabel("Timestep (s)")
+    plt.ylabel("Apogee (ft)")
+    plt.title("Apogee vs Timestep")
+    plt.show()"""
+    

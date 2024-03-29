@@ -258,7 +258,7 @@ def create_flight_event_table(
     max_g_index = g_force.idxmax()
     max_speed_index = speed.idxmax()
     max_q_index = dataset["q"][:apogee_index].idxmax()
-    max_Re_index = reynolds_num[:apogee_index].idxmax()
+    max_Re_Ma_index = reynolds_num[:apogee_index].idxmax()
 
     parameters_at_flight_events = pd.DataFrame(
         {
@@ -266,7 +266,7 @@ def create_flight_event_table(
                 round(time.iloc[liftoff_index], 2),
                 round(time.iloc[launch_rail_cleared_index], 2),
                 round(time.iloc[max_g_index], 2),
-                round(time.iloc[max_Re_index], 2),
+                round(time.iloc[max_Re_Ma_index], 2),
                 round(time.iloc[max_q_index], 2),
                 round(time.iloc[max_speed_index], 2),
                 round(time.iloc[burnout_index], 2),
@@ -276,7 +276,7 @@ def create_flight_event_table(
                 round(height.iloc[liftoff_index], 2),
                 round(height.iloc[launch_rail_cleared_index], 2),
                 round(height.iloc[max_g_index], 2),
-                round(height.iloc[max_Re_index], 2),
+                round(height.iloc[max_Re_Ma_index], 2),
                 round(height.iloc[max_q_index], 2),
                 round(height.iloc[max_speed_index], 2),
                 round(height.iloc[burnout_index], 2),
@@ -286,7 +286,7 @@ def create_flight_event_table(
                 round(v_y.iloc[liftoff_index], 2),
                 round(v_y.iloc[launch_rail_cleared_index], 2),
                 round(v_y.iloc[max_g_index], 2),
-                round(v_y.iloc[max_Re_index], 2),
+                round(v_y.iloc[max_Re_Ma_index], 2),
                 round(v_y.iloc[max_q_index], 2),
                 round(v_y.iloc[max_speed_index], 2),
                 round(v_y.iloc[burnout_index], 2),
@@ -296,7 +296,7 @@ def create_flight_event_table(
                 round(speed.iloc[liftoff_index], 2),
                 round(speed.iloc[launch_rail_cleared_index], 2),
                 round(speed.iloc[max_g_index], 2),
-                round(speed.iloc[max_Re_index], 2),
+                round(speed.iloc[max_Re_Ma_index], 2),
                 round(speed.iloc[max_q_index], 2),
                 round(speed.iloc[max_speed_index], 2),
                 round(speed.iloc[burnout_index], 2),
@@ -306,7 +306,7 @@ def create_flight_event_table(
                 round(a_y.iloc[liftoff_index], 2),
                 round(a_y.iloc[launch_rail_cleared_index], 2),
                 round(a_y.iloc[max_g_index], 2),
-                round(a_y.iloc[max_Re_index], 2),
+                round(a_y.iloc[max_Re_Ma_index], 2),
                 round(a_y.iloc[max_q_index], 2),
                 round(a_y.iloc[max_speed_index], 2),
                 round(a_y.iloc[burnout_index], 2),
@@ -316,7 +316,7 @@ def create_flight_event_table(
                 round(g_force.iloc[liftoff_index], 2),
                 round(g_force.iloc[launch_rail_cleared_index], 2),
                 round(g_force.iloc[max_g_index], 2),
-                round(g_force.iloc[max_Re_index], 2),
+                round(g_force.iloc[max_Re_Ma_index], 2),
                 round(g_force.iloc[max_q_index], 2),
                 round(g_force.iloc[max_speed_index], 2),
                 round(g_force.iloc[burnout_index], 2),
@@ -330,7 +330,7 @@ def create_flight_event_table(
                     2,
                 ),
                 round(dataset["reynolds_num"].iloc[max_g_index] / pow(10, 7), 2),
-                round(dataset["reynolds_num"].iloc[max_Re_index] / pow(10, 7), 2),
+                round(dataset["reynolds_num"].iloc[max_Re_Ma_index] / pow(10, 7), 2),
                 round(dataset["reynolds_num"].iloc[max_q_index] / pow(10, 7), 2),
                 round(dataset["reynolds_num"].iloc[max_speed_index] / pow(10, 7), 2),
                 round(dataset["reynolds_num"].iloc[burnout_index] / pow(10, 7), 2),
@@ -342,62 +342,62 @@ def create_flight_event_table(
                         dataset["speed"].iloc[liftoff_index],
                         dataset["temperature"].iloc[liftoff_index],
                     ),
-                    2,
+                    3,
                 ),
                 round(
                     hfunc.mach_number_fn(
                         dataset["speed"].iloc[launch_rail_cleared_index],
                         dataset["temperature"].iloc[launch_rail_cleared_index],
                     ),
-                    2,
+                    3,
                 ),
                 round(
                     hfunc.mach_number_fn(
                         dataset["speed"].iloc[max_g_index],
                         dataset["temperature"].iloc[max_g_index],
                     ),
-                    2,
+                    3,
                 ),
                 round(
                     hfunc.mach_number_fn(
-                        dataset["speed"].iloc[max_Re_index],
-                        dataset["temperature"].iloc[max_Re_index],
+                        dataset["speed"].iloc[max_Re_Ma_index],
+                        dataset["temperature"].iloc[max_Re_Ma_index],
                     ),
-                    2,
+                    3,
                 ),
                 round(
                     hfunc.mach_number_fn(
                         dataset["speed"].iloc[max_q_index],
                         dataset["temperature"].iloc[max_q_index],
                     ),
-                    2,
+                    3,
                 ),
                 round(
                     hfunc.mach_number_fn(
                         dataset["speed"].iloc[max_speed_index],
                         dataset["temperature"].iloc[max_speed_index],
                     ),
-                    2,
+                    3,
                 ),
                 round(
                     hfunc.mach_number_fn(
                         dataset["speed"].iloc[burnout_index],
                         dataset["temperature"].iloc[burnout_index],
                     ),
-                    2,
+                    3,
                 ),
                 round(
                     hfunc.mach_number_fn(
                         dataset["speed"].iloc[-1], dataset["temperature"].iloc[-1]
                     ),
-                    2,
+                    3,
                 ),
             ],
             f"q (kPa)": [
                 round(dataset["q"].iloc[liftoff_index] / 1000, 2),
                 round(dataset["q"].iloc[launch_rail_cleared_index] / 1000, 2),
                 round(dataset["q"].iloc[max_g_index] / 1000, 2),
-                round(dataset["q"].iloc[max_Re_index] / 1000, 2),
+                round(dataset["q"].iloc[max_Re_Ma_index] / 1000, 2),
                 round(dataset["q"].iloc[max_q_index] / 1000, 2),
                 round(dataset["q"].iloc[max_speed_index] / 1000, 2),
                 round(dataset["q"].iloc[burnout_index] / 1000, 2),
@@ -408,7 +408,7 @@ def create_flight_event_table(
             "Liftoff",
             "Off Launch Rail",
             "Max g-Force",
-            "Max Re",
+            "Max Re, Mach",
             "Max q",
             "Max Speed",
             "Burnout",

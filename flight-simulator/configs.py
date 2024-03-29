@@ -284,8 +284,7 @@ airbrakes_model_2024_03_20 = rocket_classes.Airbrakes(
     # TODO: verify Cd by checking other teams' values again
     max_deployment_speed = 5.5,  # deg/s
     # TODO: check with Cam on how to make more accurate (likely not to be exactly linear?)
-    max_deployment_angle = 41.35  # deg
-    # TODO: pick a max value. May want to meet with Niall and Brett (and Cam?) to discuss
+    max_deployment_angle = 45  # deg
 )
 
 # Set the default Hyperion configuration
