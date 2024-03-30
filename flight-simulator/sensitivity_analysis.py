@@ -7,7 +7,7 @@
 import numpy as np
 import constants as con
 import rocket_classes as rktClass
-import flight_simulation as fs
+import flight_simulation as fsim
 import helper_functions as hfunc
 from configs import Hyperion
 
@@ -41,7 +41,7 @@ else:
 
 # Run the simulations
 def run_simulation(rocket, launch_condition):
-    flight = fs.simulate_flight(rocket, launch_condition, 0.01)[0]
+    flight = fsim.simulate_flight(rocket, launch_condition, 0.01)[0]
 
     # correction for wind. For now, just a constant value of -300m (about what ork sims return as the average differences between sims with no wind and average windy sims), to be refined later
     wind_correction = -300

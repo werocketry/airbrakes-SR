@@ -7,16 +7,18 @@ from configs import Hyperion, current_airbrakes_model
 import helper_functions as hfunc
 import rocket_classes as rktClass
 import constants as con
-import flight_simulation as fltSim
+import flight_simulation as fsim
 
 # wind
 """
 Morning of launch, load wind forecasts for different times of day into the controller. Niall said wind forecasts are pretty accurate for the day of.
+
+Might be nice to take a look at forecasts at SA in May and compare them to what the actual weather is the next day.
 """
 
 # simulate the flight up to burnout
 # real inputs would be fed from sensor data
-dataset, liftoff_index, launch_rail_cleared_index, burnout_index, apogee_index = fltSim.simulate_flight(rocket=Hyperion, timestep=0.01)
+dataset, liftoff_index, launch_rail_cleared_index, burnout_index, apogee_index = fsim.simulate_flight(rocket=Hyperion, timestep=0.01)
 pre_brake_flight = dataset.iloc[:burnout_index].copy()
 
 input_height = pre_brake_flight["height"].iloc[-1]

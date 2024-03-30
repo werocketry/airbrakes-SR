@@ -14,9 +14,6 @@ Flight and airbrakes simulations, analysis of Prometheus' flight data
 - **ORK Underestimation of Drag:** 
   - Others are also experiencing underestimation of drag in their OpenRocket simulations: [Discord Discussion](https://discord.com/channels/855522432945618965/855533557996453888/1017453223340150805)
 
-- **Useful Repositories:**
-  - [ORBrake Repository](https://github.com/WPI-HPRC/ORBrake)
-
 - **Evaluating the Impact of Weathercocking:** 
   - Investigation: Determine the rough magnitude of change caused by weathercocking.
   - Focus: Is it a function of stability in tube calibers?
