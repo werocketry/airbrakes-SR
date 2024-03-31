@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import constants as con
 import rocket_classes as rktClass
 import flight_simulation as fsim
@@ -75,7 +76,6 @@ multiplier = launchpad_pressure / (con.R_specific_air * pow(launchpad_temp, con.
 exponent_constant = con.F_g_over_R_spec_air_T_lapse_rate - 1
 
 deployment_angles = []
-
 tracker = 0
 
 for burnout_state in burnout_states:
@@ -110,3 +110,11 @@ plt.title("Deployment angles needed to hit 10k")
 plt.xlabel("Burnout state")
 plt.ylabel("Deployment angle (degrees)")
 plt.show()
+
+# save to a csv
+for i in range(len(deployment_angles)):
+    burnout_states[i]["deployment_angle_needed"] = deployment_angles[i]
+
+burnout_states_df = pd.DataFrame(burnout_states)
+burnout_states_df.drop(columns=["a_y", "a_x", "temperature","air_density","q","dynamic_viscosity","reynolds_num","Cd_rocket"], inplace=True)
+burnout_states_df.to_csv("burnout_states.csv", index=False)
