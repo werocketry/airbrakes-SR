@@ -125,19 +125,19 @@ def simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, l
 
 # TODO: going to need to put some work into picking a good timestep. maybe make it dynamic? for now using 0.1, which is small enough to cause less than a 1% error in the apogee prediction compared to a sim with a timestep of 0.001. Eventually do a proper analysis. Should also vary depending on how much of the flight is left
 
-import numpy as np
-
-thirty_deg_rad = np.deg2rad(30)
-# print(thirty_deg_rad)
-
-apogee = simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, launchpad_temp, multiplier, exponent_constant, rocket=Hyperion, airbrakes=current_airbrakes_model, deployment_angle=thirty_deg_rad, timestep=0.1)
-
-print(apogee*3.28084)
-
 
 if __name__ == "__main__":
 
     pass 
+    # import numpy as np
+
+    # thirty_deg_rad = np.deg2rad(30)
+    # # print(thirty_deg_rad)
+
+    # apogee = simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, launchpad_temp, multiplier, exponent_constant, rocket=Hyperion, airbrakes=current_airbrakes_model, deployment_angle=thirty_deg_rad, timestep=0.1)
+    # print(apogee*3.28084)
+
+
     # import time
     # time1 = time.time()
     # for i in range(10000):

@@ -4,19 +4,19 @@ import rocket_classes as rktClass
 import flight_simulation as fsim
 import helper_functions as hfunc
 from configs import Hyperion, current_airbrakes_model, Prometheus_launch_conditions
-
+import controller_flight_simulator as cfsim
 # should I be siming with different Cds?
 
 """
 launch angles: 5 7 9 11 13 15
 sim with them and normal other conditions up to burnout
-additional burnout states at +/- 5%, 10%, 15%, 20%, and 25% of height, speed
+additional burnout states at: +/- 5%, 10%, 15%, and 20% of height, speed
 calcs on those of what specific angle would need to be maintained to hit 10k
 """
 
 # extract launch conditions
 launchpad_pressure = Prometheus_launch_conditions.launchpad_pressure
-launchpad_temp = Prometheus_launch_conditions.launchpad_temp
+launchpad_temp = Prometheus_launch_conditions.launchpad_temp + 273.15
 L_launch_rail = Prometheus_launch_conditions.L_launch_rail
 launch_angles = [85, 83, 81, 79, 77, 75]
 
@@ -27,13 +27,11 @@ for launch_angle in launch_angles:
     dataset, _, _, burnout_index, _ = fsim.simulate_flight(rocket=Hyperion, timestep=0.001, launch_conditions=launch_conditions)
     burnout_states.append(dataset.iloc[burnout_index].copy())
 
-print(burnout_states[0])
-
-# add additional burnout states at +/- 5%, 10%, 15%, 20%, and 25% of height, speed
+# add additional burnout states at +/- 5%, 10%, 15%, and 20% of height, speed
     # better ways to do this, but just want a first attempt
 for i in range(len(launch_angles)):
     burnout_state = burnout_states[i]
-    for j in range(1, 6):
+    for j in range(1, 4):
         burnout_state_copy = burnout_state.copy()
         burnout_state_copy["height"] *= 1 + j * 0.05
         burnout_state_copy["speed"] *= 1 + j * 0.05
@@ -54,27 +52,55 @@ burnout_states = sorted(burnout_states, key=lambda x: x["height"])
 
 # plot height and speed of different burnout states at burnout
 import matplotlib.pyplot as plt
+
 fig, axs = plt.subplots(2, 1, figsize=(10, 10))
-colors = ['b', 'g', 'r', 'c', 'm', 'y']  # Add more colors if needed
-labels = []
+
 for i in range(len(burnout_states)):
     burnout_state = burnout_states[i]
-    launch_angle = launch_angles[i % len(launch_angles)]
-    if launch_angle not in labels:
-        labels.append(launch_angle)
-        axs[0].scatter(i, burnout_state["height"], color=colors[i % len(colors)], label=f'launch angle = {launch_angle} deg')
-        axs[1].scatter(i, burnout_state["speed"], color=colors[i % len(colors)], label=f'launch angle = {launch_angle} deg')
-    else:
-        axs[0].scatter(i, burnout_state["height"], color=colors[i % len(colors)])
-        axs[1].scatter(i, burnout_state["speed"], color=colors[i % len(colors)])
+    axs[0].scatter(i, burnout_state["height"], color='b')
+    axs[1].scatter(i, burnout_state["v_y"], color='b')
+
 axs[0].set_title("Height at burnout")
 axs[0].set_xlabel("Burnout state")
 axs[0].set_ylabel("Height (m)")
-axs[0].legend()
-axs[1].set_title("Speed at burnout")
+
+axs[1].set_title("Vertical velocity at burnout")
 axs[1].set_xlabel("Burnout state")
-axs[1].set_ylabel("Speed (m/s)")
-axs[1].legend()
+axs[1].set_ylabel("Vertical velocity (m/s)")
+
 plt.show()
 
-# calculate the angle needed to hit 10k
+# calculate the angles needed to hit 10k
+multiplier = launchpad_pressure / (con.R_specific_air * pow(launchpad_temp, con.F_g_over_R_spec_air_T_lapse_rate))
+exponent_constant = con.F_g_over_R_spec_air_T_lapse_rate - 1
+
+deployment_angles = []
+
+tracker = 0
+
+for burnout_state in burnout_states:
+    apogee_no_braking = cfsim.simulate_airbrakes_flight(burnout_state["height"], burnout_state["speed"], burnout_state["v_y"], burnout_state["v_x"], launchpad_temp, multiplier, exponent_constant, rocket=Hyperion, airbrakes=current_airbrakes_model, deployment_angle=0, timestep=0.01)
+    if apogee_no_braking * 3.28084 < 10000:
+        deployment_angles.append(0)
+        tracker += 1
+        print(f'{tracker} of {len(burnout_states)} deployment angles found')
+    else:
+        lower_bound = 0
+        upper_bound = np.pi / 4
+        while upper_bound - lower_bound > 0.0001:
+            deployment_angle = (upper_bound + lower_bound) / 2
+            apogee = cfsim.simulate_airbrakes_flight(burnout_state["height"], burnout_state["speed"], burnout_state["v_y"], burnout_state["v_x"], launchpad_temp, multiplier, exponent_constant, rocket=Hyperion, airbrakes=current_airbrakes_model, deployment_angle=deployment_angle, timestep=0.01)
+            if apogee * 3.28084 > 10000:
+                lower_bound = deployment_angle
+            else:
+                upper_bound = deployment_angle
+        deployment_angles.append(deployment_angle)
+        tracker += 1
+        print(f'{tracker} of {len(burnout_states)} deployment angles found')
+
+# plot the deployment angles
+plt.scatter(range(len(deployment_angles)), deployment_angles)
+plt.title("Deployment angles needed to hit 10k")
+plt.xlabel("Burnout state")
+plt.ylabel("Deployment angle (rad)")
+plt.show()
