@@ -1,5 +1,5 @@
 //#define ARDUINO_PORTENTA_H7_M7
-#define CORE_NUM_INTERRUPT 21
+//#define CORE_NUM_INTERRUPT 21
 
 #include "Arduino.h"
 #include "Arduino_BHY2Host.h"
@@ -12,12 +12,17 @@
 #include <PID_v1.h>
 #include "DCMotorServo.h" // from https://github.com/CameronBrooks11/DCMotorServo
 
-
+#define pin_dcmoto_encode1 0
+#define pin_dcmoto_encode2 1
 #define pin_dcmoto_dir1 2
 #define pin_dcmoto_dir2 3
 #define pin_dcmoto_pwm_out 4
-#define pin_dcmoto_encode1 0
-#define pin_dcmoto_encode2 1
+
+// ESLOV - DO NOT USE
+#define FORBIDDEN_PH8_I2C3_SDA 11
+#define FORBIDDEN_PH7_I2C3_SCL 12
+#define FORBIDDEN_PI0_SPI1_CS 7
+
 
 // Encoder specifications
 #define PPR 11 // Pulses per revolution (PPR) of the encoder
@@ -78,6 +83,12 @@ void setup() {
   // debug port
   Serial.begin(115200);
   while(!Serial);
+
+  pinMode(pin_dcmoto_dir1, OUTPUT);
+  pinMode(pin_dcmoto_dir2, OUTPUT);
+  pinMode(pin_dcmoto_pwm_out, OUTPUT);
+  pinMode(pin_dcmoto_encode1, INPUT);
+  pinMode(pin_dcmoto_encode2, INPUT);
 
   servo.myPID->SetTunings(KP, KI, KD);
   servo.setPWMSkip(50);
