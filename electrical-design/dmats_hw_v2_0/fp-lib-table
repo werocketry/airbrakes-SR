@@ -1,4 +1,4 @@
 (fp_lib_table
   (version 7)
-  (lib (name "ABX00042")(type "KiCad")(uri "${KIPRJMOD}/external-components/ABX00042")(options "")(descr ""))
+  (lib (name "DMATS_capstone")(type "KiCad")(uri "${KIPRJMOD}/DMATS_capstone")(options "")(descr ""))
 )
