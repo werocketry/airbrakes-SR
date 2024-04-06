@@ -5,7 +5,6 @@
 #include "Arduino_BHY2Host.h"
 
 #include "altitude.h"
-
 #include "altitude_eqn/altitude_eqn.h"
 
 #include <Encoder.h>
@@ -75,8 +74,8 @@ static void imuRead(float gyroData[3], float accelData[3])
 float pastTime = millis();
 float currentTime = millis();
 
+bool printToggleFlag = false;
 bool printFlag = false;
-
 
 
 void setup() {
@@ -94,9 +93,7 @@ void setup() {
   servo.setPWMSkip(50);
   servo.setAccuracy(14); // Accuracy based on encoder specifics
 
- // NOTE: if Nicla is used as a Shield on top of a MKR board we must use:
   BHY2Host.begin();
-
 
   accel.begin();
   ori.begin();
@@ -177,21 +174,21 @@ void loop()
 
   BHY2Host.update();
 
-  // Check for serial input to toggle printFlag
+  // Check for serial input to toggle printToggleFlag
   if (Serial.available() > 0) {
     String command = Serial.readStringUntil('\n'); // Read the command until a newline character.
     command.trim(); // Trim any whitespace.
 
-    if (command.equals("toggle")) { // If the command is "toggle", invert the printFlag state.
-      printFlag = !printFlag;
-      Serial.println(printFlag ? "Printing Enabled" : "Printing Disabled"); // Feedback.
+    if (command.equals("toggle")) { // If the command is "toggle", invert the printToggleFlag state.
+      printToggleFlag = !printToggleFlag;
+      Serial.println(printToggleFlag ? "Printing Enabled" : "Printing Disabled"); // Feedback.
     }
   }  
 
   currentTime = millis();
   
 
-  if ((currentTime - pastTime) > 50 && !printFlag)
+  if ((currentTime - pastTime) > 50 && !printToggleFlag && printFlag)
   {
     // get all necessary data
     float pressure = baro.value();
@@ -216,7 +213,7 @@ void loop()
 
 
   static auto printTime = millis();
-  if (millis() - printTime >= 500 && printFlag) {
+  if (millis() - printTime >= 500 && printToggleFlag && printFlag) {
     printTime = millis();
     Serial.println(String("Acceleration values: ") + accel.toString());
     Serial.println(String("Orientation values: ") + ori.toString());
