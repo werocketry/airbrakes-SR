@@ -1,6 +1,8 @@
 # contains parameters for instances of these classes: Rocket, LaunchConditions, Airbrakes
 # also contains the functions that give the Cd of a rocket as a function of Re
 import rocket_classes
+import constants as con
+import numpy as np
 
 # Motor class configurations
 Cesaroni_7579M1520_P = rocket_classes.Motor( 
@@ -106,7 +108,10 @@ our_Cesaroni_7450M2505_P = rocket_classes.Motor(
 )
 
 # Cd functions
-def Prometheus_Cd_function(Re):
+
+
+# TODO: see if I can get a proper Cd(Ma) for Prometheus instead of this conversion from the Cd(Re) function. Clean this whole thing up
+def Prometheus_Cd_at_Re(Re):
     """
     CFD done by Niall in early 2021 using the Prometheus CAD as it was at that time. k-ω model.
     """
@@ -119,7 +124,21 @@ def Prometheus_Cd_function(Re):
     else:
         return 0.31
 
-# OpenRocket Cd functions
+# rough translation of Cd(Re) into a Cd(mach) function
+# assumptions:
+air_temp_for_mach = 20 + 273.15 # assumed constant at 20C (temp about halfway through flight)
+dynamic_viscosity_for_mach = 1.85e-5 # assumed constant at 1.85e-5 (dynamic viscosity at 20C)
+air_density_for_mach = 0.85 # assumed constant at 0.85 kg/m^3 (air density about halfway through flight)
+L_Prometheus = 2.229  # length of Prometheus in m # TODO: measure to double check
+# mach = speed / np.sqrt(1.4 * con.R_specific_air * temp)
+# Re = air_density * speed * len_characteristic / dynamic_viscosity
+# Re = air_density * mach * len_characteristic * np.sqrt(1.4 * con.R_specific_air * temp) / dynamic_viscosity
+
+def Prometheus_Cd_at_Ma(mach):
+    Re = air_density_for_mach * mach * L_Prometheus * np.sqrt(1.4 * con.R_specific_air * air_temp_for_mach) / dynamic_viscosity_for_mach
+    return Prometheus_Cd_at_Re(Re)
+
+# OpenRocket Cd functions TODO: update to take Ma
 """
 For demonstrative purposes, here's the Cd function from the ork files for Prometheus and Hyperion. They are basically indistinguishable.
 
@@ -183,70 +202,72 @@ def Hyperion_Cd_function_orkV7(Re):
 # Rocket class configurations
 # TODO: add another team's rocket and Cd function, test our sim with it
 Hyperion_2024_03_20 = {
-    "L_rocket": 2.71,
+    # "L_rocket": 2.71,
     # TODO: when more parts finished, update L_rocket
-    "A_rocket": 0.015326 + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
+    "A_rocket": 0.015326,# + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
+        # as best I can tell, it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
     # TODO: when fins made, update A_rocket
     # TODO: when body tubes sanded, update A_rocket
     "rocket_mass": 13.462+2,
     # TODO: continuous refinement of mass budget and updating of the first value. second value is guess at additional mass we'll add to it (heavier infills, coatings, literal weights, etc.) to bring our pre-airbrakes apogee down to ~11k ft
     "motor": our_Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Re": Prometheus_Cd_function,
+    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
     "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
     # TODO: switch to Hyperion's once aero has a final design
 }
 
 Hyperion_2024_03_19 = {
-    "L_rocket": 2.70,
+    # "L_rocket": 2.70,
     "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
     "rocket_mass": 13.449,
     "motor": our_Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Re": Prometheus_Cd_function,
+    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
     "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
 }
 
 Hyperion_2024_03_05 = {
-    "L_rocket": 2.70,
+    # "L_rocket": 2.70,
     "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
     "rocket_mass": 13.917,
     "motor": our_Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Re": Prometheus_Cd_function,
+    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
     "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
 }
 
 Hyperion_2024_02_20 = {
-    "L_rocket": 2.70,
+    # "L_rocket": 2.70,
     "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
     "rocket_mass": 14.29,
     "motor": Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Re": Prometheus_Cd_function,
+    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
     "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
 }
 
 Hyperion_2024_02_04 = {
-    "L_rocket": 2.59,
+    # "L_rocket": 2.59,
     "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
     "rocket_mass": 14.24,
     "motor": Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Re": Prometheus_Cd_function,
+    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
     "h_second_rail_button": 0.69  # m, distance from bottom of rocket to second rail button, was what Prometheus had
 }
 
 Hyperion_2024_01_24 = {
-    "L_rocket": 2.59,
+    # "L_rocket": 2.59,
     "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
     "rocket_mass": 14.54,
     "motor": Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Re": Prometheus_Cd_function,
+    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
     "h_second_rail_button": 0.69  # m, distance from bottom of rocket to second rail button, was what Prometheus had
 }
 
 Prometheus = rocket_classes.Rocket(
-    L_rocket = 2.229,  # length of Prometheus in m # TODO: measure to double check
-    A_rocket = 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
+    # L_rocket = 2.229,  # length of Prometheus in m # TODO: measure to double check
+    A_rocket = 0.015326, #+ 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
+        # as best I can tell, it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
     rocket_mass = 13.93,  # kg, from (TODO: CAD? final physical rocket mass? were they the same at the end?)
     motor = Cesaroni_7579M1520_P,
-    Cd_rocket_at_Re = Prometheus_Cd_function,
+    Cd_rocket_at_Ma = Prometheus_Cd_at_Ma,
     h_second_rail_button = 0.69  # m
 )
 

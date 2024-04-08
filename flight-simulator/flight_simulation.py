@@ -30,12 +30,10 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
     """
 
     # Initialize rocket parameters and launch conditions
-    len_characteristic = rocket.L_rocket
-    A_rocket = rocket.A_rocket
     dry_mass = rocket.dry_mass
     fuel_mass_lookup = rocket.motor.mass_curve
     engine_thrust_lookup = rocket.motor.thrust_curve
-    Cd_rocket_at_Re = rocket.Cd_rocket_at_Re
+    Cd_A_rocket_fn = rocket.Cd_A_rocket
     burnout_time = rocket.motor.burn_time
 
     # Extract launch condition parameters
@@ -45,18 +43,15 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
     launch_angle = launch_conditions.launch_angle
 
     # Initialize simulation variables
-    time, height, speed, a_y, a_x, v_y, v_x, Cd_rocket = 0, 0, 0, 0, 0, 0, 0, 0
+    time, height, speed, a_y, a_x, v_y, v_x, Cd_A_rocket, Ma, q = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     angle_to_vertical = np.deg2rad(90 - launch_angle)
 
     # Calculate constants to be used in air density function
     multiplier = launchpad_pressure / (con.R_specific_air * pow(launchpad_temp, con.F_g_over_R_spec_air_T_lapse_rate))
     exponent_constant = con.F_g_over_R_spec_air_T_lapse_rate - 1
 
-    # Calculate initial air density and dynamic viscosity
+    # Initialize air density
     air_density = hfunc.air_density_optimized(launchpad_temp, multiplier, exponent_constant)
-    dynamic_viscosity = hfunc.lookup_dynamic_viscosity(launchpad_temp)
-    reynolds_num = hfunc.calculate_reynolds_number(air_density, speed, len_characteristic, dynamic_viscosity) # 0
-    q = hfunc.calculate_dynamic_pressure(air_density, speed)
 
     # Store the initial state of the rocket
     simulated_values = [
@@ -71,9 +66,8 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
             launchpad_temp,
             air_density,
             q,
-            dynamic_viscosity,
-            reynolds_num,
-            Cd_rocket,
+            Ma,
+            Cd_A_rocket, # why is this being saved?
             angle_to_vertical,
         ]
     ]
@@ -98,9 +92,8 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
                 launchpad_temp,
                 air_density,
                 q, # 0
-                dynamic_viscosity,
-                reynolds_num, # 0
-                Cd_rocket, # 0
+                Ma, # 0
+                Cd_A_rocket, # 0
                 angle_to_vertical,
             ]
         )
@@ -117,13 +110,12 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
         # Update environmental conditions based on height
         temperature = hfunc.temp_at_height(height, launchpad_temp)
         air_density = hfunc.air_density_optimized(temperature, multiplier, exponent_constant)
-        dynamic_viscosity = hfunc.lookup_dynamic_viscosity(temperature)
 
-        # Calculate Reynolds number, drag coefficient, and forces
-        reynolds_num = (air_density * speed * len_characteristic) / dynamic_viscosity
-        Cd_rocket = Cd_rocket_at_Re(reynolds_num)
+        # Calculate Mach number, drag coefficient, and forces
+        Ma = hfunc.mach_number_fn(speed, temperature)
+        Cd_A_rocket = Cd_A_rocket_fn(Ma)
         q = hfunc.calculate_dynamic_pressure(air_density, speed)
-        F_drag = q * Cd_rocket * A_rocket
+        F_drag = q * Cd_A_rocket
 
         # Update rocket's motion parameters
         mass = hfunc.mass_at_time(time, dry_mass, fuel_mass_lookup)
@@ -148,9 +140,8 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
                 temperature,
                 air_density,
                 q,
-                dynamic_viscosity,
-                reynolds_num,
-                Cd_rocket,
+                Ma,
+                Cd_A_rocket,
                 angle_to_vertical,
             ]
         )
@@ -163,13 +154,12 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
         # Update environmental conditions based on height
         temperature = hfunc.temp_at_height(height, launchpad_temp)
         air_density = hfunc.air_density_optimized(temperature, multiplier, exponent_constant)
-        dynamic_viscosity = hfunc.lookup_dynamic_viscosity(temperature)
 
-        # Calculate Reynolds number, Drag coefficient, and Forces
-        reynolds_num = hfunc.calculate_reynolds_number(air_density, speed, len_characteristic, dynamic_viscosity)
-        Cd_rocket = Cd_rocket_at_Re(reynolds_num)
+        # Calculate Mach number, Drag coefficient, and Forces
+        Ma = hfunc.mach_number_fn(speed, temperature)
+        Cd_A_rocket = Cd_A_rocket_fn(Ma)
         q = hfunc.calculate_dynamic_pressure(air_density, speed)
-        F_drag = q * Cd_rocket * A_rocket
+        F_drag = q * Cd_A_rocket
 
         # Update rocket's motion parameters
         mass = hfunc.mass_at_time(time, dry_mass, fuel_mass_lookup)
@@ -197,9 +187,8 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
                 temperature,
                 air_density,
                 q,
-                dynamic_viscosity,
-                reynolds_num,
-                Cd_rocket,
+                Ma,
+                Cd_A_rocket,
                 angle_to_vertical,
             ]
         )
@@ -214,13 +203,12 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
     while v_y > 0:
         temperature = hfunc.temp_at_height(height, launchpad_temp)
         air_density = hfunc.air_density_optimized(temperature, multiplier, exponent_constant)
-        dynamic_viscosity = hfunc.lookup_dynamic_viscosity(temperature)
 
-        # Calculate Reynolds number, Drag coefficient, and Forces
-        reynolds_num = hfunc.calculate_reynolds_number(air_density, speed, len_characteristic, dynamic_viscosity)
-        Cd_rocket = Cd_rocket_at_Re(reynolds_num)
+        # Calculate Mach number, Drag coefficient, and Forces
+        Ma = hfunc.mach_number_fn(speed, temperature)
+        Cd_A_rocket = Cd_A_rocket_fn(Ma)
         q = hfunc.calculate_dynamic_pressure(air_density, speed)
-        F_drag = q * Cd_rocket * A_rocket
+        F_drag = q * Cd_A_rocket
 
         # Update rocket's motion parameters
         a_y = -F_drag * np.cos(angle_to_vertical) / mass - con.F_gravity
@@ -246,9 +234,8 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
                 temperature,
                 air_density,
                 q,
-                dynamic_viscosity,
-                reynolds_num,
-                Cd_rocket,
+                Ma,
+                Cd_A_rocket,
                 angle_to_vertical,
             ]
         )
@@ -257,6 +244,7 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
 
     # Mark the index at apogee (highest point)
     apogee_index = len(simulated_values)
+    simulated_values[-1][12] = simulated_values[-2][12]
 
     # Convert the list of simulation values to a DataFrame for easier analysis and visualization
     dataset = pd.DataFrame(
@@ -271,10 +259,9 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
             "temperature": [row[7] for row in simulated_values],
             "air_density": [row[8] for row in simulated_values],
             "q": [row[9] for row in simulated_values],
-            "dynamic_viscosity": [row[10] for row in simulated_values],
-            "reynolds_num": [row[11] for row in simulated_values],
-            "Cd_rocket": [row[12] for row in simulated_values],
-            "angle_to_vertical": [row[13] for row in simulated_values],
+            "Ma": [row[10] for row in simulated_values],
+            "Cd_A_rocket": [row[11] for row in simulated_values],
+            "angle_to_vertical": [row[12] for row in simulated_values],
         }
     )
 
@@ -290,10 +277,8 @@ def simulate_flight(rocket=Prometheus, launch_conditions=Prometheus_launch_condi
 # Flight with airbrakes simulation function
 def simulate_airbrakes_flight(pre_brake_flight, rocket=Prometheus, airbrakes=current_airbrakes_model, timestep=default_timestep):
     # Extract rocket parameters
-    len_characteristic = rocket.L_rocket
-    A_rocket = rocket.A_rocket
     mass = rocket.dry_mass
-    Cd_rocket_at_Re = rocket.Cd_rocket_at_Re
+    Cd_A_rocket_fn = rocket.Cd_A_rocket
 
     # Extract launch condition parameters
     launchpad_temp = pre_brake_flight.temperature.iloc[0]
@@ -331,10 +316,9 @@ def simulate_airbrakes_flight(pre_brake_flight, rocket=Prometheus, airbrakes=cur
 
         temperature = hfunc.temp_at_height(height, launchpad_temp)
         air_density = hfunc.air_density_optimized(temperature, multiplier, exponent_constant)
-        dynamic_viscosity = hfunc.lookup_dynamic_viscosity(temperature)
-        reynolds_num = hfunc.calculate_reynolds_number(air_density, speed, len_characteristic, dynamic_viscosity)
-        Cd_rocket = Cd_rocket_at_Re(reynolds_num)
-        q = hfunc.calculate_dynamic_pressure(air_density, speed)        
+        Ma = hfunc.mach_number_fn(speed, temperature)
+        Cd_A_rocket = Cd_A_rocket_fn(Ma)
+        q = hfunc.calculate_dynamic_pressure(air_density, speed)
 
         deployment_angle = min(max_deployment_angle, deployment_angle + max_deployment_speed * timestep)
 
@@ -343,7 +327,7 @@ def simulate_airbrakes_flight(pre_brake_flight, rocket=Prometheus, airbrakes=cur
             time_recorded = True
 
 
-        F_drag = q * (np.sin(deployment_angle) * A_Cd_brakes + A_rocket * Cd_rocket)
+        F_drag = q * (np.sin(deployment_angle) * A_Cd_brakes + Cd_A_rocket)
         a_y = -F_drag * np.cos(angle_to_vertical) / mass - con.F_gravity
         a_x = -F_drag * np.sin(angle_to_vertical) / mass
         v_y += a_y * timestep
@@ -365,9 +349,8 @@ def simulate_airbrakes_flight(pre_brake_flight, rocket=Prometheus, airbrakes=cur
                 temperature,
                 air_density,
                 q,
-                dynamic_viscosity,
-                reynolds_num,
-                Cd_rocket,
+                Ma,
+                Cd_A_rocket,
                 angle_to_vertical,
                 deployment_angle,
             ]
@@ -384,11 +367,10 @@ def simulate_airbrakes_flight(pre_brake_flight, rocket=Prometheus, airbrakes=cur
         "temperature": [row[7] for row in simulated_values],
         "air_density": [row[8] for row in simulated_values],
         "q": [row[9] for row in simulated_values],
-        "dynamic_viscosity": [row[10] for row in simulated_values],
-        "reynolds_num": [row[11] for row in simulated_values],
-        "Cd_rocket": [row[12] for row in simulated_values],
-        "angle_to_vertical": [row[13] for row in simulated_values],
-        "deployment_angle": [row[14] for row in simulated_values],
+        "Ma": [row[10] for row in simulated_values],
+        "Cd_A_rocket": [row[11] for row in simulated_values],
+        "angle_to_vertical": [row[12] for row in simulated_values],
+        "deployment_angle": [row[13] for row in simulated_values],
     }
 
     ascent = pd.concat([pre_brake_flight, pd.DataFrame(data)], ignore_index=True)

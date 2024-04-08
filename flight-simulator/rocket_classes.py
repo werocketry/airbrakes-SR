@@ -16,31 +16,35 @@ class Motor:
 
 class Rocket:
     """
-    L_rocket: length of the rocket (m)
-    A_rocket: cross-sectional area of the rocket (m^2)
     rocket_mass: dry mass of the rocket without the motor (kg)
     motor: Motor object
-    Cd_rocket_at_Re: coefficient of drag of the rocket as a function of Reynolds number
+    A_rocket: cross-sectional area of the rocket (m^2). Must be the same used when the Cd_rocket_at_Ma was calculated.
+    Cd_rocket_at_Ma: coefficient of drag of the rocket as a function of Mach number. Defaults to a constant 0.45, which is in the ballpark of what most comp rockets our size have.
     h_second_rail_button: height of the second rail button from the bottom of the rocket (m). This is the upper button if there's only 2. Defaults to 0.69m, which is what Prometheus had. Doesn't matter much if it's not set as it changes apogee by less than 10ft when it's at 0.
+
     dry_mass: total mass of the rocket without fuel (kg)
+    Cd_A_rocket: coefficient of drag of the rocket multiplied by the cross-sectional area of the rocket (m^2)
     """
 
     def __init__(
         self,
-        L_rocket,
-        A_rocket,
         rocket_mass,
         motor,
-        Cd_rocket_at_Re,
+        A_rocket,
+        Cd_rocket_at_Ma = 0.45,
         h_second_rail_button=0.69,
     ):
-        self.L_rocket = L_rocket
-        self.A_rocket = A_rocket
         self.rocket_mass = rocket_mass
         self.motor = motor
-        self.Cd_rocket_at_Re = Cd_rocket_at_Re
+        self.A_rocket = A_rocket
+        self.Cd_rocket_at_Ma = Cd_rocket_at_Ma
         self.h_second_rail_button = h_second_rail_button
+
         self.dry_mass = rocket_mass + motor.dry_mass
+        # TODO: make this half_Cd_A_rocket, take 0.5 out of dynamic pressure calc, so there's one less float multiplication
+        def Cd_A_rocket_fn(Ma):
+            return Cd_rocket_at_Ma(Ma) * A_rocket
+        self.Cd_A_rocket = Cd_A_rocket_fn
 
 
 class LaunchConditions:

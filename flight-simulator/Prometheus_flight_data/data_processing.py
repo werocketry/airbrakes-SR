@@ -58,8 +58,6 @@ def calculate_aerodynamic_parameters(dataset, rocket_config):
     Returns:
     - pd.DataFrame: Dataset with calculated aerodynamic parameters.
     """
-    rocket = rocket_config
-    len_characteristic = rocket.L_rocket
 
     # Fix temperature (temperature readings were taken inside the av bay, which does not change at the same rate as the outside temperature)
     # launch occured at about 9:15 am June 24th, 2022
@@ -73,14 +71,6 @@ def calculate_aerodynamic_parameters(dataset, rocket_config):
     )
     dataset["q"] = dataset.apply(
         lambda x: 0.5 * x["air_density"] * pow(x["speed"], 2), axis=1
-    )
-    dataset["dynamic_viscosity"] = dataset["temperature"].apply(
-        lambda x: hfunc.lookup_dynamic_viscosity(x)
-    )
-    dataset["reynolds_num"] = dataset.apply(
-        lambda x: (x["air_density"] * x["speed"] * len_characteristic)
-        / x["dynamic_viscosity"],
-        axis=1,
     )
     dataset["mach_number"] = dataset.apply(
         lambda x: hfunc.mach_number_fn(x["speed"], x["temperature"]),

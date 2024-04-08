@@ -37,9 +37,8 @@ exponent_constant = con.F_g_over_R_spec_air_T_lapse_rate - 1
 
 # TODO: opportunities to improve efficiency:
 """
-- Dynamic viscosity only changes by about 5% over the flight, so can find a way to trade off some accuracy for speed here. Also it's only used in the reynolds number calculation, so it an optimized reynolds number calculation that uses len_characteristic/viscosity could be used for most of the timesteps
-- Might be able to also look into not recalculating the reynolds number as often, because between 0 and 3e7, the drag coefficient doesn't change much
-- Optimize Cd(Re) function to precombine the constants
+- Might be able to also look into not recalculating the Mach number as often, because for some parts of the Cd(Ma) curve, the drag coefficient doesn't change much
+- Optimize Cd(Ma) function to precombine the constants
 - Look at helper_functions.py and note where np.interp might be faster
 """
 
@@ -66,10 +65,8 @@ def simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, l
     float: The predicted apogee height 
     """
     # Extract rocket parameters
-    len_characteristic = rocket.L_rocket
-    A_rocket = rocket.A_rocket
     mass = rocket.dry_mass
-    Cd_rocket_at_Re = rocket.Cd_rocket_at_Re
+    Cd_A_rocket_fn = rocket.Cd_A_rocket
 
     # Extract airbrakes parameters
     Cd_brakes = airbrakes.Cd_brakes
@@ -106,12 +103,11 @@ def simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, l
     while v_y > 0:
         temperature = hfunc.temp_at_height(height, launchpad_temp)
         air_density = hfunc.air_density_optimized(temperature, multiplier, exponent_constant)
-        dynamic_viscosity = hfunc.lookup_dynamic_viscosity(temperature)
-        reynolds_num = hfunc.calculate_reynolds_number(air_density, speed, len_characteristic, dynamic_viscosity)
-        Cd_rocket = Cd_rocket_at_Re(reynolds_num)
+        Ma = hfunc.mach_number_fn(speed, temperature)
+        Cd_A_rocket = Cd_A_rocket_fn(Ma)
         q = hfunc.calculate_dynamic_pressure(air_density, speed)        
 
-        F_drag = q * (np.sin(deployment_angle) * A_Cd_brakes + A_rocket * Cd_rocket)
+        F_drag = q * (np.sin(deployment_angle) * A_Cd_brakes + Cd_A_rocket)
         a_y = -F_drag * np.cos(angle_to_vertical) / mass - con.F_gravity
         a_x = -F_drag * np.sin(angle_to_vertical) / mass
         v_y += a_y * timestep

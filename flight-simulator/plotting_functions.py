@@ -38,7 +38,7 @@ def plot_ascent(time, height, speed, v_y, a_y, unit="m"):
     plt.show()
 
 
-def plot_aerodynamics(time, height, speed, q, reynolds_num, air_density, unit="m"):
+def plot_aerodynamics(time, height, speed, q, angle_to_vertical, air_density, unit="m"):
     """
     Plot aerodynamic parameters over the ascent.
 
@@ -47,7 +47,7 @@ def plot_aerodynamics(time, height, speed, q, reynolds_num, air_density, unit="m
     - height (pd.Series): Height series data.
     - speed (pd.Series): Speed series data.
     - q (pd.Series): Dynamic pressure series data.
-    - reynolds_num (pd.Series): Reynolds number series data.
+    - angle_to_vertical (pd.Series): Angle to vertical series data.
     - air_density (pd.Series): Air density series data.
     - unit (str): Unit of measurement for height, speed, etc.
     """
@@ -56,23 +56,27 @@ def plot_aerodynamics(time, height, speed, q, reynolds_num, air_density, unit="m
     ax1.set_xlabel("Time (s)")
     ax1.set_ylabel(f"Height ({unit})", color="b")
     ax1.tick_params(axis="y", labelcolor="b")
+    ax1.set_ylim(0, height.max() * 1.1)
 
     ax2 = ax1.twinx()
     ax2.plot(time, speed, color="r", label="Speed")
     ax2.set_ylabel(f"Speed ({unit}/s)", color="r")
     ax2.tick_params(axis="y", labelcolor="r")
+    ax2.set_ylim(0, speed.max() * 1.1)
 
     ax3 = ax1.twinx()
     ax3.spines["right"].set_position(("outward", 60))
     ax3.plot(time, q / 1000, color="g", label="q")
     ax3.set_ylabel("q (kPa)", color="g")
     ax3.tick_params(axis="y", labelcolor="g")
+    ax3.set_ylim(0, q.max() / 1000 * 1.1)
 
     ax4 = ax1.twinx()
     ax4.spines["right"].set_position(("outward", 120))
-    ax4.plot(time, reynolds_num, color="c", label="Reynolds Number")
-    ax4.set_ylabel("Reynolds Number", color="c")
+    ax4.plot(time, angle_to_vertical * 180 / np.pi, color="c", label="Angle to Vertical")
+    ax4.set_ylabel(f"Angle to vertical (deg)", color="c")
     ax4.tick_params(axis="y", labelcolor="c")
+    ax4.set_yticks(range(0, 91, 15))
 
     ax5 = ax1.twinx()
     ax5.spines["right"].set_position(("outward", 180))
@@ -82,7 +86,6 @@ def plot_aerodynamics(time, height, speed, q, reynolds_num, air_density, unit="m
 
     plt.title("Aerodynamics during Ascent")
     plt.show()
-
 
 
 def plot_airbrakes_ascent(ascent, unit="m"):
@@ -235,7 +238,7 @@ def create_flight_event_table(
     speed,
     a_y,
     g_force,
-    reynolds_num,
+    Ma,
     dataset,
     liftoff_index,
     launch_rail_cleared_index,
@@ -247,7 +250,7 @@ def create_flight_event_table(
     Create a table of parameters at key flight events.
 
     Args:
-    - time, height, v_y, speed, a_y, g_force, reynolds_num (pd.Series): Data series.
+    - time, height, v_y, speed, a_y, g_force, Ma (pd.Series): Data series.
     - dataset (pd.DataFrame): The dataset containing additional flight data.
     - liftoff_index, launch_rail_cleared_index, burnout_index, apogee_index (int): Indices of key flight events.
     - unit (str): Unit of measurement for height, speed, etc.
@@ -256,9 +259,8 @@ def create_flight_event_table(
     - pd.DataFrame: Table of parameters at key flight events.
     """
     max_g_index = g_force.idxmax()
-    max_speed_index = speed.idxmax()
+    max_speed_Ma_index = speed.idxmax()
     max_q_index = dataset["q"][:apogee_index].idxmax()
-    max_Re_Ma_index = reynolds_num[:apogee_index].idxmax()
 
     parameters_at_flight_events = pd.DataFrame(
         {
@@ -266,9 +268,8 @@ def create_flight_event_table(
                 round(time.iloc[liftoff_index], 2),
                 round(time.iloc[launch_rail_cleared_index], 2),
                 round(time.iloc[max_g_index], 2),
-                round(time.iloc[max_Re_Ma_index], 2),
                 round(time.iloc[max_q_index], 2),
-                round(time.iloc[max_speed_index], 2),
+                round(time.iloc[max_speed_Ma_index], 2),
                 round(time.iloc[burnout_index], 2),
                 round(time.iloc[-1], 2),
             ],
@@ -276,9 +277,8 @@ def create_flight_event_table(
                 round(height.iloc[liftoff_index], 2),
                 round(height.iloc[launch_rail_cleared_index], 2),
                 round(height.iloc[max_g_index], 2),
-                round(height.iloc[max_Re_Ma_index], 2),
                 round(height.iloc[max_q_index], 2),
-                round(height.iloc[max_speed_index], 2),
+                round(height.iloc[max_speed_Ma_index], 2),
                 round(height.iloc[burnout_index], 2),
                 round(height.iloc[-1], 2),
             ],
@@ -286,9 +286,8 @@ def create_flight_event_table(
                 round(v_y.iloc[liftoff_index], 2),
                 round(v_y.iloc[launch_rail_cleared_index], 2),
                 round(v_y.iloc[max_g_index], 2),
-                round(v_y.iloc[max_Re_Ma_index], 2),
                 round(v_y.iloc[max_q_index], 2),
-                round(v_y.iloc[max_speed_index], 2),
+                round(v_y.iloc[max_speed_Ma_index], 2),
                 round(v_y.iloc[burnout_index], 2),
                 round(v_y.iloc[-1], 2),
             ],
@@ -296,9 +295,8 @@ def create_flight_event_table(
                 round(speed.iloc[liftoff_index], 2),
                 round(speed.iloc[launch_rail_cleared_index], 2),
                 round(speed.iloc[max_g_index], 2),
-                round(speed.iloc[max_Re_Ma_index], 2),
                 round(speed.iloc[max_q_index], 2),
-                round(speed.iloc[max_speed_index], 2),
+                round(speed.iloc[max_speed_Ma_index], 2),
                 round(speed.iloc[burnout_index], 2),
                 round(speed.iloc[-1], 2),
             ],
@@ -306,9 +304,8 @@ def create_flight_event_table(
                 round(a_y.iloc[liftoff_index], 2),
                 round(a_y.iloc[launch_rail_cleared_index], 2),
                 round(a_y.iloc[max_g_index], 2),
-                round(a_y.iloc[max_Re_Ma_index], 2),
                 round(a_y.iloc[max_q_index], 2),
-                round(a_y.iloc[max_speed_index], 2),
+                round(a_y.iloc[max_speed_Ma_index], 2),
                 round(a_y.iloc[burnout_index], 2),
                 round(a_y.iloc[-1], 2),
             ],
@@ -316,25 +313,10 @@ def create_flight_event_table(
                 round(g_force.iloc[liftoff_index], 2),
                 round(g_force.iloc[launch_rail_cleared_index], 2),
                 round(g_force.iloc[max_g_index], 2),
-                round(g_force.iloc[max_Re_Ma_index], 2),
                 round(g_force.iloc[max_q_index], 2),
-                round(g_force.iloc[max_speed_index], 2),
+                round(g_force.iloc[max_speed_Ma_index], 2),
                 round(g_force.iloc[burnout_index], 2),
                 round(g_force.iloc[-1], 2),
-            ],
-            f"Re*10^7": [
-                round(dataset["reynolds_num"].iloc[liftoff_index] / pow(10, 7), 2),
-                round(
-                    dataset["reynolds_num"].iloc[launch_rail_cleared_index]
-                    / pow(10, 7),
-                    2,
-                ),
-                round(dataset["reynolds_num"].iloc[max_g_index] / pow(10, 7), 2),
-                round(dataset["reynolds_num"].iloc[max_Re_Ma_index] / pow(10, 7), 2),
-                round(dataset["reynolds_num"].iloc[max_q_index] / pow(10, 7), 2),
-                round(dataset["reynolds_num"].iloc[max_speed_index] / pow(10, 7), 2),
-                round(dataset["reynolds_num"].iloc[burnout_index] / pow(10, 7), 2),
-                round(dataset["reynolds_num"].iloc[-1] / pow(10, 7), 2),
             ],
             f"Mach": [
                 round(
@@ -360,13 +342,6 @@ def create_flight_event_table(
                 ),
                 round(
                     hfunc.mach_number_fn(
-                        dataset["speed"].iloc[max_Re_Ma_index],
-                        dataset["temperature"].iloc[max_Re_Ma_index],
-                    ),
-                    3,
-                ),
-                round(
-                    hfunc.mach_number_fn(
                         dataset["speed"].iloc[max_q_index],
                         dataset["temperature"].iloc[max_q_index],
                     ),
@@ -374,8 +349,8 @@ def create_flight_event_table(
                 ),
                 round(
                     hfunc.mach_number_fn(
-                        dataset["speed"].iloc[max_speed_index],
-                        dataset["temperature"].iloc[max_speed_index],
+                        dataset["speed"].iloc[max_speed_Ma_index],
+                        dataset["temperature"].iloc[max_speed_Ma_index],
                     ),
                     3,
                 ),
@@ -397,9 +372,8 @@ def create_flight_event_table(
                 round(dataset["q"].iloc[liftoff_index] / 1000, 2),
                 round(dataset["q"].iloc[launch_rail_cleared_index] / 1000, 2),
                 round(dataset["q"].iloc[max_g_index] / 1000, 2),
-                round(dataset["q"].iloc[max_Re_Ma_index] / 1000, 2),
                 round(dataset["q"].iloc[max_q_index] / 1000, 2),
-                round(dataset["q"].iloc[max_speed_index] / 1000, 2),
+                round(dataset["q"].iloc[max_speed_Ma_index] / 1000, 2),
                 round(dataset["q"].iloc[burnout_index] / 1000, 2),
                 round(dataset["q"].iloc[-1] / 1000, 2),
             ],
@@ -408,9 +382,8 @@ def create_flight_event_table(
             "Liftoff",
             "Off Launch Rail",
             "Max g-Force",
-            "Max Re, Mach",
             "Max q",
-            "Max Speed",
+            "Max Speed, Ma",
             "Burnout",
             "Apogee",
         ],
