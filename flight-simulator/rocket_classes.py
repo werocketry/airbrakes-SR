@@ -3,7 +3,7 @@ class Motor:
     """
     dry_mass: mass of the motor without fuel (kg)
     thrust_curve: dictionary of thrust (N) at time (s after ignition)
-    mass_curve: dictionary of mass (kg) at time (s after ignition)
+    mass_curve: dictionary of mass (kg) at time (s after ignition) # TODO: rename to fuel_mass_curve
     burn_time: time it takes for the motor to burn all of its fuel (s)
     """
 

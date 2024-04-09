@@ -356,6 +356,8 @@ def simulate_airbrakes_flight(pre_brake_flight, rocket=Prometheus, airbrakes=cur
             ]
         )
 
+    simulated_values[-1][12] = simulated_values[-2][12]
+
     data = {
         "time": [row[0] for row in simulated_values],
         "height": [row[1] for row in simulated_values],
