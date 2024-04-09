@@ -1,3 +1,0 @@
-[submodule "software-controls/dmat_main/libs/DCMotorServo"]
-	path = software-controls/dmat_main/libs/DCMotorServo
-	url = https://github.com/CameronBrooks11/DCMotorServo.git
