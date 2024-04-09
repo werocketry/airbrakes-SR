@@ -1,4 +1,4 @@
-21794463764887438
+21801314198198250
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -51464,6 +51464,27 @@ ARDUINO_NICLA
 19
 19
 DMATS_capstone
+Buzzer_22D_10P_4Hz
+Generic Buzzer, D15mm height 7.5mm with RM7.6mm
+buzzer
+0
+2
+2
+DMATS_capstone
+Buzzer_30D_15P_2.5Hz
+Generic Buzzer, D15mm height 7.5mm with RM7.6mm
+buzzer
+0
+2
+2
+DMATS_capstone
+CUI_SLW-913535-2A-RA-D_SPDT_Angled
+CuK miniature slide switch, OS series, SPDT, right angle, http://www.ckswitches.com/media/1428/os.pdf
+switch SPDT
+0
+3
+3
+DMATS_capstone
 MODULE_ABX00042
 
 
@@ -51477,6 +51498,13 @@ A4957SESTR-T
 0
 25
 25
+DMATS_capstone
+SW_DIP_SPSTx01_Slide_Power
+1x-dip-switch SPST , Slide, row spacing 7.62 mm (300 mils), body size 9.78x4.72mm (see e.g. https://www.ctscorp.com/wp-content/uploads/206-208.pdf)
+DIP Switch SPST Slide 7.62mm 300mil
+0
+2
+2
 Diode_SMD
 D_0201_0603Metric
 Diode SMD 0201 (0603 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: https://www.vishay.com/docs/20052/crcw0201e3.pdf), generated with kicad-footprint-generator
