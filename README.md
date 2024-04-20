@@ -2,6 +2,11 @@
 
 This is the repository for the Western Engineering Rocketry Team's design of an airbrakes system.
 
+## Sister Projects
+
+- [chasgior214/RocketFlightSim](https://github.com/chasgior214/RocketFlightSim)
+- [werocketry/HPR-Rocket-Flight-Computer](https://github.com/werocketry/HPR-Rocket-Flight-Computer)
+
 ## Acronyms of the Trade
 | Acronym | Full Name                                 | Description                                                                          |
 |---------|-------------------------------------------|--------------------------------------------------------------------------------------|
