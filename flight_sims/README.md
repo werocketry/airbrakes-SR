@@ -1,6 +1,6 @@
-# airbrakes-prelim-analysis
+# Flight Analysis
 
-Flight and airbrakes simulations, analysis of Prometheus' flight data
+Flight simulations, analysis of Prometheus' flight data
 
 - **Alignment of Sim Data with Experimental Data:** 
   - About 1000 ft off around motor burnout.

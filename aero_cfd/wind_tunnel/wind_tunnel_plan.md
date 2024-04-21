@@ -5,7 +5,7 @@
 - **Project:** Western Engineering Rocketry Team Drag Characterization
 - **Facility:** BLWT 2
 - **Test Type(s):** Drag Characterization
-- **Test Date (approx):** End of February
+- **Test Date (approx):** Early-mid May
 - **Objective:** Characterize the drag as a function of different wind speeds and flap deployment angles
 
 ## Test Conditions

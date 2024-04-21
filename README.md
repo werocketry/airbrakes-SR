@@ -12,18 +12,18 @@ This is the repository for the Western Engineering Rocketry Team's design of an 
 |---------|-------------------------------------------|--------------------------------------------------------------------------------------|
 | AGL     | Above Ground Level                        |                                                                                      |
 | COTS    | Commercial off-the-shelf                  |                                                                                      |
-| SRAD    | Student researched and designed           |                                                                                      |
-| ESRA    | Experimental Sounding Rocket Association  |                                                                                      |
-| SAC     | Spaceport America Cup                     |                                                                                      |
-| NM      | New Mexico                                |                                                                                      |
 | CP      | Center of pressure                        |                                                                                      |
-| IREC    | Intercollegiate Rocket Engineering Competition | Basically SAC. It used to happen somewhere else                                       |
-| WERT    | Western Engineering Rocketry Team         | Also called WE Rocketry                                                              |
-| VLA     | Vertical Launch Area                      |                                                                                      |
+| ESRA    | Experimental Sounding Rocket Association  |                                                                                      |
 | FOS     | Factor of Safety                          |                                                                                      |
 | FS      | Factor of Safety                          |                                                                                      |
-| OR      | OpenRocket                                |                                                                                   |
-| SA      | Spaceport America                         | The launch site where SAC is hosted                                                  |
+| IREC    | Intercollegiate Rocket Engineering Competition | Basically SAC. It used to happen somewhere else                                       |
+| NM      | New Mexico                                |                                                                                      |
+| NMSU    | New Mexico State University               | The university on whose grounds some parts of SAC are held                           |
+| OR      | OpenRocket                                |                                                                                      |
+| .ork    | OpenRocket filetype                       |                                                                                      |
 | RSO     | Range Safety Officer                      | The person that gives you permission to launch                                       |
-| NMSU    | New Mexico State University               | The university on whose grounds some parts of IREC are held                          |
-| .ork    | OpenRocket filetype                       |         |
+| SA      | Spaceport America                         | The launch site where SAC is hosted                                                  |
+| SAC     | Spaceport America Cup                     |                                                                                      |
+| SRAD    | Student researched and designed           |                                                                                      |
+| VLA     | Vertical Launch Area                      |                                                                                      |
+| WERT    | Western Engineering Rocketry Team         | Also called WE Rocketry                                                              |
