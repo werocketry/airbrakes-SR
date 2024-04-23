@@ -19,4 +19,8 @@
 
 ## Apparatus
 
+### Rocket
+The rocket is 2.7m long, and the airframe has a diameter of 5.5". The rocket's 3 fins (spaced 120° apart) stick out a further 5.5" from the airframe. Only the external components of the rocket will be tested in the wind tunnel, which will have a mass of about 8 kg.
+
+### Mount
 TODO: *Details of the testing apparatus and equipment used in the test are to be specified here.*
