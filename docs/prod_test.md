@@ -32,6 +32,7 @@ it will experience at the moment of maximum thrust transfer.
 
 ![A close up of a machine Description automatically
 generated](./media/image37.png)
+
 There was a marked (though not unexpected) difference in the strength of
 the tube with the cutouts compared to the tubes without the cutouts. The
 tube without the cutouts could withstand a compressive force of 11.16

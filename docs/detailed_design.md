@@ -292,6 +292,7 @@ flight, in Figure 18).
 generated](./media/image19.png)
 ![A graph of different colored lines Description automatically
 generated](./media/image20.png)
+
 It should be noted that as of the publication of this report, the mass
 budget of the rocket is in a state of flux as some final design
 considerations are still being made by the rocketry team's various sub
@@ -467,6 +468,7 @@ mechanical model to only show the essential components of the problem.
 ![A blue red and yellow metal object with a blue and green line
 Description automatically generated with medium
 confidence](./media/image23.png)
+
 The simplicity of the mechanism allowed it to be readily converted into
 a simple two-force member model diagram in which to solve, shown in
 Figure 22. The force in the model is applied normally as it represents
