@@ -209,6 +209,8 @@ def Hyperion_Cd_function_orkV7(Ma):
     else:
         return 0.65
 
+# TODO: maybe try a RASAero II Cd function, see https://www.reddit.com/r/rocketry/comments/18si1ws/comment/kf8iq38/
+
 # Hyperion Cd function
 
 # TODO: add Hyperion Cd function(s) here when Shelby's done CFD
@@ -220,8 +222,9 @@ Hyperion_2024_04_13 = {
     "A_rocket": 0.015326,# + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
         # I think it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
         # once using Shelby's CFD model, ensure that the area used here is the same as plugged into Ansys Fluent for its conversion of drag force to Cd
-    "rocket_mass": 13.222+3,
-    # TODO: continuous refinement of mass budget and updating of the first value. second value is guess at additional mass we'll add to it (heavier infills, coatings, literal weights, etc.) to bring our pre-airbrakes apogee down to ~11k ft. Need to do some work on picking that value
+    "rocket_mass": 13.222+3, # first value is expected mass of all planned components, second is guess at additional mass to add to it (heavier infills, coatings, literal weights, etc.) to bring our pre-airbrakes apogee down to ~11k ft
+    # TODO: continuous refinement of mass budget and updating of the first value
+    # TODO: work on picking second value
     "motor": our_Cesaroni_7450M2505_P,
     "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
     "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
@@ -233,7 +236,7 @@ Hyperion_2024_03_20 = {
     "A_rocket": 0.015326,# + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
         # I think it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
         # once using Shelby's CFD model, ensure that the area used here is the same as plugged into Ansys Fluent for its conversion of drag force to Cd
-    "rocket_mass": 13.462+2,
+    "rocket_mass": 13.462+2, # first value is expected mass of all planned components, second is guess at additional mass to add to it (heavier infills, coatings, literal weights, etc.) to bring our pre-airbrakes apogee down to ~11k ft
     "motor": our_Cesaroni_7450M2505_P,
     "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
     "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had

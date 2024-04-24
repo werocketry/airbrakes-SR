@@ -36,9 +36,13 @@ launchpad_pressure = pre_brake_flight["air_density"].iloc[0] * con.R_specific_ai
 # TODO: ways to improve efficiency:
 """
 - Might be able to also look into not recalculating the Mach number as often, because for some parts of the Cd(Ma) curve, the drag coefficient doesn't change much
-- Optimize Cd(Ma) function to precombine the constants
-- all constants will be hardcoded
-- multiplier can be calculated once and used in all the sims. Left inside the sim for now for the function's use in different scripts 
+- all constants will be hardcoded:
+    - Optimize Cd(Ma) function to precombine the constants
+    - make a constant half_Cd_A_rocket that is calculated once, take the 0.5 out of the dynamic pressure calculation
+    - multiplier can be calculated once and used in all the sims. Left inside the sim for now for the function's use in different scripts 
+
+- C/C++ implementation of logic
+- when done custom simulator, go through all the logic and compare to the most recent version of RFS
 """
 
 def simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, launchpad_temp, rocket=Hyperion, airbrakes=current_airbrakes_model, deployment_angle = 0, timestep=0.01):
