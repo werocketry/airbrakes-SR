@@ -1,7 +1,6 @@
 # contains parameters for instances of these classes: Rocket, LaunchConditions, Airbrakes
 # also contains the functions that give the Cd of a rocket as a function of Re
 import rocket_classes
-import constants as con
 import numpy as np
 
 # Motor class configurations
@@ -299,11 +298,74 @@ Prometheus = rocket_classes.Rocket(
 )
 
 # LaunchConditions class configurations
+local_T_lapse_rate_SA = -0.00817  # K/m
+""" How T_lapse_rate at Spaceport America was determined
+
+Only one source was found with the lapse rate for Spaceport America:
+    - https://egusphere.copernicus.org/preprints/2023/egusphere-2023-633/egusphere-2023-633.pdf
+    - luckily, they took their measurements in June
+    - The lapse rates for the stratosphere for each of three flights were reported as follows:
+        - June 1st 2021 -8.4 K/km
+        - June 4th 2021 -7.9 K/km
+        - June 6th 2021 -8.2 K/km
+    - An average of these is what was chosen for the simulation
+    - The linear lapse rate was valid for the first 10 km AGL
+
+For future reference, it should be noted that time of year has a large effect on the lapse rate, as reported in:
+    - https://mdpi-res.com/d_attachment/remotesensing/remotesensing-14-00162/article_deploy/remotesensing-14-00162.pdf?version=1640917080
+    - https://hwbdocs.env.nm.gov/Los%20Alamos%20National%20Labs/TA%2004/2733.PDF
+        - states that the average lapse rate in NM is:
+            - -4.0F/1000ft (-7.3 K/km) in July
+            - -2.5F/1000ft (-4.6 K/km) in January
+        - -8.2 K/km is higher than the summer average, but generally desert areas have higher-than-normal lapse rates
+
+The following was the most comprehensive source found for temperature lapse rates in New Mexico: 
+- https://pubs.usgs.gov/bul/1964/report.pdf
+- No values were found for Spaceport itself, but values for other locations in New Mexico were found
+- the report says that in the western conterminous United States, temperature lapse rates are generally significantly less than the standard -6.5 K/km
+- the report didn't include the date (or month) of the measurements, so I'd assume that it happened in the winter due to the low lapse rates, and/or the data being several decades old means that it's no longer as accurate due to the changing global climate
+- has values for many locations in New Mexico (search for n. mex), and they ranged from -1.4 to -3.9 K/km
+    - the closest station to SC was Datil, which had a lapse rate of -3.1 K/km
+"""
+L_launch_rail_ESRA_provided_SAC = 5.18  # m, 
+""" ESRA provides teams with a 5.18m rail at competition """
+launchpad_pressure_SA = 86400  # Pa
+""" How the launchpad pressure at Spaceport America was determined
+
+- 86400 2022/06/24   our 2022 data
+- 86405 2022/06/23   https://github.com/ISSUIUC/flight-data/tree/master/20220623
+- 86170 2023/06/21   https://github.com/ISSUIUC/flight-data/tree/master/20230621
+- Truth or Consequences, NM, USA, which has an elevation 90 m lower than Spaceport America
+    - 84780 http://cms.ashrae.biz/weatherdata/STATIONS/722710_s.pdf
+
+"""
+launchpad_temp_Prometheus = 34  # deg C
+""" From https://www.timeanddate.com/weather/@5492576/historic?month=6&year=2023 """
+latitude_SA = 32.99  # deg, Spaceport America's latitude
+""" https://maps.app.goo.gl/rZT6MRLqHneA7wNX7 """
+altitude_SA = 1401  # m, Spaceport America's elevation
+""" https://www.spaceportamerica.com/faq/#toggle-id-15"""
+# TODO: talk about determination of launch rail angle at comp here
+
 Prometheus_launch_conditions = rocket_classes.LaunchConditions(
-    launchpad_pressure = 86400,  # Pa, what it was at Prometheus' launch
-    launchpad_temp = 34,  # deg C, what it was at Prometheus' launch
-    L_launch_rail = 5.18,  # m, ESRA provides a 5.18m rail
-    launch_angle = 80  # deg from horizontal. Niall said Prometheus was set up at 10 deg off of the vertical
+    launchpad_pressure = launchpad_pressure_SA,  # Pa
+    launchpad_temp = launchpad_temp_Prometheus,  # deg C
+    L_launch_rail = L_launch_rail_ESRA_provided_SAC,
+    launch_angle = 80,  # deg from horizontal. Niall said Prometheus was set up at 10 deg off of the vertical
+    local_T_lapse_rate = local_T_lapse_rate_SA,
+    latitude = latitude_SA,
+    altitude = altitude_SA
+)
+
+Spaceport_America_avg_launch_conditions = rocket_classes.LaunchConditions(
+    launchpad_pressure = launchpad_pressure_SA,  # Pa
+    launchpad_temp = launchpad_temp_Prometheus,  # deg C
+    # TODO: find average temp at SA on launch days at launch times
+    L_launch_rail = L_launch_rail_ESRA_provided_SAC,
+    launch_angle = 80,  # deg from horizontal. Niall said Prometheus was set up at 10 deg off of the vertical
+    local_T_lapse_rate = local_T_lapse_rate_SA,
+    latitude = latitude_SA,
+    altitude = altitude_SA
 )
 
 # Airbrakes class configurations
