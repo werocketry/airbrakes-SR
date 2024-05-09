@@ -217,17 +217,28 @@ def Hyperion_Cd_function_orkV7(Ma):
 
 
 # Rocket class configurations
-Hyperion_2024_04_13 = {
+Hyperion_2024_05_08 = {
     "A_rocket": 0.015326,# + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
         # I think it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
         # once using Shelby's CFD model, ensure that the area used here is the same as plugged into Ansys Fluent for its conversion of drag force to Cd
-    "rocket_mass": 13.222+3, # first value is expected mass of all planned components, second is guess at additional mass to add to it (heavier infills, coatings, literal weights, etc.) to bring our pre-airbrakes apogee down to ~11k ft
+    "rocket_mass": 14.763+1, # first value is expected mass of all planned components, second is guess at additional mass to add to it (heavier infills, coatings, literal weights, etc.) to bring our pre-airbrakes apogee down to ~11k ft
     # TODO: continuous refinement of mass budget and updating of the first value
     # TODO: work on picking second value
     "motor": our_Cesaroni_7450M2505_P,
     "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
     "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
     # TODO: switch to Hyperion's once aero has a final design
+}
+
+
+Hyperion_2024_04_13 = {
+    "A_rocket": 0.015326,# + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
+        # I think it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
+        # once using Shelby's CFD model, ensure that the area used here is the same as plugged into Ansys Fluent for its conversion of drag force to Cd
+    "rocket_mass": 13.222+3, # first value is expected mass of all planned components, second is guess at additional mass to add to it (heavier infills, coatings, literal weights, etc.) to bring our pre-airbrakes apogee down to ~11k ft
+    "motor": our_Cesaroni_7450M2505_P,
+    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
+    "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
 }
 
 Hyperion_2024_03_20 = {
@@ -332,12 +343,11 @@ L_launch_rail_ESRA_provided_SAC = 5.18  # m,
 launchpad_pressure_SA = 86400  # Pa
 """ How the launchpad pressure at Spaceport America was determined
 
-- 86400 2022/06/24   our 2022 data
+- 86400 2022/06/24   our 2022 TeleMega/TeleMetrum data
 - 86405 2022/06/23   https://github.com/ISSUIUC/flight-data/tree/master/20220623
 - 86170 2023/06/21   https://github.com/ISSUIUC/flight-data/tree/master/20230621
 - Truth or Consequences, NM, USA, which has an elevation 90 m lower than Spaceport America
     - 84780 http://cms.ashrae.biz/weatherdata/STATIONS/722710_s.pdf
-
 """
 launchpad_temp_Prometheus = 34  # deg C
 """ From https://www.timeanddate.com/weather/@5492576/historic?month=6&year=2023 """
@@ -362,7 +372,7 @@ Spaceport_America_avg_launch_conditions = rocket_classes.LaunchConditions(
     launchpad_temp = launchpad_temp_Prometheus,  # deg C
     # TODO: find average temp at SA on launch days at launch times
     L_launch_rail = L_launch_rail_ESRA_provided_SAC,
-    launch_angle = 80,  # deg from horizontal. Niall said Prometheus was set up at 10 deg off of the vertical
+    launch_angle = 84,  # deg from horizontal. Per DTEG 10.1.1
     local_T_lapse_rate = local_T_lapse_rate_SA,
     latitude = latitude_SA,
     altitude = altitude_SA
@@ -399,5 +409,5 @@ airbrakes_model_2024_03_20 = rocket_classes.Airbrakes(
 )
 
 # Set the default Hyperion configuration
-Hyperion = rocket_classes.Rocket(**Hyperion_2024_04_13)
+Hyperion = rocket_classes.Rocket(**Hyperion_2024_05_08)
 current_airbrakes_model = airbrakes_model_2024_03_20

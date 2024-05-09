@@ -1,7 +1,6 @@
 # a simulator that may be run during the flight to provide real-time apogee prediction based on the current airbrakes deployment angle being maintained
 # as lightweight as possible, returning only the apogee prediction
 
-import pandas as pd
 import numpy as np
 from configs import Hyperion, current_airbrakes_model
 import helper_functions as hfunc
