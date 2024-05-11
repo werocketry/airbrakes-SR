@@ -230,7 +230,6 @@ Hyperion_2024_05_08 = {
     # TODO: switch to Hyperion's once aero has a final design
 }
 
-
 Hyperion_2024_04_13 = {
     "A_rocket": 0.015326,# + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
         # I think it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
