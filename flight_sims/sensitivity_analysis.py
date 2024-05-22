@@ -5,10 +5,10 @@
 # - rocket mass
 
 import numpy as np
-import constants as con
-import rocket_classes as rktClass
-import flight_simulation as fsim
-import helper_functions as hfunc
+from rocketflightsim import constants as con
+from rocketflightsim import rocket_classes as rktClass
+from rocketflightsim import flight_simulation as fsim
+from rocketflightsim import helper_functions as hfunc
 from configs import Hyperion
 
 # Set type of analysis
@@ -28,7 +28,7 @@ if analysis_type == 'linear':
     rocket_dry_masses = [Hyperion.rocket_mass - 1, Hyperion.rocket_mass, Hyperion.rocket_mass + 1]
 elif analysis_type == 'gaussian':
     num_sims = 20000
-    mean_launch_rail_angle = 90-10
+    mean_launch_rail_angle = 90-6
     std_launch_rail_angle = 3
     mean_launchpad_temp = 34
     std_launchpad_temp = 5

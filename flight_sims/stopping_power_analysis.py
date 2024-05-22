@@ -4,10 +4,10 @@
 # TODO: - different coefficients of drag?
 
 import numpy as np
-import constants as con
-import rocket_classes as rktClass
-import flight_simulation as fsim
-from configs import Hyperion
+from rocketflightsim import constants as con
+from rocketflightsim import rocket_classes as rktClass
+from rocketflightsim import flight_simulation as fsim
+from configs import Hyperion, Spaceport_America_avg_launch_conditions
 
 # TODO: may want to do an updated version of this that incorporates other things outside of our control like launch angle, atmospheric conditions, etc similar to the other sensitivity analysis without airbrakes. Or just use worst case scenario (the one that leads to the highest apogee) for everything
 
@@ -30,12 +30,12 @@ for area in individual_flap_areas:
         )
 
 # Get flight data for Hyperion through to motor burnout
-pre_brake_flight, _, _, burnout_index, _ = fsim.simulate_flight(Hyperion)
+pre_brake_flight, _, _, burnout_index, _ = fsim.simulate_flight(Hyperion, Spaceport_America_avg_launch_conditions)
 pre_brake_flight = pre_brake_flight.iloc[:burnout_index]
 
 # Run the simulations
 def run_simulation(pre_brake_flight, Hyperion, airbrakes_model):
-    ascent = fsim.simulate_airbrakes_flight(pre_brake_flight, Hyperion, airbrakes_model)[0]
+    ascent = fsim.simulate_airbrakes_flight(pre_brake_flight, Hyperion, Spaceport_America_avg_launch_conditions, airbrakes_model)[0]
     apogee = ascent['height'].iloc[-1]
     return apogee
 

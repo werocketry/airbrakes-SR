@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
-import constants as con
-import rocket_classes as rktClass
-import flight_simulation as fsim
-import helper_functions as hfunc
+from rocketflightsim import constants as con
+from rocketflightsim import rocket_classes as rktClass
+from rocketflightsim import flight_simulation as fsim
+from rocketflightsim import helper_functions as hfunc
 from configs import Hyperion, current_airbrakes_model, Prometheus_launch_conditions
 import controller_flight_simulator as cfsim
 # should I be siming with different Cds?
@@ -78,13 +78,13 @@ deployment_angles = []
 tracker = 0
 
 for burnout_state in burnout_states:
-    apogee_no_braking = cfsim.simulate_airbrakes_flight(burnout_state["height"], burnout_state["speed"], burnout_state["v_y"], burnout_state["v_x"], launchpad_temp, multiplier, rocket=Hyperion, airbrakes=current_airbrakes_model, deployment_angle=0, timestep=0.01)
+    apogee_no_braking = cfsim.simulate_airbrakes_flight(burnout_state["height"], burnout_state["speed"], burnout_state["v_y"], burnout_state["v_x"], launchpad_temp, rocket=Hyperion, airbrakes=current_airbrakes_model, deployment_angle=0, timestep=0.01)
     if apogee_no_braking * 3.28084 < 10000:
         deployment_angles.append(0)
         tracker += 1
         print(f'{tracker} of {len(burnout_states)} deployment angles found')
     else:
-        apogee_max_braking = cfsim.simulate_airbrakes_flight(burnout_state["height"], burnout_state["speed"], burnout_state["v_y"], burnout_state["v_x"], launchpad_temp, multiplier, rocket=Hyperion, airbrakes=current_airbrakes_model, deployment_angle=np.pi / 4, timestep=0.01)
+        apogee_max_braking = cfsim.simulate_airbrakes_flight(burnout_state["height"], burnout_state["speed"], burnout_state["v_y"], burnout_state["v_x"], launchpad_temp, rocket=Hyperion, airbrakes=current_airbrakes_model, deployment_angle=np.pi / 4, timestep=0.01)
         if apogee_max_braking * 3.28084 > 10000:
             deployment_angles.append(np.pi / 4)
             tracker += 1
@@ -94,7 +94,7 @@ for burnout_state in burnout_states:
             upper_bound = np.pi / 4
             while upper_bound - lower_bound > 0.0001:
                 deployment_angle = (upper_bound + lower_bound) / 2
-                apogee = cfsim.simulate_airbrakes_flight(burnout_state["height"], burnout_state["speed"], burnout_state["v_y"], burnout_state["v_x"], launchpad_temp, multiplier, rocket=Hyperion, airbrakes=current_airbrakes_model, deployment_angle=deployment_angle, timestep=0.01)
+                apogee = cfsim.simulate_airbrakes_flight(burnout_state["height"], burnout_state["speed"], burnout_state["v_y"], burnout_state["v_x"], launchpad_temp, rocket=Hyperion, airbrakes=current_airbrakes_model, deployment_angle=deployment_angle, timestep=0.01)
                 if apogee * 3.28084 > 10000:
                     lower_bound = deployment_angle
                 else:

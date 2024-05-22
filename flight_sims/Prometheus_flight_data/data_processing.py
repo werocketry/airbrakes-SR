@@ -1,8 +1,7 @@
 import pandas as pd
 import numpy as np
-import helper_functions as hfunc
-import rocket_classes as rktClass
-import constants as con
+from rocketflightsim import helper_functions as hfunc
+from rocketflightsim import constants as con
 
 def import_and_clean_data(file_path, data_type):
     """

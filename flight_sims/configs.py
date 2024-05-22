@@ -1,6 +1,6 @@
 # contains parameters for instances of these classes: Rocket, LaunchConditions, Airbrakes
 # also contains the functions that give the Cd of a rocket as a function of Re
-import rocket_classes
+from rocketflightsim import rocket_classes
 import numpy as np
 
 # Motor class configurations

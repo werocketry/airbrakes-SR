@@ -2,11 +2,11 @@
 # as lightweight as possible, returning only the apogee prediction
 
 import numpy as np
-from configs import Hyperion, current_airbrakes_model
-import helper_functions as hfunc
-import rocket_classes as rktClass
-import constants as con
-import flight_simulation as fsim
+from configs import Hyperion, Spaceport_America_avg_launch_conditions, current_airbrakes_model
+from rocketflightsim import helper_functions as hfunc
+from rocketflightsim import rocket_classes as rktClass
+from rocketflightsim import constants as con
+from rocketflightsim import flight_simulation as fsim
 
 # wind
 """
@@ -17,7 +17,7 @@ Might be nice to take a look at forecasts at SA in May and compare them to what 
 
 # simulate the flight up to burnout
 # real inputs would be fed from sensor data
-dataset, liftoff_index, launch_rail_cleared_index, burnout_index, apogee_index = fsim.simulate_flight(rocket=Hyperion, timestep=0.01)
+dataset, liftoff_index, launch_rail_cleared_index, burnout_index, apogee_index = fsim.simulate_flight(rocket=Hyperion, launch_conditions=Spaceport_America_avg_launch_conditions, timestep=0.01)
 pre_brake_flight = dataset.iloc[:burnout_index].copy()
 
 input_height = pre_brake_flight["height"].iloc[-1]
