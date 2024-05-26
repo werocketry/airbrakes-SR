@@ -30,12 +30,12 @@ elif analysis_type == 'gaussian':
     num_sims = 20000
     mean_launch_rail_angle = 90-6
     std_launch_rail_angle = 3
-    mean_launchpad_temp = 34
+    mean_launchpad_temp = 33
     std_launchpad_temp = 5
     mean_launchpad_pressure = 86300
     std_launchpad_pressure = 500
     mean_rocket_dry_mass = Hyperion.rocket_mass
-    std_rocket_dry_mass = 0.5
+    std_rocket_dry_mass = 0.4
 else:
     raise ValueError("analysis_type must be either 'linear' or 'gaussian'")
 
@@ -43,12 +43,11 @@ else:
 def run_simulation(rocket, launch_condition):
     flight = fsim.simulate_flight(rocket, launch_condition, 0.01)[0]
 
-    # correction for wind. For now, just a constant value of -300m (about what ork sims return as the average differences between sims with no wind and average windy sims), to be refined later
-    wind_correction = -300
+    # correction for wind. For now, just a constant value of -200m (about what ork sims return as the average differences between sims with no wind and average windy sims), TODO to be refined later
+    wind_correction = -200
 
     apogee = flight['height'].iloc[-1] + wind_correction
     max_q = max(flight['q'])
-    # max mach number is at max speed. Use that and the temperature at that point with the function mach_number_fn in helper_functions.py
     temp_at_max_speed = flight['temperature'].iloc[flight['speed'].idxmax()]
     max_mach = hfunc.mach_number_fn(flight['speed'].max(), temp_at_max_speed)
     return apogee, max_q, max_mach
