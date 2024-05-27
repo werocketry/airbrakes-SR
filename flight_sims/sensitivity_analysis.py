@@ -4,6 +4,8 @@
 # - launch rail angle
 # - rocket mass
 
+# TODO: move the mechanics of this to RFS (or at least the Monte Carlo method), have a notebook that uses it here
+
 import numpy as np
 from rocketflightsim import constants as con
 from rocketflightsim import rocket_classes as rktClass
@@ -35,7 +37,7 @@ elif analysis_type == 'gaussian':
     mean_launchpad_pressure = 86300
     std_launchpad_pressure = 500
     mean_rocket_dry_mass = Hyperion.rocket_mass
-    std_rocket_dry_mass = 0.4
+    std_rocket_dry_mass = 0.3
 else:
     raise ValueError("analysis_type must be either 'linear' or 'gaussian'")
 

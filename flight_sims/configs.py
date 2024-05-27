@@ -217,16 +217,26 @@ def Hyperion_Cd_function_orkV7(Ma):
 
 
 # Rocket class configurations
+Hyperion_2024_05_26 = {
+    "A_rocket": 0.015326,# + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
+        # I think it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
+        # once using Shelby's CFD model, ensure that the area used here is the same as plugged into Ansys Fluent for its conversion of drag force to Cd
+    "rocket_mass": 17.772,
+    # TODO: continuous refinement of mass budget and updating of value
+    "motor": our_Cesaroni_7450M2505_P,
+    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
+    "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
+    # TODO: switch to Hyperion's once installed on rocket and measured
+}
+
 Hyperion_2024_05_25 = {
     "A_rocket": 0.015326,# + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
         # I think it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
         # once using Shelby's CFD model, ensure that the area used here is the same as plugged into Ansys Fluent for its conversion of drag force to Cd
     "rocket_mass": 17.149,
-    # TODO: continuous refinement of mass budget and updating of value
     "motor": our_Cesaroni_7450M2505_P,
     "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
     "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
-    # TODO: switch to Hyperion's once aero has a final design
 }
 
 Hyperion_2024_05_08 = {
@@ -316,8 +326,8 @@ Prometheus = rocket_classes.Rocket(
     h_second_rail_button = 0.69  # m
 )
 
-# LaunchConditions class configurations
-local_T_lapse_rate_SA = -0.00817  # K/m
+# LaunchConditions class configuration for Spaceport America Cup
+T_lapse_rate_SA = -0.00817  # K/m
 """ How T_lapse_rate at Spaceport America was determined
 
 Only one source was found with the lapse rate for Spaceport America:
@@ -348,38 +358,62 @@ The following was the most comprehensive source found for temperature lapse rate
 """
 L_launch_rail_ESRA_provided_SAC = 5.18  # m, 
 """ ESRA provides teams with a 5.18m rail at competition """
-launchpad_pressure_SA = 86400  # Pa
+launchpad_pressure_SAC = 86400  # Pa
 """ How the launchpad pressure at Spaceport America was determined
 
-- 86400 2022/06/24   our 2022 TeleMega/TeleMetrum data
+- 86400 2022/06/24   WE Rocketry 2022 TeleMega/TeleMetrum data
 - 86405 2022/06/23   https://github.com/ISSUIUC/flight-data/tree/master/20220623
 - 86170 2023/06/21   https://github.com/ISSUIUC/flight-data/tree/master/20230621
-- Truth or Consequences, NM, USA, which has an elevation 90 m lower than Spaceport America
-    - 84780 http://cms.ashrae.biz/weatherdata/STATIONS/722710_s.pdf
 """
-launchpad_temp_Prometheus = 34  # deg C
-""" From https://www.timeanddate.com/weather/@5492576/historic?month=6&year=2023 """
+launchpad_temp_SAC = 35  # deg C
+""" Ground-level temperature at Spaceport America Cup note
+
+Flights can occur between about 07:00 and 16:30 local time, so the temperature at the time of launch can vary significantly. 35 C is about what it has been historically during the competition in mid-late June. Getting closer to launch day, it would be more accurate to use a weather forecast to get a value for expected temperature(s).
+
+You can also consider running simulations with a range of temperatures that have been seen on launch days in the past (normally between 25 and 45 C) to see how different ground-level temperatures could affect a rocket's flight.
+"""
 latitude_SA = 32.99  # deg, Spaceport America's latitude
 """ https://maps.app.goo.gl/rZT6MRLqHneA7wNX7 """
 altitude_SA = 1401  # m, Spaceport America's elevation
-""" https://www.spaceportamerica.com/faq/#toggle-id-15"""
+""" https://www.spaceportamerica.com/faq/#toggle-id-15 """
+launch_angle_SAC = 84  # deg from horizontal
+""" How the standard launch angle at Spaceport America Cup was determined
+DTEG 10.1.1: 
+    > Launch vehicles will nominally launch at an elevation angle of 84° ±1°
+DTEG 10.1.2:
+    > Range Safety Officers reserve the right to require certain vehicles’ launch elevation be 
+lower or higher if flight safety issues are identified during pre-launch activities
+
+Teams have noted that they've been told to use angles at least as low as 80°. The Range Safety Officer picks the angle based on various factors, including the rocket being launched, the weather, and the location of the launch pad. In the design, simulation, and testing phases, use the nominal angle of 84°, but consider the possibility of the launch angle being more or less than that on competition day.
+"""
+
+Spaceport_America_avg_launch_conditions = rocket_classes.LaunchConditions(
+    launchpad_pressure = launchpad_pressure_SAC,
+    launchpad_temp = launchpad_temp_SAC,
+    L_launch_rail = L_launch_rail_ESRA_provided_SAC,
+    launch_angle = launch_angle_SAC,
+    local_T_lapse_rate = T_lapse_rate_SA,
+    latitude = latitude_SA,
+    altitude = altitude_SA
+)
+
 
 Prometheus_launch_conditions = rocket_classes.LaunchConditions(
-    launchpad_pressure = launchpad_pressure_SA,  # Pa
-    launchpad_temp = launchpad_temp_Prometheus,  # deg C
+    launchpad_pressure = launchpad_pressure_SAC,  # Pa
+    launchpad_temp = 34,  # deg C, from https://www.timeanddate.com/weather/@5492576/historic?month=6&year=2023
     L_launch_rail = L_launch_rail_ESRA_provided_SAC,
     launch_angle = 80,  # deg from horizontal. Niall said Prometheus was set up at 10 deg off of the vertical
-    local_T_lapse_rate = local_T_lapse_rate_SA,
+    local_T_lapse_rate = T_lapse_rate_SA,
     latitude = latitude_SA,
     altitude = altitude_SA
 )
 # TODO: have this read from RFS instead of defined here
 Spaceport_America_avg_launch_conditions = rocket_classes.LaunchConditions(
-    launchpad_pressure = launchpad_pressure_SA,  # Pa
-    launchpad_temp = launchpad_temp_Prometheus,  # deg C
+    launchpad_pressure = launchpad_pressure_SAC,
+    launchpad_temp = launchpad_temp_SAC,
     L_launch_rail = L_launch_rail_ESRA_provided_SAC,
-    launch_angle = 84,  # deg from horizontal. Per DTEG 10.1.1
-    local_T_lapse_rate = local_T_lapse_rate_SA,
+    launch_angle = launch_angle_SAC,
+    local_T_lapse_rate = T_lapse_rate_SA,
     latitude = latitude_SA,
     altitude = altitude_SA
 )
@@ -415,5 +449,5 @@ airbrakes_model_2024_03_20 = rocket_classes.Airbrakes(
 )
 
 # Set the default Hyperion configuration
-Hyperion = rocket_classes.Rocket(**Hyperion_2024_05_25)
+Hyperion = rocket_classes.Rocket(**Hyperion_2024_05_26)
 current_airbrakes_model = airbrakes_model_2024_03_20
