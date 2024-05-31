@@ -336,7 +336,7 @@ airbrakes_model_2024_01_14 = rocket_classes.Airbrakes(
     num_flaps = 3,
     A_flap = 0.0022505,  # current area in CAD. Maryland's last year was 0.0064516, which we'll probably have a similar configuration to
     Cd_brakes = 1,  # about what other teams had. rough
-    max_deployment_speed = 7.5,  # deg/s
+    max_deployment_rate = 7.5,  # deg/s
     max_deployment_angle = 41.35  # deg
 )
 
@@ -344,7 +344,7 @@ airbrakes_model_2024_03_10 = rocket_classes.Airbrakes(
     num_flaps = 3,
     A_flap = 0.0045,  # m^2  current estimate. Maryland's last year was 0.0064516, which we'll probably have a similar configuration to
     Cd_brakes = 1,  # about what other teams had. rough
-    max_deployment_speed = 5.5,  # deg/s
+    max_deployment_rate = 5.5,  # deg/s
     max_deployment_angle = 41.35  # deg
 )
 
@@ -355,7 +355,7 @@ airbrakes_model_2024_03_20 = rocket_classes.Airbrakes(
     # TODO: look at how some being covered by the tube affects the area (will be incredibly minor)
     Cd_brakes = 1,  # about what other teams had. rough
     # TODO: verify Cd by checking other teams' values again
-    max_deployment_speed = 5.5,  # deg/s
+    max_deployment_rate = 5.5,  # deg/s
     # TODO: check with Cam on how to make more accurate (likely not to be exactly linear?)
     # TODO: consider retraction speed being significantly faster than deployment speed, incorporate being closed for apogee into sims
     max_deployment_angle = 45  # deg

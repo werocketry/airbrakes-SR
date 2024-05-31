@@ -18,6 +18,7 @@ analysis_type = 'gaussian' # options: 'linear' and 'gaussian'
 
 # Outline of sensitivity analysis:
 if analysis_type == 'linear':
+    # TODO make the output of the linear analysis show the effect of each variable on the output
     launch_rail_angles = 90 - np.linspace(5, 15, 6)
     launchpad_temps = np.linspace(20, 40, 3)
         # https://www.timeanddate.com/weather/@5492576/historic?month=6&year=2023
@@ -29,6 +30,8 @@ if analysis_type == 'linear':
             # 84780 http://cms.ashrae.biz/weatherdata/STATIONS/722710_s.pdf
     rocket_dry_masses = [Hyperion.rocket_mass - 1, Hyperion.rocket_mass, Hyperion.rocket_mass + 1]
 elif analysis_type == 'gaussian':
+    # TODO: make the output of the gaussian analysis display more information about the input variables
+        # either by colour coding the histogram stack to show how settings for one variable affect the output, and/or switching to a 3D heatmap with the x and y axes showing two different input variables, z showing apogee, and the colour showing the number of simulations in each bin. Extra important cause will help choose airbrake extension settings that are more resilient to variations in launch conditions 
     num_sims = 20000
     mean_launch_rail_angle = 90-6
     std_launch_rail_angle = 3
@@ -37,7 +40,7 @@ elif analysis_type == 'gaussian':
     mean_launchpad_pressure = 86300
     std_launchpad_pressure = 500
     mean_rocket_dry_mass = Hyperion.rocket_mass
-    std_rocket_dry_mass = 0.3
+    std_rocket_dry_mass = 0.25
 else:
     raise ValueError("analysis_type must be either 'linear' or 'gaussian'")
 
@@ -79,11 +82,10 @@ if analysis_type == 'linear':
     for rocket_dry_mass in rocket_dry_masses:
         rockets.append(
             rktClass.Rocket(
-                Hyperion.L_rocket,
-                Hyperion.A_rocket,
                 rocket_dry_mass,
                 Hyperion.motor,
-                Hyperion.Cd_rocket_at_Re,
+                Hyperion.A_rocket,
+                Hyperion.Cd_rocket_at_Ma,
                 Hyperion.h_second_rail_button
             )
         )
