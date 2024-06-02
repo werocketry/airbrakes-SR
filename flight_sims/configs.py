@@ -309,7 +309,7 @@ launchpad_pressure_SAC = 86400  # Pa
 launchpad_temp_SAC = 35  # deg C
 latitude_SA = 32.99  # deg, Spaceport America's latitude
 altitude_SA = 1401  # m, Spaceport America's elevation
-launch_angle_SAC = 84  # deg from horizontal
+launch_angle_SAC = 86  # deg from horizontal
 
 Spaceport_America_avg_launch_conditions = rocket_classes.LaunchConditions(
     launchpad_pressure = launchpad_pressure_SAC,
