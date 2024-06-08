@@ -72,8 +72,7 @@ Cesaroni_7450M2505_P = rocket_classes.Motor(
 )
 
 our_Cesaroni_7450M2505_P = Cesaroni_7450M2505_P
-our_Cesaroni_7450M2505_P.dry_mass = 2.684
-    # TODO: mass fabricated thrust plate, update mass budget and this value
+our_Cesaroni_7450M2505_P.dry_mass = 2.748
 
 # Rocket Cd functions
 
@@ -185,11 +184,11 @@ def Hyperion_Cd_function_orkV7(Ma):
 # TODO: add a Cd function from some other team's CFD, see how different from ours it actually is to get an idea of how important it is to have a very accurate Cd function
 
 # Rocket class configurations
-Hyperion_2024_05_28 = {
+Hyperion_2024_06_08 = {
     "A_rocket": 0.015326,# + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
         # I think it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
         # once using new CFD model, ensure that the area used here is the same as plugged into Ansys Fluent for its conversion of drag force to Cd
-    "rocket_mass": 17.530,
+    "rocket_mass": 18.699,
     # TODO: continuous refinement of mass budget and updating of value
     "motor": our_Cesaroni_7450M2505_P,
     "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
@@ -197,7 +196,15 @@ Hyperion_2024_05_28 = {
     # TODO: switch to Hyperion's once installed on rocket and measured
 }
 
-# Rocket class configurations
+Hyperion_2024_05_28 = {
+    "A_rocket": 0.015326,# + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
+        # I think it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
+    "rocket_mass": 17.530,
+    "motor": our_Cesaroni_7450M2505_P,
+    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
+    "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
+}
+
 Hyperion_2024_05_26 = {
     "A_rocket": 0.015326,# + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
         # I think it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
@@ -362,5 +369,5 @@ airbrakes_model_2024_03_20 = rocket_classes.Airbrakes(
 )
 
 # Set the default Hyperion configuration
-Hyperion = rocket_classes.Rocket(**Hyperion_2024_05_28)
+Hyperion = rocket_classes.Rocket(**Hyperion_2024_06_08)
 current_airbrakes_model = airbrakes_model_2024_03_20
