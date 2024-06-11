@@ -34,7 +34,7 @@ elif analysis_type == 'gaussian':
         # either by colour coding the histogram stack to show how settings for one variable affect the output, and/or switching to a 3D heatmap with the x and y axes showing two different input variables, z showing apogee, and the colour showing the number of simulations in each bin. Extra important cause will help choose airbrake extension settings that are more resilient to variations in launch conditions 
     num_sims = 20000
     mean_launch_rail_angle = Spaceport_America_avg_launch_conditions.launch_angle
-    std_launch_rail_angle = 3
+    std_launch_rail_angle = 2
     mean_launchpad_temp = Spaceport_America_avg_launch_conditions.launchpad_temp
     std_launchpad_temp = 5
     mean_launchpad_pressure = Spaceport_America_avg_launch_conditions.launchpad_pressure

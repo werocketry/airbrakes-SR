@@ -176,24 +176,113 @@ def Hyperion_Cd_function_orkV7(Ma):
     else:
         return 0.65
 
-# TODO: try a RASAero II Cd function, see https://www.reddit.com/r/rocketry/comments/18si1ws/comment/kf8iq38/
+# Hyperion Cd functions
+def Hyperion_Cd_function_RASAeroII_2024_06_10(Ma):
+    if Ma <= 0.01:
+        return 0.41
+    elif Ma <= 0.02:
+        return 0.41 + (Ma - 0.01) * (0.415 - 0.41) / (0.02 - 0.01)
+    elif Ma <= 0.03:
+        return 0.415 + (Ma - 0.02) * (0.406 - 0.415) / (0.03 - 0.02)
+    elif Ma <= 0.04:
+        return 0.406 + (Ma - 0.03) * (0.403 - 0.406) / (0.04 - 0.03)
+    elif Ma <= 0.05:
+        return 0.403 + (Ma - 0.04) * (0.402 - 0.403) / (0.05 - 0.04)
+    elif Ma <= 0.1:
+        return 0.402 + (Ma - 0.05) * (0.393 - 0.402) / (0.1 - 0.05)
+    elif Ma <= 0.15:
+        return 0.393 + (Ma - 0.1) * (0.386 - 0.393) / (0.15 - 0.1)
+    elif Ma <= 0.2:
+        return 0.386 + (Ma - 0.15) * (0.38 - 0.386) / (0.2 - 0.15)
+    elif Ma <= 0.25:
+        return 0.38 + (Ma - 0.2) * (0.375 - 0.38) / (0.25 - 0.2)
+    elif Ma <= 0.3:
+        return 0.375 + (Ma - 0.25) * (0.372 - 0.375) / (0.3 - 0.25)
+    elif Ma <= 0.35:
+        return 0.372 + (Ma - 0.3) * (0.37 - 0.372) / (0.35 - 0.3)
+    elif Ma <= 0.4:
+        return 0.37 + (Ma - 0.35) * (0.368 - 0.37) / (0.4 - 0.35)
+    elif Ma <= 0.45:
+        return 0.368 + (Ma - 0.4) * (0.366 - 0.368) / (0.45 - 0.4)
+    elif Ma <= 0.5:
+        return 0.366 + (Ma - 0.45) * (0.365 - 0.366) / (0.5 - 0.45)
+    elif Ma <= 0.55:
+        return 0.365 + (Ma - 0.5) * (0.364 - 0.365) / (0.55 - 0.5)
+    elif Ma <= 0.6:
+        return 0.364 + (Ma - 0.55) * (0.365 - 0.364) / (0.6 - 0.55)
+    elif Ma <= 0.65:
+        return 0.365 + (Ma - 0.6) * (0.367 - 0.365) / (0.65 - 0.6)
+    elif Ma <= 0.7:
+        return 0.367 + (Ma - 0.65) * (0.369 - 0.367) / (0.7 - 0.65)
+    elif Ma <= 0.75:
+        return 0.369 + (Ma - 0.7) * (0.371 - 0.369) / (0.75 - 0.7)
+    elif Ma <= 0.8:
+        return 0.371 + (Ma - 0.75) * (0.373 - 0.371) / (0.8 - 0.75)
+    elif Ma <= 0.85:
+        return 0.373 + (Ma - 0.8) * (0.376 - 0.373) / (0.85 - 0.8)
+    elif Ma <= 0.9:
+        return 0.376 + (Ma - 0.85) * (0.378 - 0.376) / (0.9 - 0.85)
+    elif Ma <= 0.91:
+        return 0.378 + (Ma - 0.9) * (0.38 - 0.378) / (0.91 - 0.9)
+    elif Ma <= 0.92:
+        return 0.38 + (Ma - 0.91) * (0.388 - 0.38) / (0.92 - 0.91)
+    elif Ma <= 0.93:
+        return 0.388 + (Ma - 0.92) * (0.403 - 0.388) / (0.93 - 0.92)
+    elif Ma <= 0.94:
+        return 0.403 + (Ma - 0.93) * (0.422 - 0.403) / (0.94 - 0.93)
+    elif Ma <= 0.95:
+        return 0.422 + (Ma - 0.94) * (0.441 - 0.422) / (0.95 - 0.94)
+    elif Ma <= 0.96:
+        return 0.441 + (Ma - 0.95) * (0.46 - 0.441) / (0.96 - 0.95)
+    elif Ma <= 0.97:
+        return 0.46 + (Ma - 0.96) * (0.479 - 0.46) / (0.97 - 0.96)
+    elif Ma <= 0.98:
+        return 0.479 + (Ma - 0.97) * (0.498 - 0.479) / (0.98 - 0.97)
+    elif Ma <= 0.99:
+        return 0.498 + (Ma - 0.98) * (0.517 - 0.498) / (0.99 - 0.98)
+    elif Ma <= 1:
+        return 0.517 + (Ma - 0.99) * (0.536 - 0.517) / (1 - 0.99)
+    elif Ma <= 1.01:
+        return 0.536 + (Ma - 1) * (0.555 - 0.536) / (1.01 - 1)
+    elif Ma <= 1.02:
+        return 0.555 + (Ma - 1.01) * (0.574 - 0.555) / (1.02 - 1.01)
+    elif Ma <= 1.03:
+        return 0.574 + (Ma - 1.02) * (0.593 - 0.574) / (1.03 - 1.02)
+    elif Ma <= 1.04:
+        return 0.593 + (Ma - 1.03) * (0.612 - 0.593) / (1.04 - 1.03)
+    elif Ma <= 1.05:
+        return 0.612 + (Ma - 1.04) * (0.631 - 0.612) / (1.05 - 1.04)
+    elif Ma <= 1.06:
+        return 0.631 + (Ma - 1.05) * (0.633 - 0.631) / (1.06 - 1.05)
+    elif Ma <= 1.07:
+        return 0.633 + (Ma - 1.06) * (0.634 - 0.633) / (1.07 - 1.06)
+    else:
+        return 0.634
 
-# Hyperion Cd function
 
-# TODO: add Hyperion Cd function(s) here when Shelby's done CFD
 # TODO: add a Cd function from some other team's CFD, see how different from ours it actually is to get an idea of how important it is to have a very accurate Cd function
 
 # Rocket class configurations
+Hyperion_2024_06_11 = {
+    "A_rocket": 0.015326, # 5.5" diameter circle's area in m^2
+    # TODO: calculate actual area with final tube OD
+    "rocket_mass": 18.699,
+    # TODO: continuous refinement of mass budget and updating of value
+    "motor": our_Cesaroni_7450M2505_P,
+    "Cd_rocket_at_Ma": Hyperion_Cd_function_RASAeroII_2024_06_10,
+    # TODO: further refinement of Cd function
+    "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
+    # TODO: switch to Hyperion's once installed on rocket and measured
+}
+
 Hyperion_2024_06_08 = {
     "A_rocket": 0.015326,# + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
         # I think it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
         # once using new CFD model, ensure that the area used here is the same as plugged into Ansys Fluent for its conversion of drag force to Cd
     "rocket_mass": 18.699,
-    # TODO: continuous refinement of mass budget and updating of value
     "motor": our_Cesaroni_7450M2505_P,
     "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
     "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
-    # TODO: switch to Hyperion's once installed on rocket and measured
 }
 
 Hyperion_2024_05_28 = {
@@ -369,5 +458,5 @@ airbrakes_model_2024_03_20 = rocket_classes.Airbrakes(
 )
 
 # Set the default Hyperion configuration
-Hyperion = rocket_classes.Rocket(**Hyperion_2024_06_08)
+Hyperion = rocket_classes.Rocket(**Hyperion_2024_06_11)
 current_airbrakes_model = airbrakes_model_2024_03_20
