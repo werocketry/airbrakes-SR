@@ -23,6 +23,8 @@
     - launch direction
 - ask Cam granularity of the lookup tables the controller can handle. every m in height and every m/s in vertical velocity at burnout?
 - how to deal with angle to vertical? 
+- if able, make airbrakes wait a second after max q before deployment
+- make the slope of deployment less if there's leeway, can also keep them closed longer before apogee
 - wait for now, but look into simulating with different Cd curves
 
 - remember that increasing drag increases proportionally less drag in the vertical direction as the angle to vertical increases
