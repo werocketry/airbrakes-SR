@@ -260,12 +260,12 @@ def Hyperion_Cd_function_RASAeroII_2024_06_10(Ma):
 Hyperion_2024_06_17_1900 = {
     "A_rocket": 0.015326, # 5.5" diameter circle's area in m^2
     # TODO: calculate actual area with final tube OD
-    "rocket_mass": 18.261, # a bit off at the moment
+    "rocket_mass": 19.137, # a bit off at the moment
     # TODO: final massing soon
     "motor": our_Cesaroni_7450M2505_P,
     "Cd_rocket_at_Ma": Hyperion_Cd_function_RASAeroII_2024_06_10,
     # TODO: further refinement of Cd function
-    "h_second_rail_button": 1.13 # m, distance from bottom of rocket to second rail button
+    "h_second_rail_button": 1.13 # m, distance from bottom of rocket to upper rail button
 }
 
 Prometheus = rocket_classes.Rocket(
@@ -311,16 +311,16 @@ Prometheus_launch_conditions = rocket_classes.LaunchConditions(
 
 # LaunchConditions for Hyperion for SAC 2024
 Hyperion_launch_conditions = rocket_classes.LaunchConditions(
-    launchpad_pressure = launchpad_pressure_SAC, # TODO: update on Tues
-    launchpad_temp = launchpad_temp_SAC, # TODO: update on Tues
+    launchpad_pressure = 85410, # TODO: update on Tues: https://mesowest.utah.edu/cgi-bin/droman/meso_base_dyn.cgi?stn=NMC77&unit=0&timetype=LOCAL
+    launchpad_temp = 35.5, # TODO: update on Tues night - weather forecast
     L_launch_rail = L_launch_rail_ESRA_provided_SAC,
     launch_rail_elevation = launch_rail_elevation_SAC,
-    launch_rail_direction = 0, # TODO: update
+    launch_rail_direction = 0, # TODO: update - pad? Can this be determined beforehand? Don't necessarily need real direction, can just be zero if wind heading is correct relative to that
     local_T_lapse_rate = T_lapse_rate_SA,
     latitude = latitude_SA,
     altitude = altitude_SA,
-    mean_wind_speed = 0,# TODO: update
-    wind_heading = 0# TODO: update
+    mean_wind_speed = 5.4,# TODO: update - https://www.herox.com/SpaceportAmericaCup2024/update/6852
+    wind_heading = 135 # TODO: update - https://www.herox.com/SpaceportAmericaCup2024/update/6852
 )
 
 # Airbrakes class configurations

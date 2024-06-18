@@ -11,7 +11,7 @@ from rocketflightsim import constants as con
 from rocketflightsim import rocket_classes as rktClass
 from rocketflightsim import flight_simulation as fsim
 from rocketflightsim import helper_functions as hfunc
-from configs import Hyperion, Spaceport_America_avg_launch_conditions
+from configs import Hyperion, Hyperion_launch_conditions
 
 # Set type of analysis
 analysis_type = 'gaussian' # options: 'linear' and 'gaussian'
@@ -33,14 +33,14 @@ elif analysis_type == 'gaussian':
     # TODO: make the output of the gaussian analysis display more information about the input variables
         # either by colour coding the histogram stack to show how settings for one variable affect the output, and/or switching to a 3D heatmap with the x and y axes showing two different input variables, z showing apogee, and the colour showing the number of simulations in each bin. Extra important cause will help choose airbrake extension settings that are more resilient to variations in launch conditions
     num_sims = 20000
-    mean_launch_rail_angle = Spaceport_America_avg_launch_conditions.launch_rail_elevation
+    mean_launch_rail_angle = Hyperion_launch_conditions.launch_rail_elevation
     std_launch_rail_angle = 1
-    mean_launchpad_temp = Spaceport_America_avg_launch_conditions.launchpad_temp
-    std_launchpad_temp = 5
-    mean_launchpad_pressure = Spaceport_America_avg_launch_conditions.launchpad_pressure
-    std_launchpad_pressure = 500
+    mean_launchpad_temp = Hyperion_launch_conditions.launchpad_temp
+    std_launchpad_temp = 4
+    mean_launchpad_pressure = Hyperion_launch_conditions.launchpad_pressure
+    std_launchpad_pressure = 200
     mean_rocket_mass = Hyperion.rocket_mass
-    std_rocket_mass = 0.2
+    std_rocket_mass = 0.4
 else:
     raise ValueError("analysis_type must be either 'linear' or 'gaussian'")
 
@@ -48,13 +48,10 @@ else:
 def run_simulation(rocket, launch_condition):
     flight = fsim.simulate_flight(rocket, launch_condition, 0.01)[0]
 
-    # correction for wind. For now, just a constant value of -100m, TODO to be refined later
-    wind_correction = -100
-
-    apogee = flight['height'].iloc[-1] + wind_correction
+    apogee = flight['height'].iloc[-1]
     max_q = max(flight['q'])
-    temp_at_max_speed = flight['temperature'].iloc[flight['speed'].idxmax()]
-    max_mach = hfunc.mach_number_fn(flight['speed'].max(), temp_at_max_speed)
+    temp_at_max_speed = flight['temperature'].iloc[flight['airspeed'].idxmax()]
+    max_mach = hfunc.mach_number_fn(flight['airspeed'].max(), temp_at_max_speed)
     return apogee, max_q, max_mach
 
 sim_num = 0
@@ -72,7 +69,7 @@ if analysis_type == 'linear':
                     rktClass.LaunchConditions(
                         launchpad_pressure,
                         launchpad_temp,
-                        Spaceport_America_avg_launch_conditions.L_launch_rail,
+                        Hyperion_launch_conditions.L_launch_rail,
                         launch_rail_angle
                     )
                 )
@@ -116,7 +113,7 @@ elif analysis_type == 'gaussian':
         launchpad_temp = np.random.normal(mean_launchpad_temp, std_launchpad_temp)
         launchpad_pressure = np.random.normal(mean_launchpad_pressure, std_launchpad_pressure)
         rocket_mass = np.random.normal(mean_rocket_mass, std_rocket_mass)
-        launch_condition = Spaceport_America_avg_launch_conditions
+        launch_condition = Hyperion_launch_conditions
         launch_condition.launch_rail_elevation = launch_rail_angle
         launch_condition.launchpad_temp = launchpad_temp
         launch_condition.launchpad_pressure = launchpad_pressure
