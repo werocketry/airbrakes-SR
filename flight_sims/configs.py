@@ -72,10 +72,9 @@ Cesaroni_7450M2505_P = rocket_classes.Motor(
 )
 
 our_Cesaroni_7450M2505_P = Cesaroni_7450M2505_P
-our_Cesaroni_7450M2505_P.dry_mass = 2.748
+our_Cesaroni_7450M2505_P.dry_mass = 2.310 # NOT including thrust plate, which is included in the rocket mass
 
 # Rocket Cd functions
-
 def Prometheus_Cd_at_Ma(mach):
     """CFD done by Niall in early 2021 using the Prometheus CAD as it was at that time in Star-CCM+. k-ω model."""
     if mach <= 0.15:
@@ -102,8 +101,6 @@ def Prometheus_Cd_at_Ma(mach):
         return 0.42 + (mach - 1.33) * (0.39 - 0.42) / (1.49 - 1.33)
     else:
         return 0.39
-
-# TODO: when Shelby's done redoing Prometheus CFD, add her function here, and maybe try to verify A_rocket that should be used when using Niall's function
 
 """ ORK Cd functions
 For demonstrative purposes, here's the Cd functions from the ork files for Prometheus and Hyperion. They are basically indistinguishable.
@@ -259,134 +256,19 @@ def Hyperion_Cd_function_RASAeroII_2024_06_10(Ma):
     else:
         return 0.634
 
-
-# TODO: add a Cd function from some other team's CFD, see how different from ours it actually is to get an idea of how important it is to have a very accurate Cd function
-
 # Rocket class configurations
-Hyperion_2024_06_11 = {
+Hyperion_2024_06_17_1900 = {
     "A_rocket": 0.015326, # 5.5" diameter circle's area in m^2
     # TODO: calculate actual area with final tube OD
-    "rocket_mass": 18.699,
-    # TODO: continuous refinement of mass budget and updating of value
+    "rocket_mass": 18.261, # a bit off at the moment
+    # TODO: final massing soon
     "motor": our_Cesaroni_7450M2505_P,
     "Cd_rocket_at_Ma": Hyperion_Cd_function_RASAeroII_2024_06_10,
     # TODO: further refinement of Cd function
-    "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
-    # TODO: switch to Hyperion's once installed on rocket and measured
-}
-
-Hyperion_2024_06_08 = {
-    "A_rocket": 0.015326,# + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
-        # I think it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
-        # once using new CFD model, ensure that the area used here is the same as plugged into Ansys Fluent for its conversion of drag force to Cd
-    "rocket_mass": 18.699,
-    "motor": our_Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
-    "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
-}
-
-Hyperion_2024_05_28 = {
-    "A_rocket": 0.015326,# + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
-        # I think it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
-    "rocket_mass": 17.530,
-    "motor": our_Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
-    "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
-}
-
-Hyperion_2024_05_26 = {
-    "A_rocket": 0.015326,# + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
-        # I think it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
-    "rocket_mass": 17.772,
-    "motor": our_Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
-    "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
-}
-
-Hyperion_2024_05_25 = {
-    "A_rocket": 0.015326,# + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
-        # I think it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
-    "rocket_mass": 17.149,
-    "motor": our_Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
-    "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
-}
-
-Hyperion_2024_05_08 = {
-    "A_rocket": 0.015326,# + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
-        # I think it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
-    "rocket_mass": 14.763+1, # first value is expected mass of all planned components, second is guess at additional mass to add to it (heavier infills, coatings, literal weights, etc.) to bring our pre-airbrakes apogee down to ~11k ft
-    "motor": our_Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
-    "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
-}
-
-Hyperion_2024_04_13 = {
-    "A_rocket": 0.015326,# + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
-        # I think it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
-    "rocket_mass": 13.222+3, # first value is expected mass of all planned components, second is guess at additional mass to add to it (heavier infills, coatings, literal weights, etc.) to bring our pre-airbrakes apogee down to ~11k ft
-    "motor": our_Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
-    "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
-}
-
-Hyperion_2024_03_20 = {
-    # "L_rocket": 2.71,
-    "A_rocket": 0.015326,# + 0.13 * 0.012 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 1.2cm (thickness of Sapphire fins, span as planned)
-        # I think it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
-    "rocket_mass": 13.462+2, # first value is expected mass of all planned components, second is guess at additional mass to add to it (heavier infills, coatings, literal weights, etc.) to bring our pre-airbrakes apogee down to ~11k ft
-    "motor": our_Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
-    "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
-}
-
-Hyperion_2024_03_19 = {
-    # "L_rocket": 2.70,
-    "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
-    "rocket_mass": 13.449,
-    "motor": our_Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
-    "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
-}
-
-Hyperion_2024_03_05 = {
-    # "L_rocket": 2.70,
-    "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
-    "rocket_mass": 13.917,
-    "motor": our_Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
-    "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
-}
-
-Hyperion_2024_02_20 = {
-    # "L_rocket": 2.70,
-    "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
-    "rocket_mass": 14.29,
-    "motor": Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
-    "h_second_rail_button": 0.69 # m, distance from bottom of rocket to second rail button, was what Prometheus had
-}
-
-Hyperion_2024_02_04 = {
-    # "L_rocket": 2.59,
-    "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
-    "rocket_mass": 14.24,
-    "motor": Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
-    "h_second_rail_button": 0.69  # m, distance from bottom of rocket to second rail button, was what Prometheus had
-}
-
-Hyperion_2024_01_24 = {
-    # "L_rocket": 2.59,
-    "A_rocket": 0.015326 + 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
-    "rocket_mass": 14.54,
-    "motor": Cesaroni_7450M2505_P,
-    "Cd_rocket_at_Ma": Prometheus_Cd_at_Ma,
-    "h_second_rail_button": 0.69  # m, distance from bottom of rocket to second rail button, was what Prometheus had
+    "h_second_rail_button": 1.13 # m, distance from bottom of rocket to second rail button
 }
 
 Prometheus = rocket_classes.Rocket(
-    # L_rocket = 2.229,  # length of Prometheus in m # measure to double check
     A_rocket = 0.015326, #+ 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
         # I think it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
             # but maybe not?? TODO: look into more
@@ -405,13 +287,13 @@ launchpad_pressure_SAC = 86400  # Pa
 launchpad_temp_SAC = 35  # deg C
 latitude_SA = 32.99  # deg, Spaceport America's latitude
 altitude_SA = 1401  # m, Spaceport America's elevation
-launch_angle_SAC = 86  # deg from horizontal
+launch_rail_elevation_SAC = 86  # deg from horizontal
 
 Spaceport_America_avg_launch_conditions = rocket_classes.LaunchConditions(
     launchpad_pressure = launchpad_pressure_SAC,
     launchpad_temp = launchpad_temp_SAC,
     L_launch_rail = L_launch_rail_ESRA_provided_SAC,
-    launch_angle = launch_angle_SAC,
+    launch_rail_elevation = launch_rail_elevation_SAC,
     local_T_lapse_rate = T_lapse_rate_SA,
     latitude = latitude_SA,
     altitude = altitude_SA
@@ -421,42 +303,36 @@ Prometheus_launch_conditions = rocket_classes.LaunchConditions(
     launchpad_pressure = launchpad_pressure_SAC,  # Pa
     launchpad_temp = 34,  # deg C, from https://www.timeanddate.com/weather/@5492576/historic?month=6&year=2023
     L_launch_rail = L_launch_rail_ESRA_provided_SAC,
-    launch_angle = 80,  # deg from horizontal. Niall said Prometheus was set up at 10 deg off of the vertical
+    launch_rail_elevation = 80,  # deg from horizontal. Niall said Prometheus was set up at 10 deg off of the vertical
     local_T_lapse_rate = T_lapse_rate_SA,
     latitude = latitude_SA,
     altitude = altitude_SA
 )
 
+# LaunchConditions for Hyperion for SAC 2024
+Hyperion_launch_conditions = rocket_classes.LaunchConditions(
+    launchpad_pressure = launchpad_pressure_SAC, # TODO: update on Tues
+    launchpad_temp = launchpad_temp_SAC, # TODO: update on Tues
+    L_launch_rail = L_launch_rail_ESRA_provided_SAC,
+    launch_rail_elevation = launch_rail_elevation_SAC,
+    launch_rail_direction = 0, # TODO: update
+    local_T_lapse_rate = T_lapse_rate_SA,
+    latitude = latitude_SA,
+    altitude = altitude_SA,
+    mean_wind_speed = 0,# TODO: update
+    wind_heading = 0# TODO: update
+)
+
 # Airbrakes class configurations
-airbrakes_model_2024_01_14 = rocket_classes.Airbrakes(
+airbrakes_model_2024_06_17_1900 = rocket_classes.Airbrakes(
     num_flaps = 3,
-    A_flap = 0.0022505,  # current area in CAD. Maryland's last year was 0.0064516, which we'll probably have a similar configuration to
-    Cd_brakes = 1,  # about what other teams had. rough
-    max_deployment_rate = 7.5,  # deg/s
-    max_deployment_angle = 41.35  # deg
-)
-
-airbrakes_model_2024_03_10 = rocket_classes.Airbrakes(
-    num_flaps = 3,
-    A_flap = 0.0045,  # m^2  current estimate. Maryland's last year was 0.0064516, which we'll probably have a similar configuration to
-    Cd_brakes = 1,  # about what other teams had. rough
+    A_flap = 0.004215,  # m^2  flap area (47.1 mm * 89.5 mm)
+    Cd_brakes = 1,  # flat plate, TODO: TBC
     max_deployment_rate = 5.5,  # deg/s
-    max_deployment_angle = 41.35  # deg
-)
-
-airbrakes_model_2024_03_20 = rocket_classes.Airbrakes(
-    num_flaps = 3,
-    A_flap = 0.00395,  # m^2  flap area
-    # TODO: still needs final sanding, so check again later, but should be super close
-    # TODO: look at how some being covered by the tube affects the area (will be incredibly minor)
-    Cd_brakes = 1,  # about what other teams had. rough
-    # TODO: verify Cd by checking other teams' values again
-    max_deployment_rate = 5.5,  # deg/s
-    # TODO: check with Cam on how to make more accurate (likely not to be exactly linear?)
+    # TODO: update rate after loaded testing
     # TODO: consider retraction speed being significantly faster than deployment speed, incorporate being closed for apogee into sims
     max_deployment_angle = 45  # deg
 )
-
 # Set the default Hyperion configuration
-Hyperion = rocket_classes.Rocket(**Hyperion_2024_06_11)
-current_airbrakes_model = airbrakes_model_2024_03_20
+Hyperion = rocket_classes.Rocket(**Hyperion_2024_06_17_1900)
+current_airbrakes_model = airbrakes_model_2024_06_17_1900

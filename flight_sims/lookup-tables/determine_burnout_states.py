@@ -1,6 +1,6 @@
 """
 Start with:
-    - v_y = np.linspace(200, 400, 10)
+    - v_z = np.linspace(200, 400, 10)
     - height = np.linspace(300, 600, 25)
 
 Note, no need to make lookups for burnout states faster/higher than 0 drag theoretical max. Use that for upper limit, and construct table for heights and speeds below height and speed of that state.
@@ -33,17 +33,17 @@ additional burnout states at: +/- np.linspace(0.01, 0.25, 25) * burnout_state of
 launchpad_pressure = Spaceport_America_avg_launch_conditions.launchpad_pressure
 launchpad_temp = Spaceport_America_avg_launch_conditions.launchpad_temp
 L_launch_rail = Spaceport_America_avg_launch_conditions.L_launch_rail
-launch_angles = [85, 83, 81, 79, 77, 75]
+launch_rail_elevations = [85, 83, 81, 79, 77, 75]
 
 # create a list of possible motor burnout states
 burnout_states = []
-for launch_angle in launch_angles:
-    launch_conditions = rocket_classes.LaunchConditions(launchpad_pressure, launchpad_temp, L_launch_rail, launch_angle)
+for launch_rail_elevation in launch_rail_elevations:
+    launch_conditions = rocket_classes.LaunchConditions(launchpad_pressure, launchpad_temp, L_launch_rail, launch_rail_elevation)
     dataset, _, _, burnout_index, _ = fsim.simulate_flight(rocket=Hyperion, timestep=0.001, launch_conditions=launch_conditions)
     burnout_states.append(dataset.iloc[burnout_index].copy())
 
 # add additional burnout states
-for i in range(len(launch_angles)):
+for i in range(len(launch_rail_elevations)):
     burnout_state = burnout_states[i]
     for j in range(1, 25):
         burnout_state_copy = burnout_state.copy()

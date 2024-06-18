@@ -94,6 +94,8 @@ def simulate_airbrakes_flight(input_height, input_speed, input_v_y, input_v_x, l
 
     while t_to_apogee < t_full_retraction:
         run loop with same deployment angle as current
+
+    note from later on: if this were used in future years, just return both the time and the apogee, and if the time is <= the time it takes to close at the new parameter giving max closing rate (just test how fast it closes unloaded, any airspeed in the last few seconds would just help), start sequence to close and keep them closed for the rest of the flight
     
     rest of sim:
         run loop with deployment angle closing to 0

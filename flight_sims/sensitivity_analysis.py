@@ -31,16 +31,16 @@ if analysis_type == 'linear':
     rocket_masses = [Hyperion.rocket_mass - 1, Hyperion.rocket_mass, Hyperion.rocket_mass + 1]
 elif analysis_type == 'gaussian':
     # TODO: make the output of the gaussian analysis display more information about the input variables
-        # either by colour coding the histogram stack to show how settings for one variable affect the output, and/or switching to a 3D heatmap with the x and y axes showing two different input variables, z showing apogee, and the colour showing the number of simulations in each bin. Extra important cause will help choose airbrake extension settings that are more resilient to variations in launch conditions 
+        # either by colour coding the histogram stack to show how settings for one variable affect the output, and/or switching to a 3D heatmap with the x and y axes showing two different input variables, z showing apogee, and the colour showing the number of simulations in each bin. Extra important cause will help choose airbrake extension settings that are more resilient to variations in launch conditions
     num_sims = 20000
-    mean_launch_rail_angle = Spaceport_America_avg_launch_conditions.launch_angle
-    std_launch_rail_angle = 2
+    mean_launch_rail_angle = Spaceport_America_avg_launch_conditions.launch_rail_elevation
+    std_launch_rail_angle = 1
     mean_launchpad_temp = Spaceport_America_avg_launch_conditions.launchpad_temp
     std_launchpad_temp = 5
     mean_launchpad_pressure = Spaceport_America_avg_launch_conditions.launchpad_pressure
     std_launchpad_pressure = 500
     mean_rocket_mass = Hyperion.rocket_mass
-    std_rocket_mass = 0.3
+    std_rocket_mass = 0.2
 else:
     raise ValueError("analysis_type must be either 'linear' or 'gaussian'")
 
@@ -117,7 +117,7 @@ elif analysis_type == 'gaussian':
         launchpad_pressure = np.random.normal(mean_launchpad_pressure, std_launchpad_pressure)
         rocket_mass = np.random.normal(mean_rocket_mass, std_rocket_mass)
         launch_condition = Spaceport_America_avg_launch_conditions
-        launch_condition.launch_angle = launch_rail_angle
+        launch_condition.launch_rail_elevation = launch_rail_angle
         launch_condition.launchpad_temp = launchpad_temp
         launch_condition.launchpad_pressure = launchpad_pressure
         rocket = rktClass.Rocket(
