@@ -72,7 +72,7 @@ Cesaroni_7450M2505_P = rocket_classes.Motor(
 )
 
 our_Cesaroni_7450M2505_P = Cesaroni_7450M2505_P
-our_Cesaroni_7450M2505_P.dry_mass = 2.310 # NOT including thrust plate, which is included in the rocket mass
+our_Cesaroni_7450M2505_P.dry_mass = 2.310 # NOT including thrust plate, which is included in the rocket mass. In addition to the final rocket mass, there was not a chance for a final weighing of the motor (either dry or wet)
 
 # Rocket Cd functions
 def Prometheus_Cd_at_Ma(mach):
@@ -173,7 +173,7 @@ def Hyperion_Cd_function_orkV7(Ma):
     else:
         return 0.65
 
-# Hyperion Cd functions
+# Hyperion Cd function
 def Hyperion_Cd_function_RASAeroII_2024_06_10(Ma):
     if Ma <= 0.01:
         return 0.41
@@ -257,21 +257,20 @@ def Hyperion_Cd_function_RASAeroII_2024_06_10(Ma):
         return 0.634
 
 # Rocket class configurations
-Hyperion_2024_06_17_1900 = {
-    "A_rocket": 0.015326, # 5.5" diameter circle's area in m^2
-    # TODO: calculate actual area with final tube OD
-    "rocket_mass": 19.137, # a bit off at the moment
-    # TODO: final massing soon
+Hyperion_2024_06_19_1200 = {
+    "A_rocket": 0.016061, # 14.3cm diameter circle's area in m^2
+    "rocket_mass": 20.5,
+    # note that a final massing could not happen before launch because the grind to finish the airframe was so bad that it extended through to the first days of launches at competition (which also led to the airbrakes and payload becoming non-functional, though the last-minute alterations to the airframe made the airbrakes unnecesary anyway as they added significant weight and external features that increased drag). Given all of the last-minute adjustments, the mass is likely within a kilo of the estimate given above
     "motor": our_Cesaroni_7450M2505_P,
     "Cd_rocket_at_Ma": Hyperion_Cd_function_RASAeroII_2024_06_10,
-    # TODO: further refinement of Cd function
-    "h_second_rail_button": 1.13 # m, distance from bottom of rocket to upper rail button
+    "h_second_rail_button": 1.11 # m, distance from bottom of rocket to upper rail button
 }
 
 Prometheus = rocket_classes.Rocket(
     A_rocket = 0.015326, #+ 0.13 * 0.008 * 3,  # 5.5" diameter circle's area in m^2, plus 3 fins with span of 13cm and thickness of 0.8cm
         # I think it was only the area of the body tube that was fed to Star-CCM+ for the Cd calculation
             # but maybe not?? TODO: look into more
+    # TODO: maybe measure OD of tube and use that
     rocket_mass = 13.93,  # kg, from (TODO: CAD? final physical rocket mass? were they the same at the end?)
     motor = Cesaroni_7579M1520_P,
     Cd_rocket_at_Ma = Prometheus_Cd_at_Ma,
@@ -300,7 +299,7 @@ Spaceport_America_avg_launch_conditions = rocket_classes.LaunchConditions(
 )
 
 Prometheus_launch_conditions = rocket_classes.LaunchConditions(
-    launchpad_pressure = launchpad_pressure_SAC,  # Pa
+    launchpad_pressure = launchpad_pressure_SAC,
     launchpad_temp = 34,  # deg C, from https://www.timeanddate.com/weather/@5492576/historic?month=6&year=2023
     L_launch_rail = L_launch_rail_ESRA_provided_SAC,
     launch_rail_elevation = 80,  # deg from horizontal. Niall said Prometheus was set up at 10 deg off of the vertical
@@ -311,28 +310,29 @@ Prometheus_launch_conditions = rocket_classes.LaunchConditions(
 
 # LaunchConditions for Hyperion for SAC 2024
 Hyperion_launch_conditions = rocket_classes.LaunchConditions(
-    launchpad_pressure = 85410, # TODO: update on Tues: https://mesowest.utah.edu/cgi-bin/droman/meso_base_dyn.cgi?stn=NMC77&unit=0&timetype=LOCAL
-    launchpad_temp = 35.5, # TODO: update on Tues night - weather forecast
+    # TODO time of launch was 16:50 Mountain +/- 10 minutes. More accurate time can be taken from the flight computers once their data is taken off of them, and the weather conditions below can be updated from that (https://mesowest.utah.edu/cgi-bin/droman/meso_base_dyn.cgi?stn=NMC77&unit=0&timetype=LOCAL)
+    launchpad_pressure = 86368, # Pa
+    launchpad_temp = 25.8, # deg C
     L_launch_rail = L_launch_rail_ESRA_provided_SAC,
-    launch_rail_elevation = launch_rail_elevation_SAC,
-    launch_rail_direction = 0, # TODO: update - pad? Can this be determined beforehand? Don't necessarily need real direction, can just be zero if wind heading is correct relative to that
+    launch_rail_elevation = 86.8, # deg
+    launch_rail_direction = 167, # deg, SSE
     local_T_lapse_rate = T_lapse_rate_SA,
     latitude = latitude_SA,
     altitude = altitude_SA,
-    mean_wind_speed = 5.4,# TODO: update - https://www.herox.com/SpaceportAmericaCup2024/update/6852
-    wind_heading = 135 # TODO: update - https://www.herox.com/SpaceportAmericaCup2024/update/6852
+    mean_wind_speed = 4.8, # m/s
+    wind_heading = 90 # TODO: not working with the sim; flipping it completely gives less than a foot difference in apogee
 )
 
 # Airbrakes class configurations
-airbrakes_model_2024_06_17_1900 = rocket_classes.Airbrakes(
+airbrakes_model_2024_06_18_1700 = rocket_classes.Airbrakes(
     num_flaps = 3,
     A_flap = 0.004215,  # m^2  flap area (47.1 mm * 89.5 mm)
-    Cd_brakes = 1,  # flat plate, TODO: TBC
-    max_deployment_rate = 5.5,  # deg/s
-    # TODO: update rate after loaded testing
-    # TODO: consider retraction speed being significantly faster than deployment speed, incorporate being closed for apogee into sims
+    Cd_brakes = 0.95,  # flat plate, TODO: TBC
+    max_deployment_rate = 5.5,  # deg/s # TODO: update rate after loaded testing
+    max_retraction_rate = 5.5, # TODO UPDATE
     max_deployment_angle = 45  # deg
 )
+
 # Set the default Hyperion configuration
-Hyperion = rocket_classes.Rocket(**Hyperion_2024_06_17_1900)
-current_airbrakes_model = airbrakes_model_2024_06_17_1900
+Hyperion = rocket_classes.Rocket(**Hyperion_2024_06_19_1200)
+current_airbrakes_model = airbrakes_model_2024_06_18_1700

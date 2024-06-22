@@ -6,9 +6,9 @@
             - if highly sensitive to another variable, a third dimension could be added to the table
     - controller will use PID ontop of this to adjust for errors in deployment angle, trying to keep the flightpath as close as possible to that of the flightpath specified by the function chosen at burnout
     - incorporate having the brakes closed for apogee into the recommended flightpaths
-        - t_to_apogee_min = v_y / a_y
+        - t_to_apogee_min = v_z / a_z
         - minimum time to apogee is if the current drag force remains all the way to apogee. Currently compared to time needed to close airbrakes completely if they're fully deployed
-        - t_to_apogee_max = v_y / F_gravity
+        - t_to_apogee_max = v_z / F_gravity
         - now doing it with this method, can just check at each timestep (after some cutoff) if the breaks need to be closed more to get closed for apogee, don't need efficiency anymore. Can also use extra small timesteps now
 - things to update closer to launch (incomplete list):
     - temperature at launchpad
@@ -36,21 +36,22 @@ from rocketflightsim import constants as con
 from rocketflightsim import rocket_classes
 from rocketflightsim import flight_simulation as fsim
 from rocketflightsim import helper_functions as hfunc
-from configs import Hyperion, current_airbrakes_model, Spaceport_America_avg_launch_conditions
+from configs import Hyperion, current_airbrakes_model, Hyperion_launch_conditions
 
 # step 1: use determine_burnout_states.py to get the burnout states
 """for now, just use:
-    - v_ys_at_burnout = np.linspace(200, 400, 10)
+    - v_zs_at_burnout = np.linspace(200, 400, 10)
     - heights_at_burnout = np.linspace(300, 600, 25)
-    - launch conditions: Spaceport_America_avg_launch_conditions
+    - launch conditions: Hyperion_launch_conditions
 With the above:
     time → don't care about initial, set to 0
     height → given
-    speed → function of v_x, v_y
+    speed → function of v_x, v_y, v_z
     a_y → can be calculated from angle to vertical, q, rocket parameters, environmental parameters
     a_x → can be calculated from angle to vertical, q, rocket parameters, environmental parameters
-    v_y → given
-    v_x → for now, take as 10% of v_y
+    v_z → given
+    v_x → take as 8% of v_z
+    v_y → take as 8% of v_z
     temperature → function of height, launch conditions
     air_density → function of height, launch conditions
     q → function of speed, air_density
@@ -90,7 +91,7 @@ h'(h = 10 000) = 0
 If want more, can add things like must be increasing then one switch to non-increasing
 """
 
-v_y = 280
+v_z = 280
 height_initial = 440
 airbrakes = current_airbrakes_model
 tenkft_in_m = 10000/3.28084
@@ -110,9 +111,9 @@ from rocketflightsim.flight_simulation import simulate_airbrakes_flight_deployme
 # 1
 def deployment_fn_null(h): return 0
 ascent = simulate_airbrakes_flight_deployment_function_of_height(
-    [height_initial, v_y, v_y * 0.1],
+    [height_initial, v_z * 0.08, v_z * 0.08, v_z],
     Hyperion,
-    Spaceport_America_avg_launch_conditions,
+    Hyperion_launch_conditions,
     airbrakes,
     deployment_fn_null
 )
@@ -143,9 +144,9 @@ for i in range(num_iterations):
         return deployment_function_values[index]
 
     ascent = simulate_airbrakes_flight_deployment_function_of_height(
-        [height_initial, v_y, v_y * 0.01],
+        [height_initial, v_z * 0.08, v_z * 0.08, v_z],
         Hyperion,
-        Spaceport_America_avg_launch_conditions,
+        Hyperion_launch_conditions,
         airbrakes,
         deployment_fn_simulator
     )
@@ -184,9 +185,9 @@ Score:
 
 
 ascent = simulate_airbrakes_flight_deployment_function_of_height(
-    [height_initial, v_y, v_y * 0.01],
+    [height_initial, v_z * 0.08, v_z * 0.08, v_z],
     Hyperion,
-    Spaceport_America_avg_launch_conditions,
+    Hyperion_launch_conditions,
     airbrakes,
     deployment_fn_simulator
 )
@@ -203,8 +204,8 @@ ax1.tick_params(axis="y", labelcolor="b")
 ax1.axhline(y=10000, color='gray', linestyle='--')
 
 ax2 = ax1.twinx()
-ax2.plot(ascent["time"], ascent["speed"], color="r")
-ax2.set_ylabel(f"Speed (m/s)", color="r")
+ax2.plot(ascent["time"], ascent["airspeed"], color="r")
+ax2.set_ylabel(f"Airspeed (m/s)", color="r")
 ax2.tick_params(axis="y", labelcolor="r")
 
 ax3 = ax1.twinx()
@@ -228,6 +229,16 @@ plt.show()
 
 # step 3: use the function to generate flightpaths for each burnout state
 
+
+
+
+
+
+
+
+
+
+# OLD CODE:
 # calculate the angles needed to hit 10k
 # multiplier = launchpad_pressure / (con.R_specific_air * pow(launchpad_temp, con.F_g_over_R_spec_air_T_lapse_rate))
 
