@@ -9,7 +9,7 @@ def import_and_clean_data(file_path, data_type):
 
     Args:
     - file_path (str): Path to the CSV file.
-    - data_type (str): Type of data (e.g., 'telemetrum', 'telemega').
+    - data_type (str): Type of data (e.g., 'telemetrum', 'telemega', 'telemega_Hyperion').
 
     Returns:
     - pd.DataFrame: Cleaned dataset.
@@ -20,6 +20,9 @@ def import_and_clean_data(file_path, data_type):
     elif data_type == "telemega":
         skip_rows = 80
         drop_rows = 216
+    elif data_type == "telemega_Hyperion":
+        skip_rows = 82
+        drop_rows = 2450
     else:
         raise ValueError("Unsupported data type")
 
@@ -27,7 +30,7 @@ def import_and_clean_data(file_path, data_type):
     dataset = dataset.iloc[:-drop_rows].drop_duplicates().reset_index()
     dataset["time"] = dataset["time"] - dataset["time"][0]
 
-    if data_type == 'telemega':
+    if data_type == 'telemega' or data_type == 'telemega_Hyperion':
         # approximate velocity based on derivative of height data for missing points in the TeleMega data (TeleMega didn't start capturing velocity data until apogee)
         num_to_smooth_by = 7  # speed quite far off of TeleMetrum. Maybe try going back to acceleration based
         for i in range(num_to_smooth_by):
@@ -42,7 +45,10 @@ def import_and_clean_data(file_path, data_type):
                 average_prev = prev_points / num_to_smooth_by
                 average_following = following_points / num_to_smooth_by
                 dataset.at[i, "speed"] = (average_following - average_prev) / (dataset["time"][i + num_to_smooth_by] - dataset["time"][i - num_to_smooth_by])
-        dataset["speed"] = pd.to_numeric(dataset["speed"])        
+        for i in range(len(dataset)):
+            if dataset["speed"][i] == "     NaN":
+                dataset.at[i, "speed"] = dataset["speed"][i - 1]
+        dataset["speed"] = pd.to_numeric(dataset["speed"])
 
     return dataset
 
